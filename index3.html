@@ -217,7 +217,13 @@ function renderResults() {
   checked.forEach(cb => {
     const category = cb.dataset.category;
     const topic = cb.value;
-
+console.log('DEBUG items:', {
+  category,
+  topic,
+  value: DATA[category][topic],
+  type: typeof DATA[category][topic],
+  isArray: Array.isArray(DATA[category][topic])
+});
     // 🔴 1단 방어: category / topic 유효성
     if (!DATA[category]) return;
     if (!DATA[category][topic]) return;
@@ -312,3 +318,4 @@ searchInput.addEventListener('input', () => {
 </script>
 </body>
 </html>
+
