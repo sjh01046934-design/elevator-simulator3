@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>승강기 검사기준 적용 시뮬레이터 · 개선판</title>
+  <style>
+    :root {
+      --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc;
+      --green:#19c37d; --red:#ff4d4f; --line:#22314f; --chip:#162545;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --accent:#7aa2ff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial;
+      background: radial-gradient(1200px 600px at 20% 0%, #14234a 0%, var(--bg) 60%);
+      color:var(--text);
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:22px 16px 70px;}
+    header{
+      position:sticky; top:0; z-index:5;
+      background: linear-gradient(180deg, rgba(11,18,32,.98), rgba(11,18,32,.92));
+      border-bottom:1px solid var(--line);
+      padding:10px 0 12px;
+      backdrop-filter: blur(6px);
+    }
+    h1{margin:0;font-size:18px}
+    .sub{margin-top:6px;color:var(--muted);font-size:12px}
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line); border-radius:14px; padding:12px; box-shadow: var(--shadow);
+      margin-top:10px;
+    }
+    .controls{display:grid; grid-template-columns: 1.3fr .7fr; gap:10px;}
+    @media (max-width:900px){ .controls{grid-template-columns:1fr;} }
+
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input,select,button{
+      width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line);
+      background: rgba(10,16,30,.55); color:var(--text);
+    }
+    button{cursor:pointer;font-weight:700;background: rgba(22,37,69,.85)}
+    button:hover{filter:brightness(1.06)}
+
+    .date-row{display:grid; grid-template-columns: 1fr 1fr; gap:8px;}
+    .presets{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px}
+    .preset{padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+      background: rgba(22,37,69,.85); font-size:12px; cursor:pointer}
+    .preset:hover{filter:brightness(1.06)}
+
+    .topics{border:1px solid var(--line); border-radius:12px; padding:8px; max-height:220px; overflow:auto;}
+    .search{margin-bottom:8px}
+    .topic{display:flex; gap:8px; align-items:flex-start; padding:6px 4px; border-bottom:1px dashed rgba(255,255,255,.08)}
+    .topic:last-child{border-bottom:none}
+    .topic input{width:auto; margin-top:2px}
+    .topic span{font-size:13px}
+
+    .actions{display:flex; gap:8px; margin-top:8px}
+
+    .summary{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+    .chip{display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px;
+      background: rgba(22,37,69,.9); border:1px solid var(--line); font-size:12px; color:var(--muted)}
+
+    .grid{display:grid; grid-template-columns: 1fr; gap:12px; margin-top:14px;}
+    .card{background: rgba(17,27,46,.72); border:1px solid var(--line); border-radius:14px; padding:12px;}
+    .title{font-weight:800; margin-bottom:6px}
+    .timeline{display:grid; gap:8px}
+    .row{display:grid; grid-template-columns: 140px 1fr; gap:10px; align-items:flex-start}
+    .badge{font-size:12px; font-weight:800}
+    .ok{color:var(--green)}
+    .no{color:var(--red)}
+    .range{color:var(--muted); font-size:12px}
+    .text{white-space:pre-wrap; line-height:1.5; font-size:13px}
+
+    footer{margin-top:16px;color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>승강기 검사기준 적용 시뮬레이터 · 개선판</h1>
+    <div class="sub">
+      ✔ 항목 다중 선택 · 날짜 프리셋 · 연혁 항상 표시<br>
+      ✔ 데이터 출처: <b>진호가 직접 전달한 기준 텍스트만</b>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="controls">
+      <div>
+        <label>검사 항목(주제) — 다중 선택 가능</label>
+        <input class="search" id="search" placeholder="항목 검색 (예: 피트, 조명, 환기)" />
+        <div class="topics" id="topics"></div>
+      </div>
+      <div>
+        <label>건축허가일</label>
+        <div class="date-row">
+          <input type="date" id="date" />
+          <select id="quick">
+            <option value="">빠른 선택</option>
+            <option value="2019-03-28">2019-03-28</option>
+            <option value="2013-09-15">2013-09-15</option>
+            <option value="2004-12-01">2004-12-01</option>
+            <option value="1997-08-18">1997-08-18</option>
+          </select>
+        </div>
+        <div class="presets">
+          <div class="preset" data-d="2019-03-28">2019.3.28 이후</div>
+          <div class="preset" data-d="2013-09-15">2013.9.15 이후</div>
+          <div class="preset" data-d="2004-12-01">2004.12.1 이후</div>
+          <div class="preset" data-d="1997-08-18">1997.8.18 이후</div>
+        </div>
+        <div class="actions">
+          <button id="run">적용 표시</button>
+          <button id="reset">초기화</button>
+        </div>
+        <div class="summary" id="summary"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" id="results"></div>
+
+  <footer>
+    🟩 = 입력된 건축허가일에 적용 / 🟥 = 미적용<br>
+    ※ 연혁은 접지 않고 <b>타임라인 형태로 항상 표시</b>
+  </footer>
+</div>
+
+<script>
+  let DATA = {};   // 전역 기준 데이터
+
+fetch('./data/criteria.json')
+  .then(res => {
+    if (!res.ok) throw new Error('criteria.json 로딩 실패');
+    return res.json();
+  })
+  .then(json => {
+    DATA = json;
+    init();   // 데이터 로딩 후 초기화
+  })
+  .catch(err => {
+    console.error(err);
+    alert('기준 데이터를 불러오지 못했습니다.');
+  });
+/* ==========================
+   개선 포인트 요약
+   1) 초기 아무 항목도 선택되지 않음 (기존 유지)
+   2) 체크박스 선택/해제 즉시 결과 렌더링
+   3) <details>는 자동 open 처리
+   ========================== */
+function isApplied(buildDate, from, to) {
+  if (!buildDate) return false;
+
+  const b = new Date(buildDate);
+  const f = from ? new Date(from) : null;
+  const t = to ? new Date(to) : null;
+
+  if (f && b < f) return false;
+  if (t && b > t) return false;
+  return true;
+}
+// ===== 기존 DATA 객체는 그대로 유지 (생략 없이 원본 그대로 사용) =====
+// ⚠ 실제 사용 시 여기 아래에 기존 DATA 전체를 그대로 붙여두면 됩니다.
+
+
+const topicsEl = document.getElementById('topics');
+const resultsEl = document.getElementById('results');
+const dateEl = document.getElementById('date');
+const quickEl = document.getElementById('quick');
+
+function renderTopics() {
+  const topicsEl = document.getElementById('topics');
+  topicsEl.innerHTML = '';
+
+  Object.keys(DATA).forEach(category => {
+    if (category === 'meta') return;
+
+    // 대분류 제목
+    const h = document.createElement('div');
+    h.className = 'category';
+    h.textContent = category;
+    topicsEl.appendChild(h);
+
+    // 소분류(검사항목)
+    Object.keys(DATA[category]).forEach(topic => {
+      const label = document.createElement('label');
+      label.className = 'topic';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = topic;
+      cb.dataset.category = category;
+      cb.addEventListener('change', renderResults);
+
+      const span = document.createElement('span');
+      span.textContent = topic;
+
+      label.appendChild(cb);
+      label.appendChild(span);
+      topicsEl.appendChild(label);
+    });
+  });
+}
+
+function renderResults() {
+  const results = document.getElementById('results');
+  const dateEl = document.getElementById('date');
+  results.innerHTML = '';
+
+  const checked = document.querySelectorAll('.topic input:checked');
+
+  checked.forEach(cb => {
+    const category = cb.dataset.category;
+    const topic = cb.value;
+
+    // 🔴 1단 방어: category / topic 유효성
+    if (!DATA[category]) return;
+    if (!DATA[category][topic]) return;
+
+    const items = DATA[category][topic];
+
+    // 🔴 2단 방어: 배열이 아니면 즉시 중단 (핵심)
+    if (!Array.isArray(items)) {
+      console.warn('배열 아님 → 스킵', category, topic, items);
+      return;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const title = document.createElement('div');
+    title.className = 'title';
+    title.textContent = `${category} / ${topic}`;
+    card.appendChild(title);
+
+    const timeline = document.createElement('div');
+    timeline.className = 'timeline';
+
+    // ✅ 여기서만 forEach 실행됨 (안전)
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'row';
+
+      const badge = document.createElement('div');
+      badge.className = 'badge';
+
+      const applied = isApplied(dateEl.value, item.from, item.to);
+      badge.classList.add(applied ? 'ok' : 'no');
+      badge.textContent = applied ? '🟩 적용' : '🟥 미적용';
+
+      const range = document.createElement('div');
+      range.className = 'range';
+      range.textContent =
+        `적용 기간: ${item.from || '—'} ~ ${item.to || '현재'}`;
+
+      badge.appendChild(range);
+
+      const text = document.createElement('div');
+      text.className = 'text';
+      text.textContent = item.text || '';
+
+      row.appendChild(badge);
+      row.appendChild(text);
+      timeline.appendChild(row);
+    });
+
+    card.appendChild(timeline);
+    results.appendChild(card);
+  });
+}
+
+// 날짜 프리셋
+quickEl.addEventListener('change', e => {
+  dateEl.value = e.target.value;
+  renderResults();
+});
+
+document.querySelectorAll('.preset').forEach(p => {
+  p.addEventListener('click', () => {
+    dateEl.value = p.dataset.d;
+    renderResults();
+  });
+});
+
+// 초기화
+ document.getElementById('reset').addEventListener('click', () => {
+  topicsEl.querySelectorAll('input').forEach(i => i.checked = false);
+  resultsEl.innerHTML = '';
+});
+
+// 적용 표시 버튼도 유지 (선택적 사용)
+document.getElementById('run').addEventListener('click', renderResults);
+
+function init() {
+  renderTopics();
+}
+const searchInput = document.getElementById('search');
+
+searchInput.addEventListener('input', () => {
+  const keyword = searchInput.value.trim().toLowerCase();
+
+  document.querySelectorAll('#topics .topic').forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(keyword) ? '' : 'none';
+  });
+});
+</script>
+</body>
+</html>
