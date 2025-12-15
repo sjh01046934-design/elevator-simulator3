@@ -135,7 +135,7 @@
 <script>
   let DATA = {};   // 전역 기준 데이터
 
-fetch('./data/criteria.json')
+fetch('./criteria.json')
   .then(res => {
     if (!res.ok) throw new Error('criteria.json 로딩 실패');
     return res.json();
@@ -306,3 +306,4 @@ searchInput.addEventListener('input', () => {
 </script>
 </body>
 </html>
+
