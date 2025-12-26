@@ -36,13 +36,17 @@ button:hover{filter:brightness(1.06)}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
 mark{background: yellow; color: black;}
 .text-size-controls{display:flex; gap:6px; margin-bottom:8px;}
+.quick-select-wrapper{display:flex; gap:6px; align-items:center; margin-bottom:4px;}
+.quick-select-wrapper button{border:1px solid var(--line); border-radius:12px; padding:6px 10px; background: rgba(22,37,69,.85); color:var(--text); cursor:pointer;}
+.quick-select-wrapper button:hover{filter:brightness(1.06);}
+.quick-select-wrapper span{font-size:12px; color:var(--muted); margin-right:6px;}
 </style>
 </head>
 <body>
 <header>
 <div class="wrap">
 <h1>승강기 검사기준 시뮬레이터</h1>
-<div class="sub">✔ 선택창 개선판: 10개 항목 표시 + 검색/버튼 위쪽 배치</div>
+<div class="sub">✔ 선택창 개선판: 10개 항목 표시 + 검색/버튼 위쪽 배치 + 빠른 선택</div>
 </div>
 </header>
 
@@ -51,32 +55,31 @@ mark{background: yellow; color: black;}
 <div class="controls">
   <!-- 좌측: 체크박스 리스트 -->
   <div>
-    <!-- 검색 + 버튼 영역 선택창 위쪽 -->
-    <div class="topics-control" style="margin-bottom:8px;">
-      <div class="text-size-controls" style="margin-bottom:4px;">
-        <button id="increase-font">글씨 크게</button>
-        <button id="decrease-font">글씨 작게</button>
-      </div>
+    <!-- 1. 건축허가일 + 빠른 선택 (최상단) -->
+    <label>건축허가일</label>
+    <div class="quick-select-wrapper" style="margin-bottom:6px;">
+      <span>빠른 선택</span>
+      <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
+      <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
+    </div>
+    <input type="date" id="date" style="margin-bottom:8px;">
 
-      <input type="text" id="search" placeholder="검사항목 검색 (예: 피트, 조명, 환기)" style="margin-bottom:4px;">
-      <div style="display:flex; gap:6px; margin-bottom:4px;">
-        <button id="run">적용 표시</button>
-        <button id="reset">초기화</button>
-      </div>
+    <!-- 2. 검사항목 검색 + 버튼 -->
+    <input type="text" id="search" placeholder="검사항목 검색 (예: 피트, 조명, 환기)" style="margin-bottom:4px;">
+    <div style="display:flex; gap:6px; margin-bottom:4px;">
+      <button id="run">적용 표시</button>
+      <button id="reset">초기화</button>
     </div>
 
+    <!-- 3. 글씨 크기 버튼 -->
+    <div class="text-size-controls">
+      <button id="increase-font">글씨 크게</button>
+      <button id="decrease-font">글씨 작게</button>
+    </div>
+
+    <!-- 검사항목 선택창 -->
     <label>검사항목 선택</label>
     <div class="topics" id="topics"></div>
-  </div>
-
-  <!-- 우측: 기존 다른 컨트롤(필요 시 유지) -->
-  <div style="display:flex; flex-direction:column; gap:8px;">
-    <label>건축허가일</label>
-    <input type="date" id="date">
-    <div class="presets">
-      <div class="preset" data-d="2013-09-15">2013.09.15 이후</div>
-      <div class="preset" data-d="2019-03-28">2019.03.28 이후</div>
-    </div>
   </div>
 </div>
 </div>
@@ -88,7 +91,7 @@ mark{background: yellow; color: black;}
 <script>
 let DATA=[];
 let TITLE_MAP={};
-let currentFontSize=14;
+let currentFontSize = 14;
 
 const topicsEl=document.getElementById('topics');
 const resultsEl=document.getElementById('results');
@@ -96,6 +99,7 @@ const dateEl=document.getElementById('date');
 const searchInput=document.getElementById('search');
 const presets=document.querySelectorAll('.preset');
 const fontTargetsSelector='body, input, select, button, .topic span, .title, .text, .badge, .range';
+
 function applyFontSize(){document.querySelectorAll(fontTargetsSelector).forEach(el=>el.style.fontSize=currentFontSize+'px');}
 
 fetch('./data/criteria.json')
@@ -125,7 +129,7 @@ function renderTopics(keyword=''){
     cb.value=title;
     cb.addEventListener('change', ()=> renderResults(searchInput.value));
     const span=document.createElement('span');
-    span.innerHTML=highlightText(title, keyword);
+    span.innerHTML = highlightText(title, keyword);
     label.appendChild(cb);
     label.appendChild(span);
     topicsEl.appendChild(label);
@@ -134,9 +138,9 @@ function renderTopics(keyword=''){
 
 function isApplied(buildDate, from, to){
   if(!buildDate) return false;
-  const b=new Date(buildDate);
-  const f=from?new Date(from):null;
-  const t=to?new Date(to):null;
+  const b = new Date(buildDate);
+  const f = from ? new Date(from) : null;
+  const t = to ? new Date(to) : null;
   if(f && b<f) return false;
   if(t && b>t) return false;
   return true;
@@ -205,7 +209,7 @@ document.getElementById('reset').addEventListener('click',()=>{
   dateEl.value='';
   searchInput.value='';
   document.querySelectorAll('#topics input').forEach(cb=>cb.checked=false);
-  renderTopics();
+  renderTopics(); 
   renderResults();
 });
 searchInput.addEventListener('input',()=>{
