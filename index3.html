@@ -214,71 +214,55 @@ function renderTopics() {
 
 function renderResults() {
   const results = document.getElementById('results');
-  const dateEl = document.getElementById('date');
   results.innerHTML = '';
 
   const checked = document.querySelectorAll('.topic input:checked');
-
+  
   checked.forEach(cb => {
     const category = cb.dataset.category;
     const topic = cb.value;
- 
-  console.log('DEBUG items:', {
-  category,
-  topic,
-  value: DATA[category][topic],
-  type: typeof DATA[category][topic],
-  isArray: Array.isArray(DATA[category][topic])
-});
- // 🔴 1단 방어: category / topic 유효성
-if (!DATA[category]) return;
-if (!DATA[category][topic]) return;
+    
+    if (!DATA[category] || !DATA[category][topic]) return;
 
-// 🔴 단일 객체도 배열처럼 처리
-const itemsRaw = DATA[category][topic];
-const items = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw]; // 단일 객체 → 배열
+    const itemsRaw = DATA[category][topic];
+    const items = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];
 
-const card = document.createElement('div');
-card.className = 'card';
+    const card = document.createElement('div');
+    card.className = 'card';
+    const title = document.createElement('div');
+    title.className = 'title';
+    title.textContent = `${category} / ${topic}`;
+    card.appendChild(title);
 
-const title = document.createElement('div');
-title.className = 'title';
-title.textContent = `${category} / ${topic}`;
-card.appendChild(title);
+    const timeline = document.createElement('div');
+    timeline.className = 'timeline';
 
-const timeline = document.createElement('div');
-timeline.className = 'timeline';
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      const badge = document.createElement('div');
+      badge.className = 'badge';
+      const applied = isApplied(dateEl.value, item.from, item.to);
+      badge.classList.add(applied ? 'ok' : 'no');
+      badge.textContent = applied ? '🟩 적용' : '🟥 미적용';
+      const range = document.createElement('div');
+      range.className = 'range';
+      range.textContent = `적용 기간: ${item.from || '—'} ~ ${item.to || '현재'}`;
+      badge.appendChild(range);
+      const text = document.createElement('div');
+      text.className = 'text';
+      text.textContent = item.text || '';
+      row.appendChild(badge);
+      row.appendChild(text);
+      timeline.appendChild(row);
+    });
 
-// ✅ items 배열 반복
-items.forEach(item => {
-  const row = document.createElement('div');
-  row.className = 'row';
+    card.appendChild(timeline);
+    results.appendChild(card);
+  }); // checked.forEach 끝
+} // <-- renderResults 함수 끝
 
-  const badge = document.createElement('div');
-  badge.className = 'badge';
-
-  const applied = isApplied(dateEl.value, item.from, item.to);
-  badge.classList.add(applied ? 'ok' : 'no');
-  badge.textContent = applied ? '🟩 적용' : '🟥 미적용';
-
-  const range = document.createElement('div');
-  range.className = 'range';
-  range.textContent = `적용 기간: ${item.from || '—'} ~ ${item.to || '현재'}`;
-  badge.appendChild(range);
-
-  const text = document.createElement('div');
-  text.className = 'text';
-  text.textContent = item.text || '';
-
-  row.appendChild(badge);
-  row.appendChild(text);
-  timeline.appendChild(row);
-});
-
-card.appendChild(timeline);
-results.appendChild(card);
-
-// 날짜 프리셋
+// renderResults 함수 바깥에서 이벤트 바인딩
 quickEl.addEventListener('change', e => {
   dateEl.value = e.target.value;
   renderResults();
@@ -290,6 +274,14 @@ document.querySelectorAll('.preset').forEach(p => {
     renderResults();
   });
 });
+
+document.getElementById('reset').addEventListener('click', () => {
+  topicsEl.querySelectorAll('input').forEach(i => i.checked = false);
+  resultsEl.innerHTML = '';
+});
+
+document.getElementById('run').addEventListener('click', renderResults);
+
 
 // 초기화
  document.getElementById('reset').addEventListener('click', () => {
