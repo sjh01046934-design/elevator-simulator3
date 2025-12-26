@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>승강기 검사기준 시뮬레이터 · 단순배열 기준</title>
+<title>승강기 검사기준 시뮬레이터 · 검색 포함</title>
 <style>
-/* 기존 스타일 유지 */
+/* 스타일 그대로 유지 */
 :root { --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc; --green:#19c37d; --red:#ff4d4f; --line:#22314f; --chip:#162545; --shadow:0 10px 30px rgba(0,0,0,.35); --accent:#7aa2ff; }
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,#14234a 0%,var(--bg) 60%);color:var(--text);}
@@ -32,13 +32,14 @@ h1{margin:0;font-size:18px}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
 button{cursor:pointer;font-weight:700;background: rgba(22,37,69,.85);padding:10px 12px;border-radius:12px;border:1px solid var(--line);color:var(--text);}
 button:hover{filter:brightness(1.06);}
+input#search{margin-bottom:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background: rgba(10,16,30,.55);color:var(--text);width:100%;}
 </style>
 </head>
 <body>
 <header>
 <div class="wrap">
-<h1>승강기 검사기준 시뮬레이터 · 단순배열 기준</h1>
-<div class="sub">✔ JSON 배열 기준 직접 처리 · title/text 정상 출력</div>
+<h1>승강기 검사기준 시뮬레이터 · 검색 포함</h1>
+<div class="sub">✔ JSON 배열 기준 직접 처리 · title/label/text 정상 출력 · 검색 가능</div>
 </div>
 </header>
 
@@ -46,7 +47,8 @@ button:hover{filter:brightness(1.06);}
 <div class="panel">
 <div class="controls">
 <div>
-<label>검사 항목 — 전체 표시</label>
+<label>검사 항목 검색</label>
+<input type="text" id="search" placeholder="검색 (예: 피트, 조명, 환기)">
 </div>
 <div>
 <label>건축허가일</label>
@@ -75,8 +77,8 @@ let DATA = [];
 fetch('./data/criteria.json')
 .then(res => res.json())
 .then(json => {
-  if (json.criteria && Array.isArray(json.criteria)) {
-    DATA = json.criteria.filter(Boolean); // null 제거
+  if(json.criteria && Array.isArray(json.criteria)){
+    DATA = json.criteria.filter(Boolean);
   }
   renderResults();
 })
@@ -94,12 +96,19 @@ function isApplied(buildDate, from, to){
 
 const resultsEl = document.getElementById('results');
 const dateEl = document.getElementById('date');
+const searchInput = document.getElementById('search');
 const presets = document.querySelectorAll('.preset');
 
-function renderResults(){
+function renderResults(keyword=''){
   resultsEl.innerHTML='';
   DATA.forEach(item=>{
     if(!item) return;
+
+    // 검색 필터
+    if(keyword){
+      const haystack = `${item.title||''} ${item.label||''} ${item.text||''}`.toLowerCase();
+      if(!haystack.includes(keyword)) return;
+    }
 
     const card = document.createElement('div');
     card.className='card';
@@ -139,15 +148,20 @@ function renderResults(){
 }
 
 // 이벤트
-document.getElementById('run').addEventListener('click', renderResults);
-document.getElementById('reset').addEventListener('click', ()=>{
+document.getElementById('run').addEventListener('click',()=>renderResults(searchInput.value));
+document.getElementById('reset').addEventListener('click',()=>{
   dateEl.value='';
+  searchInput.value='';
   renderResults();
 });
 presets.forEach(p=>p.addEventListener('click',()=>{
   dateEl.value=p.dataset.d;
-  renderResults();
+  renderResults(searchInput.value);
 }));
+
+searchInput.addEventListener('input',()=>{
+  renderResults(searchInput.value);
+});
 </script>
 </body>
 </html>
