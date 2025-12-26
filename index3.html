@@ -222,68 +222,61 @@ function renderResults() {
   checked.forEach(cb => {
     const category = cb.dataset.category;
     const topic = cb.value;
-console.log('DEBUG items:', {
+ 
+  console.log('DEBUG items:', {
   category,
   topic,
   value: DATA[category][topic],
   type: typeof DATA[category][topic],
   isArray: Array.isArray(DATA[category][topic])
 });
-    // 🔴 1단 방어: category / topic 유효성
-    if (!DATA[category]) return;
-    if (!DATA[category][topic]) return;
+ // 🔴 1단 방어: category / topic 유효성
+if (!DATA[category]) return;
+if (!DATA[category][topic]) return;
 
-    const items = DATA[category][topic];
+// 🔴 단일 객체도 배열처럼 처리
+const itemsRaw = DATA[category][topic];
+const items = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw]; // 단일 객체 → 배열
 
-    // 🔴 2단 방어: 배열이 아니면 즉시 중단 (핵심)
-    if (!Array.isArray(items)) {
-      console.warn('배열 아님 → 스킵', category, topic, items);
-      return;
-    }
+const card = document.createElement('div');
+card.className = 'card';
 
-    const card = document.createElement('div');
-    card.className = 'card';
+const title = document.createElement('div');
+title.className = 'title';
+title.textContent = `${category} / ${topic}`;
+card.appendChild(title);
 
-    const title = document.createElement('div');
-    title.className = 'title';
-    title.textContent = `${category} / ${topic}`;
-    card.appendChild(title);
+const timeline = document.createElement('div');
+timeline.className = 'timeline';
 
-    const timeline = document.createElement('div');
-    timeline.className = 'timeline';
+// ✅ items 배열 반복
+items.forEach(item => {
+  const row = document.createElement('div');
+  row.className = 'row';
 
-    // ✅ 여기서만 forEach 실행됨 (안전)
-    items.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'row';
+  const badge = document.createElement('div');
+  badge.className = 'badge';
 
-      const badge = document.createElement('div');
-      badge.className = 'badge';
+  const applied = isApplied(dateEl.value, item.from, item.to);
+  badge.classList.add(applied ? 'ok' : 'no');
+  badge.textContent = applied ? '🟩 적용' : '🟥 미적용';
 
-      const applied = isApplied(dateEl.value, item.from, item.to);
-      badge.classList.add(applied ? 'ok' : 'no');
-      badge.textContent = applied ? '🟩 적용' : '🟥 미적용';
+  const range = document.createElement('div');
+  range.className = 'range';
+  range.textContent = `적용 기간: ${item.from || '—'} ~ ${item.to || '현재'}`;
+  badge.appendChild(range);
 
-      const range = document.createElement('div');
-      range.className = 'range';
-      range.textContent =
-        `적용 기간: ${item.from || '—'} ~ ${item.to || '현재'}`;
+  const text = document.createElement('div');
+  text.className = 'text';
+  text.textContent = item.text || '';
 
-      badge.appendChild(range);
+  row.appendChild(badge);
+  row.appendChild(text);
+  timeline.appendChild(row);
+});
 
-      const text = document.createElement('div');
-      text.className = 'text';
-      text.textContent = item.text || '';
-
-      row.appendChild(badge);
-      row.appendChild(text);
-      timeline.appendChild(row);
-    });
-
-    card.appendChild(timeline);
-    results.appendChild(card);
-  });
-}
+card.appendChild(timeline);
+results.appendChild(card);
 
 // 날짜 프리셋
 quickEl.addEventListener('change', e => {
@@ -323,5 +316,3 @@ searchInput.addEventListener('input', () => {
 </script>
 </body>
 </html>
-
-
