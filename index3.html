@@ -48,77 +48,78 @@ footer{margin-top:16px;color:var(--muted);font-size:12px}
 </head>
 <body>
 <header>
-  <div class="wrap">
-    <h1>승강기 검사기준 적용 시뮬레이터 · 개선판</h1>
-    <div class="sub">
-      ✔ 항목 다중 선택 · 날짜 프리셋 · 연혁 항상 표시<br>
-      ✔ 데이터 출처: <b>진호가 직접 전달한 기준 텍스트만</b>
-    </div>
-  </div>
+<div class="wrap">
+<h1>승강기 검사기준 적용 시뮬레이터 · 개선판</h1>
+<div class="sub">
+✔ 항목 다중 선택 · 날짜 프리셋 · 연혁 항상 표시<br>
+✔ 데이터 출처: <b>진호가 직접 전달한 기준 텍스트만</b>
+</div>
+</div>
 </header>
 
 <div class="wrap">
-  <div class="panel">
-    <div class="controls">
-      <div>
-        <label>검사 항목(주제) — 다중 선택 가능</label>
-        <input class="search" id="search" placeholder="항목 검색 (예: 피트, 조명, 환기)" />
-        <div class="topics" id="topics"></div>
-      </div>
-      <div>
-        <label>건축허가일</label>
-        <div class="date-row">
-          <input type="date" id="date" />
-          <select id="quick">
-            <option value="">빠른 선택</option>
-            <option value="2019-03-28">2019-03-28</option>
-            <option value="2013-09-15">2013-09-15</option>
-            <option value="2004-12-01">2004-12-01</option>
-            <option value="1997-08-18">1997-08-18</option>
-          </select>
-        </div>
-        <div class="presets">
-          <div class="preset" data-d="2019-03-28">2019.3.28 이후</div>
-          <div class="preset" data-d="2013-09-15">2013.9.15 이후</div>
-          <div class="preset" data-d="2004-12-01">2004.12.1 이후</div>
-          <div class="preset" data-d="1997-08-18">1997.8.18 이후</div>
-        </div>
-        <div class="actions">
-          <button id="run">적용 표시</button>
-          <button id="reset">초기화</button>
-        </div>
-        <div class="summary" id="summary"></div>
-      </div>
-    </div>
-  </div>
+<div class="panel">
+<div class="controls">
+<div>
+<label>검사 항목(주제) — 다중 선택 가능</label>
+<input class="search" id="search" placeholder="항목 검색 (예: 피트, 조명, 환기)" />
+<div class="topics" id="topics"></div>
+</div>
+<div>
+<label>건축허가일</label>
+<div class="date-row">
+<input type="date" id="date" />
+<select id="quick">
+<option value="">빠른 선택</option>
+<option value="2019-03-28">2019-03-28</option>
+<option value="2013-09-15">2013-09-15</option>
+<option value="2004-12-01">2004-12-01</option>
+<option value="1997-08-18">1997-08-18</option>
+</select>
+</div>
+<div class="presets">
+<div class="preset" data-d="2019-03-28">2019.3.28 이후</div>
+<div class="preset" data-d="2013-09-15">2013.9.15 이후</div>
+<div class="preset" data-d="2004-12-01">2004.12.1 이후</div>
+<div class="preset" data-d="1997-08-18">1997.8.18 이후</div>
+</div>
+<div class="actions">
+<button id="run">적용 표시</button>
+<button id="reset">초기화</button>
+</div>
+<div class="summary" id="summary"></div>
+</div>
+</div>
+</div>
 
-  <div class="grid" id="results"></div>
+<div class="grid" id="results"></div>
 
-  <footer>
-    🟩 = 입력된 건축허가일에 적용 / 🟥 = 미적용<br>
-    ※ 연혁은 접지 않고 <b>타임라인 형태로 항상 표시</b>
-  </footer>
+<footer>
+🟩 = 입력된 건축허가일에 적용 / 🟥 = 미적용<br>
+※ 연혁은 접지 않고 <b>타임라인 형태로 항상 표시</b>
+</footer>
 </div>
 
 <script>
 let DATA = {};
 
 fetch('./data/criteria.json')
-  .then(res => {
-    if (!res.ok) throw new Error('criteria.json 로딩 실패');
-    return res.json();
-  })
+  .then(res => res.json())
   .then(json => {
-    if (json.criteria && !Array.isArray(json.criteria)) {
-      json.criteria = Object.values(json.criteria);
+    // topic 내부까지 배열로 정리
+    for (const category in json) {
+      if (category === 'meta') continue;
+      for (const topic in json[category]) {
+        let raw = json[category][topic];
+        if (!Array.isArray(raw)) {
+          json[category][topic] = Object.values(raw).filter(Boolean);
+        }
+      }
     }
     DATA = json;
     init();
   })
-  .catch(err => {
-    console.error(err);
-    alert('기준 데이터를 불러오지 못했습니다.');
-  });
+  .catch(err => { console.error(err); alert('기준 데이터를 불러오지 못했습니다.'); });
 
 function isApplied(buildDate, from, to) {
   if (!buildDate) return false;
@@ -143,7 +144,6 @@ function renderTopics() {
     h.className = 'category';
     h.textContent = category;
     topicsEl.appendChild(h);
-
     Object.keys(DATA[category]).forEach(topic => {
       const label = document.createElement('label');
       label.className = 'topic';
@@ -164,19 +164,16 @@ function renderTopics() {
 function renderResults() {
   resultsEl.innerHTML = '';
   const checked = document.querySelectorAll('.topic input:checked');
-  
+
   checked.forEach(cb => {
     const category = cb.dataset.category;
     const topic = cb.value;
     if (!DATA[category] || !DATA[category][topic]) return;
 
-    let itemsRaw = DATA[category][topic];
-    let items = Array.isArray(itemsRaw) ? itemsRaw : Object.values(itemsRaw);
-    items = items.filter(Boolean); // null/undefined 제거
+    let items = DATA[category][topic].filter(Boolean); // null 제거
 
     const card = document.createElement('div');
     card.className = 'card';
-
     const title = document.createElement('div');
     title.className = 'title';
     title.textContent = `${category} / ${topic}`;
@@ -193,7 +190,6 @@ function renderResults() {
 
       const badge = document.createElement('div');
       badge.className = 'badge';
-
       const applied = isApplied(dateEl.value, item.from, item.to);
       badge.classList.add(applied ? 'ok' : 'no');
       badge.textContent = applied ? '🟩 적용' : '🟥 미적용';
