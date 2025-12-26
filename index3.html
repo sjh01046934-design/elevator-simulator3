@@ -55,31 +55,35 @@ mark{background: yellow; color: black;}
 <div class="controls">
   <!-- 좌측: 체크박스 리스트 -->
   <div>
-    <!-- 1. 건축허가일 + 빠른 선택 (최상단) -->
+    <!-- 검색 + 버튼 영역 선택창 위쪽 -->
+    <div class="topics-control" style="margin-bottom:8px;">
+      <div class="text-size-controls" style="margin-bottom:4px;">
+        <button id="increase-font">글씨 크게</button>
+        <button id="decrease-font">글씨 작게</button>
+      </div>
+
+      <input type="text" id="search" placeholder="검사항목 검색 (예: 피트, 조명, 환기)" style="margin-bottom:4px;">
+      <div style="display:flex; gap:6px; margin-bottom:4px;">
+        <button id="run">적용 표시</button>
+        <button id="reset">초기화</button>
+      </div>
+    </div>
+
+    <label>검사항목 선택</label>
+    <div class="topics" id="topics"></div>
+  </div>
+
+  <!-- 우측: 건축허가일 + 빠른 선택 버튼 -->
+  <div style="display:flex; flex-direction:column; gap:8px;">
     <label>건축허가일</label>
-    <div class="quick-select-wrapper" style="margin-bottom:6px;">
+
+    <div class="quick-select-wrapper">
       <span>빠른 선택</span>
       <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
       <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
     </div>
-    <input type="date" id="date" style="margin-bottom:8px;">
 
-    <!-- 2. 검사항목 검색 + 버튼 -->
-    <input type="text" id="search" placeholder="검사항목 검색 (예: 피트, 조명, 환기)" style="margin-bottom:4px;">
-    <div style="display:flex; gap:6px; margin-bottom:4px;">
-      <button id="run">적용 표시</button>
-      <button id="reset">초기화</button>
-    </div>
-
-    <!-- 3. 글씨 크기 버튼 -->
-    <div class="text-size-controls">
-      <button id="increase-font">글씨 크게</button>
-      <button id="decrease-font">글씨 작게</button>
-    </div>
-
-    <!-- 검사항목 선택창 -->
-    <label>검사항목 선택</label>
-    <div class="topics" id="topics"></div>
+    <input type="date" id="date">
   </div>
 </div>
 </div>
