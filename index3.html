@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>승강기 검사기준 시뮬레이터 · 검색 포함</title>
+<title>승강기 검사기준 시뮬레이터 · 체크박스 + 검색</title>
 <style>
-/* 스타일 그대로 유지 */
 :root { --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc; --green:#19c37d; --red:#ff4d4f; --line:#22314f; --chip:#162545; --shadow:0 10px 30px rgba(0,0,0,.35); --accent:#7aa2ff; }
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,#14234a 0%,var(--bg) 60%);color:var(--text);}
@@ -16,10 +15,19 @@ h1{margin:0;font-size:18px}
 .panel{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow);margin-top:10px;}
 .controls{display:grid;grid-template-columns:1.3fr .7fr;gap:10px;}
 @media(max-width:900px){.controls{grid-template-columns:1fr;}}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+input,select,button{width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background: rgba(10,16,30,.55); color:var(--text);}
+button{cursor:pointer;font-weight:700;background: rgba(22,37,69,.85)}
+button:hover{filter:brightness(1.06)}
 .date-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .preset{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background: rgba(22,37,69,.85);font-size:12px;cursor:pointer}
 .preset:hover{filter:brightness(1.06)}
+.topics{border:1px solid var(--line); border-radius:12px; padding:8px; max-height:220px; overflow:auto; margin-bottom:8px;}
+.topic{display:flex; gap:8px; align-items:flex-start; padding:6px 4px; border-bottom:1px dashed rgba(255,255,255,.08)}
+.topic:last-child{border-bottom:none}
+.topic input{width:auto; margin-top:2px}
+.topic span{font-size:13px}
 .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px;}
 .card{background:rgba(17,27,46,.72);border:1px solid var(--line);border-radius:14px;padding:12px;}
 .title{font-weight:800;margin-bottom:6px}
@@ -30,27 +38,24 @@ h1{margin:0;font-size:18px}
 .no{color:var(--red)}
 .range{color:var(--muted);font-size:12px}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
-button{cursor:pointer;font-weight:700;background: rgba(22,37,69,.85);padding:10px 12px;border-radius:12px;border:1px solid var(--line);color:var(--text);}
-button:hover{filter:brightness(1.06);}
-input#search{margin-bottom:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background: rgba(10,16,30,.55);color:var(--text);width:100%;}
 </style>
 </head>
 <body>
 <header>
 <div class="wrap">
-<h1>승강기 검사기준 시뮬레이터 · 검색 포함</h1>
-<div class="sub">✔ JSON 배열 기준 직접 처리 · title/label/text 정상 출력 · 검색 가능</div>
+<h1>승강기 검사기준 시뮬레이터</h1>
+<div class="sub">✔ JSON 기준 title 체크 → 선택된 항목만 표시 · 검색 가능</div>
 </div>
 </header>
 
 <div class="wrap">
 <div class="panel">
-<div class="controls">
-<div>
-<label>검사 항목 검색</label>
+<label>검사항목 선택</label>
+<div class="topics" id="topics"></div>
+
+<label>검사항목 검색</label>
 <input type="text" id="search" placeholder="검색 (예: 피트, 조명, 환기)">
-</div>
-<div>
+
 <label>건축허가일</label>
 <div class="date-row">
 <input type="date" id="date"/>
@@ -59,30 +64,53 @@ input#search{margin-bottom:8px;padding:8px 10px;border-radius:8px;border:1px sol
 <div class="preset" data-d="2019-03-28">2019.03.28 이후</div>
 </div>
 </div>
+
 <div class="actions">
 <button id="run">적용 표시</button>
 <button id="reset">초기화</button>
 </div>
 </div>
-</div>
-</div>
 
 <div class="grid" id="results"></div>
-
 <footer>🟩 = 입력된 건축허가일에 적용 / 🟥 = 미적용</footer>
+</div>
 
 <script>
 let DATA = [];
 
+const topicsEl = document.getElementById('topics');
+const resultsEl = document.getElementById('results');
+const dateEl = document.getElementById('date');
+const searchInput = document.getElementById('search');
+const presets = document.querySelectorAll('.preset');
+
 fetch('./data/criteria.json')
 .then(res => res.json())
-.then(json => {
+.then(json=>{
   if(json.criteria && Array.isArray(json.criteria)){
     DATA = json.criteria.filter(Boolean);
   }
-  renderResults();
+  renderTopics();
 })
-.catch(err => { console.error(err); alert('기준 데이터를 불러오지 못했습니다.'); });
+.catch(err=>{console.error(err); alert('기준 데이터를 불러오지 못했습니다.');});
+
+function renderTopics(){
+  topicsEl.innerHTML='';
+  DATA.forEach((item,index)=>{
+    if(!item) return;
+    const label = document.createElement('label');
+    label.className='topic';
+    const cb = document.createElement('input');
+    cb.type='checkbox';
+    cb.value=index; // 배열 인덱스로 참조
+    cb.addEventListener('change', ()=> renderResults(searchInput.value));
+    const span = document.createElement('span');
+    span.textContent = item.title || '제목 없음';
+    label.appendChild(cb);
+    label.appendChild(span);
+    topicsEl.appendChild(label);
+  });
+}
 
 function isApplied(buildDate, from, to){
   if(!buildDate) return false;
@@ -94,16 +122,15 @@ function isApplied(buildDate, from, to){
   return true;
 }
 
-const resultsEl = document.getElementById('results');
-const dateEl = document.getElementById('date');
-const searchInput = document.getElementById('search');
-const presets = document.querySelectorAll('.preset');
-
 function renderResults(keyword=''){
   resultsEl.innerHTML='';
-  DATA.forEach(item=>{
-    if(!item) return;
+  const checked = document.querySelectorAll('#topics input:checked');
+  const checkedIndices = Array.from(checked).map(cb=>parseInt(cb.value));
 
+  DATA.forEach((item,index)=>{
+    if(!item) return;
+    // 체크된 항목만
+    if(!checkedIndices.includes(index)) return;
     // 검색 필터
     if(keyword){
       const haystack = `${item.title||''} ${item.label||''} ${item.text||''}`.toLowerCase();
@@ -112,7 +139,6 @@ function renderResults(keyword=''){
 
     const card = document.createElement('div');
     card.className='card';
-
     const titleEl = document.createElement('div');
     titleEl.className='title';
     titleEl.textContent = item.title || '제목 없음';
@@ -148,20 +174,18 @@ function renderResults(keyword=''){
 }
 
 // 이벤트
-document.getElementById('run').addEventListener('click',()=>renderResults(searchInput.value));
+document.getElementById('run').addEventListener('click',()=> renderResults(searchInput.value));
 document.getElementById('reset').addEventListener('click',()=>{
   dateEl.value='';
   searchInput.value='';
+  document.querySelectorAll('#topics input').forEach(cb=>cb.checked=false);
   renderResults();
 });
 presets.forEach(p=>p.addEventListener('click',()=>{
   dateEl.value=p.dataset.d;
   renderResults(searchInput.value);
 }));
-
-searchInput.addEventListener('input',()=>{
-  renderResults(searchInput.value);
-});
+searchInput.addEventListener('input',()=> renderResults(searchInput.value));
 </script>
 </body>
 </html>
