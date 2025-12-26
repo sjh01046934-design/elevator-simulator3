@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>승강기 검사기준 시뮬레이터 · 체크박스 + 검색</title>
+<title>승강기 검사기준 시뮬레이터 · 체크박스+검색+중복제거</title>
 <style>
 :root { --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc; --green:#19c37d; --red:#ff4d4f; --line:#22314f; --chip:#162545; --shadow:0 10px 30px rgba(0,0,0,.35); --accent:#7aa2ff; }
 *{box-sizing:border-box}
@@ -38,13 +38,14 @@ button:hover{filter:brightness(1.06)}
 .no{color:var(--red)}
 .range{color:var(--muted);font-size:12px}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
+input#search{margin-bottom:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background: rgba(10,16,30,.55);color:var(--text);}
 </style>
 </head>
 <body>
 <header>
 <div class="wrap">
 <h1>승강기 검사기준 시뮬레이터</h1>
-<div class="sub">✔ JSON 기준 title 체크 → 선택된 항목만 표시 · 검색 가능</div>
+<div class="sub">✔ title 체크박스 + 검색 + 중복 title 묶기</div>
 </div>
 </header>
 
@@ -77,6 +78,7 @@ button:hover{filter:brightness(1.06)}
 
 <script>
 let DATA = [];
+let TITLE_MAP = {}; // title 기준으로 그룹화
 
 const topicsEl = document.getElementById('topics');
 const resultsEl = document.getElementById('results');
@@ -85,27 +87,34 @@ const searchInput = document.getElementById('search');
 const presets = document.querySelectorAll('.preset');
 
 fetch('./data/criteria.json')
-.then(res => res.json())
+.then(res=>res.json())
 .then(json=>{
   if(json.criteria && Array.isArray(json.criteria)){
     DATA = json.criteria.filter(Boolean);
+    // title로 그룹화
+    TITLE_MAP = {};
+    DATA.forEach(item=>{
+      if(!item.title) return;
+      if(!TITLE_MAP[item.title]) TITLE_MAP[item.title]=[];
+      TITLE_MAP[item.title].push(item);
+    });
   }
   renderTopics();
 })
 .catch(err=>{console.error(err); alert('기준 데이터를 불러오지 못했습니다.');});
 
-function renderTopics(){
+function renderTopics(keyword=''){
   topicsEl.innerHTML='';
-  DATA.forEach((item,index)=>{
-    if(!item) return;
+  Object.keys(TITLE_MAP).forEach(title=>{
+    if(keyword && !title.toLowerCase().includes(keyword.toLowerCase())) return;
     const label = document.createElement('label');
     label.className='topic';
     const cb = document.createElement('input');
     cb.type='checkbox';
-    cb.value=index; // 배열 인덱스로 참조
+    cb.value=title;
     cb.addEventListener('change', ()=> renderResults(searchInput.value));
     const span = document.createElement('span');
-    span.textContent = item.title || '제목 없음';
+    span.textContent = title;
     label.appendChild(cb);
     label.appendChild(span);
     topicsEl.appendChild(label);
@@ -124,52 +133,49 @@ function isApplied(buildDate, from, to){
 
 function renderResults(keyword=''){
   resultsEl.innerHTML='';
-  const checked = document.querySelectorAll('#topics input:checked');
-  const checkedIndices = Array.from(checked).map(cb=>parseInt(cb.value));
+  const checked = Array.from(document.querySelectorAll('#topics input:checked')).map(cb=>cb.value);
+  checked.forEach(title=>{
+    const items = TITLE_MAP[title] || [];
+    items.forEach(item=>{
+      // 검색 필터
+      if(keyword){
+        const haystack = `${item.title||''} ${item.label||''} ${item.text||''}`.toLowerCase();
+        if(!haystack.includes(keyword.toLowerCase())) return;
+      }
+      const card = document.createElement('div');
+      card.className='card';
+      const titleEl = document.createElement('div');
+      titleEl.className='title';
+      titleEl.textContent = item.title || '제목 없음';
+      card.appendChild(titleEl);
 
-  DATA.forEach((item,index)=>{
-    if(!item) return;
-    // 체크된 항목만
-    if(!checkedIndices.includes(index)) return;
-    // 검색 필터
-    if(keyword){
-      const haystack = `${item.title||''} ${item.label||''} ${item.text||''}`.toLowerCase();
-      if(!haystack.includes(keyword)) return;
-    }
+      const timeline = document.createElement('div');
+      timeline.className='timeline';
 
-    const card = document.createElement('div');
-    card.className='card';
-    const titleEl = document.createElement('div');
-    titleEl.className='title';
-    titleEl.textContent = item.title || '제목 없음';
-    card.appendChild(titleEl);
+      const badge = document.createElement('div');
+      badge.className='badge';
+      const applied = isApplied(dateEl.value,item.from,item.to);
+      badge.classList.add(applied?'ok':'no');
+      badge.textContent = applied?'🟩 적용':'🟥 미적용';
 
-    const timeline = document.createElement('div');
-    timeline.className='timeline';
+      const range = document.createElement('div');
+      range.className='range';
+      range.textContent=`적용 기간: ${item.from||'—'} ~ ${item.to||'현재'}`;
+      badge.appendChild(range);
 
-    const badge = document.createElement('div');
-    badge.className='badge';
-    const applied = isApplied(dateEl.value,item.from,item.to);
-    badge.classList.add(applied?'ok':'no');
-    badge.textContent = applied?'🟩 적용':'🟥 미적용';
+      const textEl = document.createElement('div');
+      textEl.className='text';
+      textEl.innerHTML = `<b>${item.label||'기준'}</b><br>${item.text||''}`;
 
-    const range = document.createElement('div');
-    range.className='range';
-    range.textContent=`적용 기간: ${item.from||'—'} ~ ${item.to||'현재'}`;
-    badge.appendChild(range);
+      const row = document.createElement('div');
+      row.className='row';
+      row.appendChild(badge);
+      row.appendChild(textEl);
+      timeline.appendChild(row);
 
-    const textEl = document.createElement('div');
-    textEl.className='text';
-    textEl.innerHTML = `<b>${item.label||'기준'}</b><br>${item.text||''}`;
-
-    const row = document.createElement('div');
-    row.className='row';
-    row.appendChild(badge);
-    row.appendChild(textEl);
-    timeline.appendChild(row);
-
-    card.appendChild(timeline);
-    resultsEl.appendChild(card);
+      card.appendChild(timeline);
+      resultsEl.appendChild(card);
+    });
   });
 }
 
@@ -185,7 +191,10 @@ presets.forEach(p=>p.addEventListener('click',()=>{
   dateEl.value=p.dataset.d;
   renderResults(searchInput.value);
 }));
-searchInput.addEventListener('input',()=> renderResults(searchInput.value));
+searchInput.addEventListener('input',()=> {
+  renderTopics(searchInput.value);
+  renderResults(searchInput.value);
+});
 </script>
 </body>
 </html>
