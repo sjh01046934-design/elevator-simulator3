@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>승강기 검사기준 시뮬레이터 · 체크박스+검색+중복제거</title>
+<title>승강기 검사기준 시뮬레이터 · 검색 하이라이트</title>
 <style>
 :root { --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc; --green:#19c37d; --red:#ff4d4f; --line:#22314f; --chip:#162545; --shadow:0 10px 30px rgba(0,0,0,.35); --accent:#7aa2ff; }
 *{box-sizing:border-box}
@@ -39,13 +39,14 @@ button:hover{filter:brightness(1.06)}
 .range{color:var(--muted);font-size:12px}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
 input#search{margin-bottom:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background: rgba(10,16,30,.55);color:var(--text);}
+mark{background: yellow; color: black;}
 </style>
 </head>
 <body>
 <header>
 <div class="wrap">
 <h1>승강기 검사기준 시뮬레이터</h1>
-<div class="sub">✔ title 체크박스 + 검색 + 중복 title 묶기</div>
+<div class="sub">✔ 체크박스 선택 + 검색 하이라이트 + 중복 title 묶음</div>
 </div>
 </header>
 
@@ -78,7 +79,7 @@ input#search{margin-bottom:8px;padding:8px 10px;border-radius:8px;border:1px sol
 
 <script>
 let DATA = [];
-let TITLE_MAP = {}; // title 기준으로 그룹화
+let TITLE_MAP = {};
 
 const topicsEl = document.getElementById('topics');
 const resultsEl = document.getElementById('results');
@@ -114,7 +115,7 @@ function renderTopics(keyword=''){
     cb.value=title;
     cb.addEventListener('change', ()=> renderResults(searchInput.value));
     const span = document.createElement('span');
-    span.textContent = title;
+    span.innerHTML = highlightText(title, keyword);
     label.appendChild(cb);
     label.appendChild(span);
     topicsEl.appendChild(label);
@@ -129,6 +130,13 @@ function isApplied(buildDate, from, to){
   if(f && b<f) return false;
   if(t && b>t) return false;
   return true;
+}
+
+// 검색어 하이라이트 함수
+function highlightText(text, keyword){
+  if(!keyword) return text;
+  const re = new RegExp(`(${keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&')})`, 'gi');
+  return text.replace(re, '<mark>$1</mark>');
 }
 
 function renderResults(keyword=''){
@@ -146,7 +154,7 @@ function renderResults(keyword=''){
       card.className='card';
       const titleEl = document.createElement('div');
       titleEl.className='title';
-      titleEl.textContent = item.title || '제목 없음';
+      titleEl.innerHTML = highlightText(item.title||'제목 없음', keyword);
       card.appendChild(titleEl);
 
       const timeline = document.createElement('div');
@@ -165,7 +173,7 @@ function renderResults(keyword=''){
 
       const textEl = document.createElement('div');
       textEl.className='text';
-      textEl.innerHTML = `<b>${item.label||'기준'}</b><br>${item.text||''}`;
+      textEl.innerHTML = `<b>${highlightText(item.label||'기준', keyword)}</b><br>${highlightText(item.text||'', keyword)}`;
 
       const row = document.createElement('div');
       row.className='row';
@@ -191,7 +199,7 @@ presets.forEach(p=>p.addEventListener('click',()=>{
   dateEl.value=p.dataset.d;
   renderResults(searchInput.value);
 }));
-searchInput.addEventListener('input',()=> {
+searchInput.addEventListener('input',()=>{
   renderTopics(searchInput.value);
   renderResults(searchInput.value);
 });
