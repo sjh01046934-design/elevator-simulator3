@@ -140,8 +140,13 @@ fetch('./data/criteria.json')
     return res.json();
   })
   .then(json => {
-    DATA = json;
-    init();   // 데이터 로딩 후 초기화
+    // JSON 구조 확인 후 배열 변환
+    if (json.criteria && !Array.isArray(json.criteria)) {
+      json.criteria = Object.values(json.criteria);
+    }
+
+    DATA = json;  // 변환 후 DATA에 저장
+    init();       // 데이터 로딩 후 초기화
   })
   .catch(err => {
     console.error(err);
@@ -318,4 +323,5 @@ searchInput.addEventListener('input', () => {
 </script>
 </body>
 </html>
+
 
