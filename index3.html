@@ -225,37 +225,30 @@ function renderResults() {
     if (!DATA[category] || !DATA[category][topic]) return;
 
     const itemsRaw = DATA[category][topic];
-    const items = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];
+const items = Array.isArray(itemsRaw) 
+                ? itemsRaw 
+                : Object.values(itemsRaw); // ← 여기 중요
 
-    const card = document.createElement('div');
-    card.className = 'card';
-    const title = document.createElement('div');
-    title.className = 'title';
-    title.textContent = `${category} / ${topic}`;
-    card.appendChild(title);
+items.forEach(item => {
+  const row = document.createElement('div');
+  row.className = 'row';
 
-    const timeline = document.createElement('div');
-    timeline.className = 'timeline';
+  const badge = document.createElement('div');
+  badge.className = 'badge';
 
-    items.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'row';
-      const badge = document.createElement('div');
-      badge.className = 'badge';
-      const applied = isApplied(dateEl.value, item.from, item.to);
-      badge.classList.add(applied ? 'ok' : 'no');
-      badge.textContent = applied ? '🟩 적용' : '🟥 미적용';
-      const range = document.createElement('div');
-      range.className = 'range';
-      range.textContent = `적용 기간: ${item.from || '—'} ~ ${item.to || '현재'}`;
-      badge.appendChild(range);
-      const text = document.createElement('div');
-      text.className = 'text';
-      text.textContent = item.text || '';
-      row.appendChild(badge);
-      row.appendChild(text);
-      timeline.appendChild(row);
-    });
+  const applied = isApplied(dateEl.value, item.from, item.to);
+  badge.classList.add(applied ? 'ok' : 'no');
+  badge.textContent = applied ? '🟩 적용' : '🟥 미적용';
+
+  const titleText = item.title || '제목 없음'; // title 출력
+  const text = document.createElement('div');
+  text.className = 'text';
+  text.innerHTML = `<b>${titleText}</b><br>${item.text || ''}`;
+
+  row.appendChild(badge);
+  row.appendChild(text);
+  timeline.appendChild(row);
+});
 
     card.appendChild(timeline);
     results.appendChild(card);
