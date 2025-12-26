@@ -101,26 +101,24 @@ footer{margin-top:16px;color:var(--muted);font-size:12px}
 </div>
 
 <script>
-let DATA = {};   // 전역 기준 데이터
+let DATA = {};
 
 fetch('./data/criteria.json')
-.then(res => {
-  if (!res.ok) throw new Error('criteria.json 로딩 실패');
-  return res.json();
-})
-.then(json => {
-  // JSON 구조 확인 후 배열 변환
-  if (json.criteria && !Array.isArray(json.criteria)) {
-    json.criteria = Object.values(json.criteria);
-  }
-
-  DATA = json;  // 변환 후 DATA에 저장
-  init();       // 데이터 로딩 후 초기화
-})
-.catch(err => {
-  console.error(err);
-  alert('기준 데이터를 불러오지 못했습니다.');
-});
+  .then(res => {
+    if (!res.ok) throw new Error('criteria.json 로딩 실패');
+    return res.json();
+  })
+  .then(json => {
+    if (json.criteria && !Array.isArray(json.criteria)) {
+      json.criteria = Object.values(json.criteria);
+    }
+    DATA = json;
+    init();
+  })
+  .catch(err => {
+    console.error(err);
+    alert('기준 데이터를 불러오지 못했습니다.');
+  });
 
 function isApplied(buildDate, from, to) {
   if (!buildDate) return false;
@@ -166,14 +164,15 @@ function renderTopics() {
 function renderResults() {
   resultsEl.innerHTML = '';
   const checked = document.querySelectorAll('.topic input:checked');
-
+  
   checked.forEach(cb => {
     const category = cb.dataset.category;
     const topic = cb.value;
     if (!DATA[category] || !DATA[category][topic]) return;
 
-    const itemsRaw = DATA[category][topic];
-    const items = Array.isArray(itemsRaw) ? itemsRaw : Object.values(itemsRaw);
+    let itemsRaw = DATA[category][topic];
+    let items = Array.isArray(itemsRaw) ? itemsRaw : Object.values(itemsRaw);
+    items = items.filter(Boolean); // null/undefined 제거
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -183,10 +182,12 @@ function renderResults() {
     title.textContent = `${category} / ${topic}`;
     card.appendChild(title);
 
-    const timeline = document.createElement('div'); // ✅ timeline 변수 선언 위치 수정
+    const timeline = document.createElement('div');
     timeline.className = 'timeline';
 
     items.forEach(item => {
+      if (!item) return;
+
       const row = document.createElement('div');
       row.className = 'row';
 
@@ -218,28 +219,12 @@ function renderResults() {
 }
 
 // 이벤트 바인딩
-quickEl.addEventListener('change', e => {
-  dateEl.value = e.target.value;
-  renderResults();
-});
-
-document.querySelectorAll('.preset').forEach(p => {
-  p.addEventListener('click', () => {
-    dateEl.value = p.dataset.d;
-    renderResults();
-  });
-});
-
-document.getElementById('reset').addEventListener('click', () => {
-  topicsEl.querySelectorAll('input').forEach(i => i.checked = false);
-  resultsEl.innerHTML = '';
-});
-
+quickEl.addEventListener('change', e => { dateEl.value = e.target.value; renderResults(); });
+document.querySelectorAll('.preset').forEach(p => p.addEventListener('click', () => { dateEl.value = p.dataset.d; renderResults(); }));
+document.getElementById('reset').addEventListener('click', () => { topicsEl.querySelectorAll('input').forEach(i => i.checked = false); resultsEl.innerHTML = ''; });
 document.getElementById('run').addEventListener('click', renderResults);
 
-function init() {
-  renderTopics();
-}
+function init() { renderTopics(); }
 
 const searchInput = document.getElementById('search');
 searchInput.addEventListener('input', () => {
