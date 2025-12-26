@@ -7,7 +7,7 @@
 <style>
 :root { --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc; --green:#19c37d; --red:#ff4d4f; --line:#22314f; --chip:#162545; --shadow:0 10px 30px rgba(0,0,0,.35); --accent:#7aa2ff; }
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,#14234a 0%,var(--bg) 60%);color:var(--text);}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,#14234a 0%,var(--bg) 60%);color:var(--text);font-size:14px;}
 .wrap{max-width:1200px;margin:0 auto;padding:22px 16px 70px;}
 header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, rgba(11,18,32,.98), rgba(11,18,32,.92));border-bottom:1px solid var(--line);padding:10px 0 12px;backdrop-filter: blur(6px);}
 h1{margin:0;font-size:18px}
@@ -88,14 +88,20 @@ mark{background: yellow; color: black;}
 let DATA = [];
 let TITLE_MAP = {};
 let currentFontSize = 14;
-const bodyEl = document.body;
-const allContainers = document.querySelectorAll('body, .wrap, .panel, .topics, .grid, .text-size-controls');
 
 const topicsEl = document.getElementById('topics');
 const resultsEl = document.getElementById('results');
 const dateEl = document.getElementById('date');
 const searchInput = document.getElementById('search');
 const presets = document.querySelectorAll('.preset');
+
+// 글씨 크기 적용 대상: 체크박스, span, title, text, badge, range, input, button
+const fontTargetsSelector = 'body, input, select, button, .topic span, .title, .text, .badge, .range';
+function applyFontSize(){
+  document.querySelectorAll(fontTargetsSelector).forEach(el=>{
+    el.style.fontSize = currentFontSize+'px';
+  });
+}
 
 fetch('./data/criteria.json')
 .then(res=>res.json())
@@ -194,10 +200,7 @@ function renderResults(keyword=''){
   });
 }
 
-// 글씨 크기 조절 (전체 화면 적용)
-function applyFontSize(){
-  allContainers.forEach(el=>el.style.fontSize = currentFontSize+'px');
-}
+// 글씨 크기 조절 버튼
 document.getElementById('increase-font').addEventListener('click', ()=>{
   currentFontSize += 1;
   applyFontSize();
@@ -207,7 +210,7 @@ document.getElementById('decrease-font').addEventListener('click', ()=>{
   applyFontSize();
 });
 
-// 버튼 이벤트
+// 이벤트
 document.getElementById('run').addEventListener('click',()=> renderResults(searchInput.value));
 document.getElementById('reset').addEventListener('click',()=>{
   dateEl.value='';
