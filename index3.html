@@ -40,10 +40,36 @@ button:hover{filter:brightness(1.06)}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
 input#search{margin-bottom:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background: rgba(10,16,30,.55);color:var(--text);}
 mark{background: yellow; color: black;}
-.text-size-controls{display:flex; gap:6px; margin-bottom:8px;}
+
+/* 우측 상단 고정 글씨 크기 조절 버튼 */
+.text-size-controls-fixed {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: 9999;
+}
+.text-size-controls-fixed button {
+  padding: 6px 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #22314f;
+  background: rgba(22,37,69,.85);
+  cursor: pointer;
+}
+.text-size-controls-fixed button:hover {
+  filter: brightness(1.06);
+}
 </style>
 </head>
 <body>
+<!-- 우측 상단 고정 버튼 -->
+<div class="text-size-controls-fixed">
+  <button id="increase-font">글씨 크게</button>
+  <button id="decrease-font">글씨 작게</button>
+</div>
+
 <header>
 <div class="wrap">
 <h1>승강기 검사기준 시뮬레이터</h1>
@@ -53,10 +79,6 @@ mark{background: yellow; color: black;}
 
 <div class="wrap">
 <div class="panel">
-<div class="text-size-controls">
-<button id="increase-font">글씨 크게</button>
-<button id="decrease-font">글씨 작게</button>
-</div>
 
 <label>검사항목 선택</label>
 <div class="topics" id="topics"></div>
@@ -95,7 +117,7 @@ const dateEl = document.getElementById('date');
 const searchInput = document.getElementById('search');
 const presets = document.querySelectorAll('.preset');
 
-// 글씨 크기 적용 대상: 체크박스, span, title, text, badge, range, input, button
+// 글씨 크기 적용 대상
 const fontTargetsSelector = 'body, input, select, button, .topic span, .title, .text, .badge, .range';
 function applyFontSize(){
   document.querySelectorAll(fontTargetsSelector).forEach(el=>{
@@ -200,7 +222,7 @@ function renderResults(keyword=''){
   });
 }
 
-// 글씨 크기 조절 버튼
+// 글씨 크기 버튼
 document.getElementById('increase-font').addEventListener('click', ()=>{
   currentFontSize += 1;
   applyFontSize();
@@ -210,7 +232,7 @@ document.getElementById('decrease-font').addEventListener('click', ()=>{
   applyFontSize();
 });
 
-// 이벤트
+// 버튼 이벤트
 document.getElementById('run').addEventListener('click',()=> renderResults(searchInput.value));
 document.getElementById('reset').addEventListener('click',()=>{
   dateEl.value='';
