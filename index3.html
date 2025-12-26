@@ -13,17 +13,13 @@ header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, rgba(1
 h1{margin:0;font-size:18px}
 .sub{margin-top:6px;color:var(--muted);font-size:12px}
 .panel{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow);margin-top:10px;}
-.controls{display:grid;grid-template-columns:1.3fr .7fr;gap:10px;}
+.controls{display:grid;grid-template-columns:2fr 1fr;gap:10px;}
 @media(max-width:900px){.controls{grid-template-columns:1fr;}}
 label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
 input,select,button{width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background: rgba(10,16,30,.55); color:var(--text);}
 button{cursor:pointer;font-weight:700;background: rgba(22,37,69,.85)}
 button:hover{filter:brightness(1.06)}
-.date-row{display:grid;grid-template-columns:1fr auto;gap:8px; align-items:center;}
-.presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.preset{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background: rgba(22,37,69,.85);font-size:12px;cursor:pointer}
-.preset:hover{filter:brightness(1.06)}
-.topics{border:1px solid var(--line); border-radius:12px; padding:8px; max-height:220px; overflow:auto; margin-bottom:8px;}
+.topics{border:1px solid var(--line); border-radius:12px; padding:8px; max-height:500px; overflow:auto;}
 .topic{display:flex; gap:8px; align-items:flex-start; padding:6px 4px; border-bottom:1px dashed rgba(255,255,255,.08)}
 .topic:last-child{border-bottom:none}
 .topic input{width:auto; margin-top:2px}
@@ -38,38 +34,11 @@ button:hover{filter:brightness(1.06)}
 .no{color:var(--red)}
 .range{color:var(--muted);font-size:12px}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
-input#search{margin-bottom:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background: rgba(10,16,30,.55);color:var(--text);}
 mark{background: yellow; color: black;}
-
-/* 우측 상단 고정 글씨 크기 조절 버튼 */
-.text-size-controls-fixed {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  gap: 6px;
-  z-index: 9999;
-}
-.text-size-controls-fixed button {
-  padding: 6px 12px;
-  font-weight: 700;
-  border-radius: 6px;
-  border: 1px solid #22314f;
-  background: rgba(22,37,69,.85);
-  cursor: pointer;
-}
-.text-size-controls-fixed button:hover {
-  filter: brightness(1.06);
-}
+.text-size-controls{display:flex; gap:6px; margin-bottom:8px;}
 </style>
 </head>
 <body>
-<!-- 우측 상단 고정 버튼 -->
-<div class="text-size-controls-fixed">
-  <button id="increase-font">글씨 크게</button>
-  <button id="decrease-font">글씨 작게</button>
-</div>
-
 <header>
 <div class="wrap">
 <h1>승강기 검사기준 시뮬레이터</h1>
@@ -79,27 +48,36 @@ mark{background: yellow; color: black;}
 
 <div class="wrap">
 <div class="panel">
+<div class="controls">
+  <!-- 좌측: 체크박스 리스트 -->
+  <div>
+    <label>검사항목 선택</label>
+    <div class="topics" id="topics"></div>
+  </div>
 
-<label>검사항목 선택</label>
-<div class="topics" id="topics"></div>
+  <!-- 우측: 모든 컨트롤 -->
+  <div style="display:flex; flex-direction:column; gap:8px;">
+    <div class="text-size-controls">
+      <button id="increase-font">글씨 크게</button>
+      <button id="decrease-font">글씨 작게</button>
+    </div>
 
-<label>검사항목 검색</label>
-<input type="text" id="search" placeholder="검색 (예: 피트, 조명, 환기)">
+    <label>검사항목 검색</label>
+    <input type="text" id="search" placeholder="검색 (예: 피트, 조명, 환기)">
 
-<label>건축허가일</label>
-<div class="date-row">
-  <input type="date" id="date"/>
-  <div style="display:flex; gap:6px;">
-    <button id="run">적용 표시</button>
-    <button id="reset">초기화</button>
+    <label>건축허가일</label>
+    <div style="display:flex; gap:6px;">
+      <input type="date" id="date"/>
+      <button id="run">적용 표시</button>
+      <button id="reset">초기화</button>
+    </div>
+
+    <div class="presets">
+      <div class="preset" data-d="2013-09-15">2013.09.15 이후</div>
+      <div class="preset" data-d="2019-03-28">2019.03.28 이후</div>
+    </div>
   </div>
 </div>
-
-<div class="presets">
-<div class="preset" data-d="2013-09-15">2013.09.15 이후</div>
-<div class="preset" data-d="2019-03-28">2019.03.28 이후</div>
-</div>
-
 </div>
 
 <div class="grid" id="results"></div>
@@ -116,13 +94,9 @@ const resultsEl = document.getElementById('results');
 const dateEl = document.getElementById('date');
 const searchInput = document.getElementById('search');
 const presets = document.querySelectorAll('.preset');
-
-// 글씨 크기 적용 대상
 const fontTargetsSelector = 'body, input, select, button, .topic span, .title, .text, .badge, .range';
 function applyFontSize(){
-  document.querySelectorAll(fontTargetsSelector).forEach(el=>{
-    el.style.fontSize = currentFontSize+'px';
-  });
+  document.querySelectorAll(fontTargetsSelector).forEach(el=>el.style.fontSize=currentFontSize+'px');
 }
 
 fetch('./data/criteria.json')
