@@ -294,7 +294,11 @@ document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
 </script>
-
+<!-- 이미지 확대 모달 -->
+<div id="imageModal" class="image-modal" onclick="closeImageModal()">
+  <img id="modalImage">
+</div>
 </body>
 </html>
+
 
