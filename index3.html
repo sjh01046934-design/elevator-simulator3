@@ -157,12 +157,10 @@ mark{background:yellow;color:black}
   <!-- 건축허가일 -->
   <div>
     <label>건축허가일</label>
-
     <div style="display:flex;gap:6px;margin-bottom:6px">
       <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
       <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
     </div>
-
     <input type="date" id="date" placeholder="건축허가일 날짜입력">
   </div>
 
@@ -228,32 +226,45 @@ function highlight(t,k){
   return t.replace(new RegExp(`(${k})`,'gi'),'<mark>$1</mark>');
 }
 
+/* 🔥 핵심 수정 로직 */
 function renderResults(){
   resultsEl.innerHTML='';
-  document.querySelectorAll('#topics input:checked').forEach(cb=>{
-    TITLE_MAP[cb.value].forEach(i=>{
-      const hay=(i.title+i.label+i.text).toLowerCase();
-      if(contentSearch.value && !hay.includes(contentSearch.value.toLowerCase())) return;
+  const keyword = contentSearch.value.trim().toLowerCase();
+  let targets = [];
 
-      const card=document.createElement('div');
-      card.className='card';
-      card.innerHTML=`
-        <div class="title">${highlight(i.title,contentSearch.value)}</div>
-        <div class="row">
-          <div class="badge ${isApplied(dateEl.value,i.from,i.to)?'ok':'no'}">
-            ${isApplied(dateEl.value,i.from,i.to)?'🟩 적용':'🟥 미적용'}
-            <div class="range">${i.from||'—'} ~ ${i.to||'현재'}</div>
-          </div>
-          <div class="text">
-            <b>${highlight(i.label,contentSearch.value)}</b><br>
-            ${highlight(i.text,contentSearch.value)}
-          </div>
-        </div>`;
-      resultsEl.appendChild(card);
+  if (keyword) {
+    // 내용검색 시: 전체 기준 대상
+    targets = DATA;
+  } else {
+    // 체크된 검사항목만
+    document.querySelectorAll('#topics input:checked').forEach(cb=>{
+      (TITLE_MAP[cb.value]||[]).forEach(i=>targets.push(i));
     });
+  }
+
+  targets.forEach(i=>{
+    const hay=(i.title+i.label+i.text).toLowerCase();
+    if(keyword && !hay.includes(keyword)) return;
+
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <div class="title">${highlight(i.title,contentSearch.value)}</div>
+      <div class="row">
+        <div class="badge ${isApplied(dateEl.value,i.from,i.to)?'ok':'no'}">
+          ${isApplied(dateEl.value,i.from,i.to)?'🟩 적용':'🟥 미적용'}
+          <div class="range">${i.from||'—'} ~ ${i.to||'현재'}</div>
+        </div>
+        <div class="text">
+          <b>${highlight(i.label,contentSearch.value)}</b><br>
+          ${highlight(i.text,contentSearch.value)}
+        </div>
+      </div>`;
+    resultsEl.appendChild(card);
   });
 }
 
+/* ===== 이벤트 ===== */
 document.getElementById('increase-font').onclick=()=>{currentFontSize++;applyFont()};
 document.getElementById('decrease-font').onclick=()=>{currentFontSize=Math.max(10,currentFontSize-1);applyFont()};
 document.getElementById('run').onclick=renderResults;
