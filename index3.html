@@ -6,10 +6,10 @@
 <title>승강기 검사기준 시뮬레이터 · 선택창 개선판</title>
 
 <style>
-:root {
+:root{
   --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc;
   --green:#19c37d; --red:#ff4d4f; --line:#22314f;
-  --chip:#162545; --shadow:0 10px 30px rgba(0,0,0,.35);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
 body{
@@ -19,17 +19,46 @@ body{
   color:var(--text);
   font-size:14px;
 }
-.wrap{max-width:1200px;margin:0 auto;padding:22px 16px 70px;}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 16px 70px}
+
+/* ===== HEADER ===== */
 header{
   position:sticky;top:0;z-index:5;
   background:linear-gradient(180deg, rgba(11,18,32,.98), rgba(11,18,32,.92));
   border-bottom:1px solid var(--line);
-  padding:10px 0 12px;
   backdrop-filter: blur(6px);
 }
+.header-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:10px 16px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
 h1{margin:0;font-size:18px}
-.sub{margin-top:6px;color:var(--muted);font-size:12px}
+.sub{margin-top:4px;color:var(--muted);font-size:12px}
 
+/* 글씨 크기 버튼 (상단 우측) */
+.font-controls{
+  display:flex;
+  gap:6px;
+}
+.font-controls button{
+  width:32px;
+  height:32px;
+  padding:0;
+  font-size:12px;
+  font-weight:800;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:rgba(22,37,69,.85);
+  color:var(--text);
+  cursor:pointer;
+}
+.font-controls button:hover{filter:brightness(1.08)}
+
+/* ===== PANEL ===== */
 .panel{
   background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
   border:1px solid var(--line);
@@ -44,15 +73,9 @@ h1{margin:0;font-size:18px}
   grid-template-columns:2fr 1fr;
   gap:10px;
 }
-
 @media(max-width:900px){
-  .controls{
-    display:flex;
-    flex-direction:column;
-  }
-  /* 모바일에서 건축허가일을 상단으로 */
-  .controls > div:last-child{order:-1;}
-  .controls > div:first-child{order:1;}
+  .controls{display:flex;flex-direction:column}
+  .controls>div:last-child{order:-1}
 }
 
 label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
@@ -61,10 +84,10 @@ input,button{
   padding:10px 12px;
   border-radius:12px;
   border:1px solid var(--line);
-  background: rgba(10,16,30,.55);
+  background:rgba(10,16,30,.55);
   color:var(--text);
 }
-button{cursor:pointer;font-weight:700;background: rgba(22,37,69,.85)}
+button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
 button:hover{filter:brightness(1.06)}
 
 .topics{
@@ -75,7 +98,7 @@ button:hover{filter:brightness(1.06)}
   overflow-y:auto;
 }
 .topic{
-  display:flex; gap:8px; align-items:flex-start;
+  display:flex;gap:8px;align-items:flex-start;
   padding:6px 4px;
   border-bottom:1px dashed rgba(255,255,255,.08)
 }
@@ -83,7 +106,12 @@ button:hover{filter:brightness(1.06)}
 .topic input{width:auto;margin-top:2px}
 .topic span{font-size:13px}
 
-.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px;}
+.quick-select-wrapper{
+  display:flex;gap:6px;align-items:center;margin-bottom:6px
+}
+.quick-select-wrapper span{font-size:12px;color:var(--muted)}
+
+.grid{display:grid;gap:12px;margin-top:14px}
 .card{
   background:rgba(17,27,46,.72);
   border:1px solid var(--line);
@@ -99,28 +127,7 @@ button:hover{filter:brightness(1.06)}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
 mark{background:yellow;color:black}
 
-.text-size-controls{
-  display:flex;
-  gap:6px;
-  margin-bottom:6px;
-}
-.text-size-controls button{
-  font-size:11px;
-  padding:6px 8px;
-  border-radius:8px;
-}
-
-.quick-select-wrapper{
-  display:flex;
-  gap:6px;
-  align-items:center;
-}
-.quick-select-wrapper span{
-  font-size:12px;
-  color:var(--muted);
-}
-
-/* 모바일 입력창 터치 편의성 */
+/* 모바일 입력창 확대 */
 @media(max-width:900px){
   #search,#date{
     font-size:16px;
@@ -132,10 +139,17 @@ mark{background:yellow;color:black}
 </head>
 
 <body>
+
 <header>
-  <div class="wrap">
-    <h1>승강기 검사기준 시뮬레이터</h1>
-    <div class="sub">✔ 모바일 UX 개선 완료</div>
+  <div class="header-inner">
+    <div>
+      <h1>승강기 검사기준 시뮬레이터</h1>
+      <div class="sub">모바일 UX 개선 · 글씨 크기 제어</div>
+    </div>
+    <div class="font-controls">
+      <button id="increase-font" title="글씨 크게">A+</button>
+      <button id="decrease-font" title="글씨 작게">A−</button>
+    </div>
   </div>
 </header>
 
@@ -143,27 +157,21 @@ mark{background:yellow;color:black}
 <div class="panel">
 <div class="controls">
 
-  <!-- 좌측: 검사항목 -->
+  <!-- 검사항목 -->
   <div>
-    <div class="text-size-controls">
-      <button id="increase-font">글씨 크게</button>
-      <button id="decrease-font">글씨 작게</button>
-    </div>
-
     <input id="search" type="text" placeholder="검사항목 검색 (예: 피트, 조명, 환기)">
-    <div style="display:flex;gap:6px;margin:6px 0;">
+    <div style="display:flex;gap:6px;margin:6px 0">
       <button id="run">적용 표시</button>
       <button id="reset">초기화</button>
     </div>
-
     <label>검사항목 선택</label>
     <div class="topics" id="topics"></div>
   </div>
 
-  <!-- 우측: 건축허가일 -->
+  <!-- 건축허가일 -->
   <div>
     <label>건축허가일</label>
-    <div class="quick-select-wrapper" style="margin-bottom:6px;">
+    <div class="quick-select-wrapper">
       <span>빠른 선택</span>
       <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
       <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
@@ -175,7 +183,7 @@ mark{background:yellow;color:black}
 </div>
 
 <div class="grid" id="results"></div>
-<footer style="margin-top:10px;">🟩 적용 / 🟥 미적용</footer>
+<footer style="margin-top:10px">🟩 적용 / 🟥 미적용</footer>
 </div>
 
 <script>
@@ -184,6 +192,13 @@ const topicsEl=document.getElementById('topics');
 const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
 const searchInput=document.getElementById('search');
+const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range';
+
+function applyFont(){
+  document.querySelectorAll(fontTargets).forEach(e=>{
+    e.style.fontSize=currentFontSize+'px';
+  });
+}
 
 fetch('./data/criteria.json')
 .then(r=>r.json())
@@ -204,7 +219,7 @@ function renderTopics(k=''){
     l.className='topic';
     const c=document.createElement('input');
     c.type='checkbox'; c.value=t;
-    c.onchange=()=>renderResults();
+    c.onchange=renderResults;
     const s=document.createElement('span');
     s.innerHTML=highlight(t,k);
     l.append(c,s);
@@ -245,6 +260,8 @@ function renderResults(){
   });
 }
 
+document.getElementById('increase-font').onclick=()=>{currentFontSize+=1;applyFont()};
+document.getElementById('decrease-font').onclick=()=>{currentFontSize=Math.max(10,currentFontSize-1);applyFont()};
 document.getElementById('run').onclick=renderResults;
 document.getElementById('reset').onclick=()=>{
   dateEl.value=''; searchInput.value='';
@@ -256,5 +273,6 @@ document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
 </script>
+
 </body>
 </html>
