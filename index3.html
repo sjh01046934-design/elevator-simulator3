@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>승강기 검사기준 시뮬레이터 · 선택창 개선판</title>
+<title>승강기 검사기준 시뮬레이터</title>
 
 <style>
 :root{
@@ -33,30 +33,21 @@ header{
   margin:0 auto;
   padding:10px 16px 12px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  align-items:center;
 }
 h1{margin:0;font-size:18px}
-.sub{margin-top:4px;color:var(--muted);font-size:12px}
-
-/* 글씨 크기 버튼 (상단 우측) */
-.font-controls{
-  display:flex;
-  gap:6px;
-}
+.sub{font-size:12px;color:var(--muted)}
+.font-controls{display:flex;gap:6px}
 .font-controls button{
-  width:32px;
-  height:32px;
-  padding:0;
-  font-size:12px;
-  font-weight:800;
+  width:32px;height:32px;
+  font-size:12px;font-weight:800;
   border-radius:8px;
   border:1px solid var(--line);
   background:rgba(22,37,69,.85);
   color:var(--text);
   cursor:pointer;
 }
-.font-controls button:hover{filter:brightness(1.08)}
 
 /* ===== PANEL ===== */
 .panel{
@@ -67,7 +58,6 @@ h1{margin:0;font-size:18px}
   box-shadow:var(--shadow);
   margin-top:10px;
 }
-
 .controls{
   display:grid;
   grid-template-columns:2fr 1fr;
@@ -88,7 +78,6 @@ input,button{
   color:var(--text);
 }
 button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
-button:hover{filter:brightness(1.06)}
 
 .topics{
   border:1px solid var(--line);
@@ -106,11 +95,6 @@ button:hover{filter:brightness(1.06)}
 .topic input{width:auto;margin-top:2px}
 .topic span{font-size:13px}
 
-.quick-select-wrapper{
-  display:flex;gap:6px;align-items:center;margin-bottom:6px
-}
-.quick-select-wrapper span{font-size:12px;color:var(--muted)}
-
 .grid{display:grid;gap:12px;margin-top:14px}
 .card{
   background:rgba(17,27,46,.72);
@@ -127,9 +111,8 @@ button:hover{filter:brightness(1.06)}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
 mark{background:yellow;color:black}
 
-/* 모바일 입력창 확대 */
 @media(max-width:900px){
-  #search,#date{
+  #titleSearch,#contentSearch,#date{
     font-size:16px;
     padding:14px;
     height:48px;
@@ -144,11 +127,11 @@ mark{background:yellow;color:black}
   <div class="header-inner">
     <div>
       <h1>승강기 검사기준 시뮬레이터</h1>
-      <div class="sub">모바일 UX 개선 · 글씨 크기 제어</div>
+      <div class="sub">제목 + 내용 검색 지원</div>
     </div>
     <div class="font-controls">
-      <button id="increase-font" title="글씨 크게">A+</button>
-      <button id="decrease-font" title="글씨 작게">A−</button>
+      <button id="increase-font">A+</button>
+      <button id="decrease-font">A−</button>
     </div>
   </div>
 </header>
@@ -159,11 +142,14 @@ mark{background:yellow;color:black}
 
   <!-- 검사항목 -->
   <div>
-    <input id="search" type="text" placeholder="검사항목 검색 (예: 피트, 조명, 환기)">
+    <input id="titleSearch" placeholder="검사항목(제목) 검색">
+    <input id="contentSearch" placeholder="기준 내용 검색 (예: 0.7 m, 조도, 피난공간)" style="margin-top:6px">
+
     <div style="display:flex;gap:6px;margin:6px 0">
       <button id="run">적용 표시</button>
       <button id="reset">초기화</button>
     </div>
+
     <label>검사항목 선택</label>
     <div class="topics" id="topics"></div>
   </div>
@@ -171,8 +157,7 @@ mark{background:yellow;color:black}
   <!-- 건축허가일 -->
   <div>
     <label>건축허가일</label>
-    <div class="quick-select-wrapper">
-      <span>빠른 선택</span>
+    <div style="display:flex;gap:6px;margin-bottom:6px">
       <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
       <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
     </div>
@@ -191,7 +176,8 @@ let DATA=[], TITLE_MAP={}, currentFontSize=14;
 const topicsEl=document.getElementById('topics');
 const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
-const searchInput=document.getElementById('search');
+const titleSearch=document.getElementById('titleSearch');
+const contentSearch=document.getElementById('contentSearch');
 const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range';
 
 function applyFont(){
@@ -211,17 +197,17 @@ fetch('./data/criteria.json')
   renderTopics();
 });
 
-function renderTopics(k=''){
+function renderTopics(){
   topicsEl.innerHTML='';
   Object.keys(TITLE_MAP).forEach(t=>{
-    if(k && !t.includes(k)) return;
+    if(titleSearch.value && !t.includes(titleSearch.value)) return;
     const l=document.createElement('label');
     l.className='topic';
     const c=document.createElement('input');
     c.type='checkbox'; c.value=t;
     c.onchange=renderResults;
     const s=document.createElement('span');
-    s.innerHTML=highlight(t,k);
+    s.innerHTML=highlight(t,titleSearch.value);
     l.append(c,s);
     topicsEl.appendChild(l);
   });
@@ -244,31 +230,38 @@ function renderResults(){
   resultsEl.innerHTML='';
   document.querySelectorAll('#topics input:checked').forEach(cb=>{
     TITLE_MAP[cb.value].forEach(i=>{
+      const hay=(i.title+i.label+i.text).toLowerCase();
+      if(contentSearch.value && !hay.includes(contentSearch.value.toLowerCase())) return;
+
       const card=document.createElement('div');
       card.className='card';
       card.innerHTML=`
-        <div class="title">${i.title}</div>
+        <div class="title">${highlight(i.title,contentSearch.value)}</div>
         <div class="row">
           <div class="badge ${isApplied(dateEl.value,i.from,i.to)?'ok':'no'}">
             ${isApplied(dateEl.value,i.from,i.to)?'🟩 적용':'🟥 미적용'}
             <div class="range">${i.from||'—'} ~ ${i.to||'현재'}</div>
           </div>
-          <div class="text"><b>${i.label}</b><br>${i.text}</div>
+          <div class="text">
+            <b>${highlight(i.label,contentSearch.value)}</b><br>
+            ${highlight(i.text,contentSearch.value)}
+          </div>
         </div>`;
       resultsEl.appendChild(card);
     });
   });
 }
 
-document.getElementById('increase-font').onclick=()=>{currentFontSize+=1;applyFont()};
+document.getElementById('increase-font').onclick=()=>{currentFontSize++;applyFont()};
 document.getElementById('decrease-font').onclick=()=>{currentFontSize=Math.max(10,currentFontSize-1);applyFont()};
 document.getElementById('run').onclick=renderResults;
 document.getElementById('reset').onclick=()=>{
-  dateEl.value=''; searchInput.value='';
+  titleSearch.value=''; contentSearch.value=''; dateEl.value='';
   document.querySelectorAll('#topics input').forEach(c=>c.checked=false);
-  renderResults();
+  renderTopics(); renderResults();
 };
-searchInput.oninput=()=>renderTopics(searchInput.value);
+titleSearch.oninput=renderTopics;
+contentSearch.oninput=renderResults;
 document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
