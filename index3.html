@@ -127,7 +127,7 @@ mark{background:yellow;color:black}
   <div class="header-inner">
     <div>
       <h1>승강기 검사기준 시뮬레이터</h1>
-      <div class="sub">제목 + 내용 검색 지원</div>
+      <div class="sub">건축허가일 기반 검사기준 자동 판별</div>
     </div>
     <div class="font-controls">
       <button id="increase-font">A+</button>
@@ -157,11 +157,13 @@ mark{background:yellow;color:black}
   <!-- 건축허가일 -->
   <div>
     <label>건축허가일</label>
+
     <div style="display:flex;gap:6px;margin-bottom:6px">
       <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
       <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
     </div>
-    <input type="date" id="date">
+
+    <input type="date" id="date" placeholder="건축허가일 날짜입력">
   </div>
 
 </div>
