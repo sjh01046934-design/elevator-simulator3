@@ -250,6 +250,14 @@ function renderImage(imagePath){
       <img src="${imagePath}"
            style="width:100%; max-width:400px; cursor:zoom-in; border:1px solid #22314f; border-radius:8px;"
            onclick="openImageModal('${imagePath}')">
+      <div style="
+        margin-top:4px;
+        font-size:12px;
+        color:#9fb0d0;
+        text-align:center;
+      ">
+        ※ 이미지를 크게 보려면 클릭하시오.
+      </div>
     </div>
   `;
 }
@@ -332,3 +340,4 @@ document.querySelectorAll('.preset').forEach(b=>{
 
 </body>
 </html>
+
