@@ -4,226 +4,191 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>승강기 검사기준 시뮬레이터 · 선택창 개선판</title>
+
 <style>
-:root { --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc; --green:#19c37d; --red:#ff4d4f; --line:#22314f; --chip:#162545; --shadow:0 10px 30px rgba(0,0,0,.35); --accent:#7aa2ff; }
+:root {
+  --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc;
+  --green:#19c37d; --red:#ff4d4f; --line:#22314f;
+  --chip:#162545; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,#14234a 0%,var(--bg) 60%);color:var(--text);font-size:14px;}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;
+  background:radial-gradient(1200px 600px at 20% 0%,#14234a 0%,var(--bg) 60%);
+  color:var(--text);
+  font-size:14px;
+}
 .wrap{max-width:1200px;margin:0 auto;padding:22px 16px 70px;}
-header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, rgba(11,18,32,.98), rgba(11,18,32,.92));border-bottom:1px solid var(--line);padding:10px 0 12px;backdrop-filter: blur(6px);}
+header{
+  position:sticky;top:0;z-index:5;
+  background:linear-gradient(180deg, rgba(11,18,32,.98), rgba(11,18,32,.92));
+  border-bottom:1px solid var(--line);
+  padding:10px 0 12px;
+  backdrop-filter: blur(6px);
+}
 h1{margin:0;font-size:18px}
 .sub{margin-top:6px;color:var(--muted);font-size:12px}
-.panel{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow);margin-top:10px;}
-.controls{display:grid;grid-template-columns:2fr 1fr;gap:10px;}
-@media(max-width:900px){.controls{grid-template-columns:1fr;}}
+
+.panel{
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  box-shadow:var(--shadow);
+  margin-top:10px;
+}
+
+.controls{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:10px;
+}
+
+@media(max-width:900px){
+  .controls{
+    display:flex;
+    flex-direction:column;
+  }
+  /* 모바일에서 건축허가일을 상단으로 */
+  .controls > div:last-child{order:-1;}
+  .controls > div:first-child{order:1;}
+}
+
 label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-input,select,button{width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background: rgba(10,16,30,.55); color:var(--text);}
+input,button{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background: rgba(10,16,30,.55);
+  color:var(--text);
+}
 button{cursor:pointer;font-weight:700;background: rgba(22,37,69,.85)}
 button:hover{filter:brightness(1.06)}
-.topics{border:1px solid var(--line); border-radius:12px; padding:8px; max-height:320px; overflow-y:auto;} /* 최대 10개 항목 표시 */
-.topic{display:flex; gap:8px; align-items:flex-start; padding:6px 4px; border-bottom:1px dashed rgba(255,255,255,.08)}
+
+.topics{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:8px;
+  max-height:320px;
+  overflow-y:auto;
+}
+.topic{
+  display:flex; gap:8px; align-items:flex-start;
+  padding:6px 4px;
+  border-bottom:1px dashed rgba(255,255,255,.08)
+}
 .topic:last-child{border-bottom:none}
-.topic input{width:auto; margin-top:2px}
+.topic input{width:auto;margin-top:2px}
 .topic span{font-size:13px}
+
 .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px;}
-.card{background:rgba(17,27,46,.72);border:1px solid var(--line);border-radius:14px;padding:12px;}
+.card{
+  background:rgba(17,27,46,.72);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+}
 .title{font-weight:800;margin-bottom:6px}
-.timeline{display:grid;gap:8px}
-.row{display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:flex-start}
+.row{display:grid;grid-template-columns:140px 1fr;gap:10px}
 .badge{font-size:12px;font-weight:800}
 .ok{color:var(--green)}
 .no{color:var(--red)}
-.range{color:var(--muted);font-size:12px}
+.range{font-size:12px;color:var(--muted)}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
-mark{background: yellow; color: black;}
-.text-size-controls{display:flex; gap:6px; margin-bottom:8px;}
-.quick-select-wrapper{display:flex; gap:6px; align-items:center; margin-bottom:4px;}
-.quick-select-wrapper button{border:1px solid var(--line); border-radius:12px; padding:6px 10px; background: rgba(22,37,69,.85); color:var(--text); cursor:pointer;}
-.quick-select-wrapper button:hover{filter:brightness(1.06);}
-.quick-select-wrapper span{font-size:12px; color:var(--muted); margin-right:6px;}
+mark{background:yellow;color:black}
+
+.text-size-controls{
+  display:flex;
+  gap:6px;
+  margin-bottom:6px;
+}
+.text-size-controls button{
+  font-size:11px;
+  padding:6px 8px;
+  border-radius:8px;
+}
+
+.quick-select-wrapper{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+.quick-select-wrapper span{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* 모바일 입력창 터치 편의성 */
+@media(max-width:900px){
+  #search,#date{
+    font-size:16px;
+    padding:14px;
+    height:48px;
+  }
+}
 </style>
 </head>
+
 <body>
 <header>
-<div class="wrap">
-<h1>승강기 검사기준 시뮬레이터</h1>
-<div class="sub">✔ 선택창 개선판: 10개 항목 표시 + 검색/버튼 위쪽 배치 + 빠른 선택</div>
-</div>
+  <div class="wrap">
+    <h1>승강기 검사기준 시뮬레이터</h1>
+    <div class="sub">✔ 모바일 UX 개선 완료</div>
+  </div>
 </header>
 
 <div class="wrap">
 <div class="panel">
 <div class="controls">
-  <!-- 좌측: 체크박스 리스트 -->
-  <div>
-    <!-- 검색 + 버튼 영역 선택창 위쪽 -->
-    <div class="topics-control" style="margin-bottom:8px;">
-      <div class="text-size-controls" style="margin-bottom:4px;">
-        <button id="increase-font">글씨 크게</button>
-        <button id="decrease-font">글씨 작게</button>
-      </div>
 
-      <input type="text" id="search" placeholder="검사항목 검색 (예: 피트, 조명, 환기)" style="margin-bottom:4px;">
-      <div style="display:flex; gap:6px; margin-bottom:4px;">
-        <button id="run">적용 표시</button>
-        <button id="reset">초기화</button>
-      </div>
+  <!-- 좌측: 검사항목 -->
+  <div>
+    <div class="text-size-controls">
+      <button id="increase-font">글씨 크게</button>
+      <button id="decrease-font">글씨 작게</button>
+    </div>
+
+    <input id="search" type="text" placeholder="검사항목 검색 (예: 피트, 조명, 환기)">
+    <div style="display:flex;gap:6px;margin:6px 0;">
+      <button id="run">적용 표시</button>
+      <button id="reset">초기화</button>
     </div>
 
     <label>검사항목 선택</label>
     <div class="topics" id="topics"></div>
   </div>
 
-  <!-- 우측: 건축허가일 + 빠른 선택 버튼 -->
-  <div style="display:flex; flex-direction:column; gap:8px;">
+  <!-- 우측: 건축허가일 -->
+  <div>
     <label>건축허가일</label>
-
-    <div class="quick-select-wrapper">
+    <div class="quick-select-wrapper" style="margin-bottom:6px;">
       <span>빠른 선택</span>
       <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
       <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
     </div>
-
     <input type="date" id="date">
   </div>
+
 </div>
 </div>
 
 <div class="grid" id="results"></div>
-<footer>🟩 = 입력된 건축허가일에 적용 / 🟥 = 미적용</footer>
+<footer style="margin-top:10px;">🟩 적용 / 🟥 미적용</footer>
 </div>
 
 <script>
-let DATA=[];
-let TITLE_MAP={};
-let currentFontSize = 14;
-
+let DATA=[], TITLE_MAP={}, currentFontSize=14;
 const topicsEl=document.getElementById('topics');
 const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
 const searchInput=document.getElementById('search');
-const presets=document.querySelectorAll('.preset');
-const fontTargetsSelector='body, input, select, button, .topic span, .title, .text, .badge, .range';
-
-function applyFontSize(){document.querySelectorAll(fontTargetsSelector).forEach(el=>el.style.fontSize=currentFontSize+'px');}
 
 fetch('./data/criteria.json')
-.then(res=>res.json())
-.then(json=>{
-  if(json.criteria && Array.isArray(json.criteria)){
-    DATA=json.criteria.filter(Boolean);
-    TITLE_MAP={};
-    DATA.forEach(item=>{
-      if(!item.title) return;
-      if(!TITLE_MAP[item.title]) TITLE_MAP[item.title]=[];
-      TITLE_MAP[item.title].push(item);
-    });
-  }
-  renderTopics();
-})
-.catch(err=>{console.error(err); alert('기준 데이터를 불러오지 못했습니다.');});
-
-function renderTopics(keyword=''){
-  topicsEl.innerHTML='';
-  Object.keys(TITLE_MAP).forEach(title=>{
-    if(keyword && !title.toLowerCase().includes(keyword.toLowerCase())) return;
-    const label=document.createElement('label');
-    label.className='topic';
-    const cb=document.createElement('input');
-    cb.type='checkbox';
-    cb.value=title;
-    cb.addEventListener('change', ()=> renderResults(searchInput.value));
-    const span=document.createElement('span');
-    span.innerHTML = highlightText(title, keyword);
-    label.appendChild(cb);
-    label.appendChild(span);
-    topicsEl.appendChild(label);
-  });
-}
-
-function isApplied(buildDate, from, to){
-  if(!buildDate) return false;
-  const b = new Date(buildDate);
-  const f = from ? new Date(from) : null;
-  const t = to ? new Date(to) : null;
-  if(f && b<f) return false;
-  if(t && b>t) return false;
-  return true;
-}
-
-function highlightText(text, keyword){
-  if(!keyword) return text;
-  const re=new RegExp(`(${keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&')})`, 'gi');
-  return text.replace(re,'<mark>$1</mark>');
-}
-
-function renderResults(keyword=''){
-  resultsEl.innerHTML='';
-  const checked=Array.from(document.querySelectorAll('#topics input:checked')).map(cb=>cb.value);
-  checked.forEach(title=>{
-    const items=TITLE_MAP[title]||[];
-    items.forEach(item=>{
-      if(keyword){
-        const haystack=`${item.title||''} ${item.label||''} ${item.text||''}`.toLowerCase();
-        if(!haystack.includes(keyword.toLowerCase())) return;
-      }
-      const card=document.createElement('div');
-      card.className='card';
-      const titleEl=document.createElement('div');
-      titleEl.className='title';
-      titleEl.innerHTML=highlightText(item.title||'제목 없음', keyword);
-      card.appendChild(titleEl);
-
-      const timeline=document.createElement('div');
-      timeline.className='timeline';
-
-      const badge=document.createElement('div');
-      badge.className='badge';
-      const applied=isApplied(dateEl.value,item.from,item.to);
-      badge.classList.add(applied?'ok':'no');
-      badge.textContent=applied?'🟩 적용':'🟥 미적용';
-
-      const range=document.createElement('div');
-      range.className='range';
-      range.textContent=`적용 기간: ${item.from||'—'} ~ ${item.to||'현재'}`;
-      badge.appendChild(range);
-
-      const textEl=document.createElement('div');
-      textEl.className='text';
-      textEl.innerHTML=`<b>${highlightText(item.label||'기준', keyword)}</b><br>${highlightText(item.text||'', keyword)}`;
-
-      const row=document.createElement('div');
-      row.className='row';
-      row.appendChild(badge);
-      row.appendChild(textEl);
-      timeline.appendChild(row);
-
-      card.appendChild(timeline);
-      resultsEl.appendChild(card);
-    });
-  });
-}
-
-// 글씨 크기 버튼
-document.getElementById('increase-font').addEventListener('click',()=>{currentFontSize+=1; applyFontSize();});
-document.getElementById('decrease-font').addEventListener('click',()=>{currentFontSize=Math.max(10,currentFontSize-1); applyFontSize();});
-
-// 버튼 이벤트
-document.getElementById('run').addEventListener('click',()=> renderResults(searchInput.value));
-document.getElementById('reset').addEventListener('click',()=>{
-  dateEl.value='';
-  searchInput.value='';
-  document.querySelectorAll('#topics input').forEach(cb=>cb.checked=false);
-  renderTopics(); 
-  renderResults();
-});
-searchInput.addEventListener('input',()=>{
-  renderTopics(searchInput.value);
-  renderResults(searchInput.value);
-});
-presets.forEach(p=>p.addEventListener('click',()=>{
-  dateEl.value=p.dataset.d;
-  renderResults(searchInput.value);
-}));
-</script>
-</body>
-</html>
+.then(r=>r.json())
+.then(j=>{
+  DATA=j.criteria||[];
+  DATA.forEach(i=>{
+    if(!TITLE_MAP[i.title]) TITLE_MAP[i.title]=[];
+    T
