@@ -117,6 +117,24 @@ mark{background:yellow;color:black}
   color:var(--muted);
 }
 
+/* ===== 이미지 확대 모달 ===== */
+.image-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  cursor:zoom-out;
+}
+.image-modal img{
+  max-width:95%;
+  max-height:95%;
+  border-radius:8px;
+  box-shadow:0 0 30px rgba(0,0,0,0.6);
+}
+
 @media(max-width:900px){
   #titleSearch,#contentSearch,#date{
     font-size:16px;
@@ -163,12 +181,10 @@ mark{background:yellow;color:black}
   <!-- 건축허가일 -->
   <div>
     <label>건축허가일</label>
-
     <div style="display:flex;gap:6px;margin-bottom:6px">
       <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
       <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
     </div>
-
     <input type="date" id="date">
     <div class="help-text">※ 건축허가일 날짜를 입력하세요</div>
   </div>
@@ -178,6 +194,11 @@ mark{background:yellow;color:black}
 
 <div class="grid" id="results"></div>
 <footer style="margin-top:10px">🟩 적용 / 🟥 미적용</footer>
+</div>
+
+<!-- 이미지 확대 모달 -->
+<div id="imageModal" class="image-modal" onclick="closeImageModal()">
+  <img id="modalImage">
 </div>
 
 <script>
@@ -221,15 +242,28 @@ function renderTopics(){
     topicsEl.appendChild(l);
   });
 }
+
 function renderImage(imagePath){
   if(!imagePath) return '';
   return `
     <div style="margin-top:10px">
-      <img src="${imagePath}" 
-           style="width:100%; max-width:400px; border:1px solid #22314f; border-radius:8px;">
+      <img src="${imagePath}"
+           style="width:100%; max-width:400px; cursor:zoom-in; border:1px solid #22314f; border-radius:8px;"
+           onclick="openImageModal('${imagePath}')">
     </div>
   `;
 }
+
+function openImageModal(src){
+  const modal=document.getElementById('imageModal');
+  const img=document.getElementById('modalImage');
+  img.src=src;
+  modal.style.display='flex';
+}
+function closeImageModal(){
+  document.getElementById('imageModal').style.display='none';
+}
+
 function isApplied(d,f,t){
   if(!d) return false;
   const b=new Date(d);
@@ -272,9 +306,10 @@ function renderResults(){
         <div class="text">
           <b>${highlight(i.label,contentSearch.value)}</b><br>
           ${highlight(i.text,contentSearch.value)}
-       </div>
-  ${renderImage(i.image)}
-      </div>`;
+        </div>
+      </div>
+      ${renderImage(i.image)}
+    `;
     resultsEl.appendChild(card);
   });
 }
@@ -294,11 +329,6 @@ document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
 </script>
-<!-- 이미지 확대 모달 -->
-<div id="imageModal" class="image-modal" onclick="closeImageModal()">
-  <img id="modalImage">
-</div>
+
 </body>
 </html>
-
-
