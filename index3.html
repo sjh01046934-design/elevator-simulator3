@@ -221,7 +221,15 @@ function renderTopics(){
     topicsEl.appendChild(l);
   });
 }
-
+function renderImage(imagePath){
+  if(!imagePath) return '';
+  return `
+    <div style="margin-top:10px">
+      <img src="${imagePath}" 
+           style="width:100%; max-width:400px; border:1px solid #22314f; border-radius:8px;">
+    </div>
+  `;
+}
 function isApplied(d,f,t){
   if(!d) return false;
   const b=new Date(d);
@@ -264,7 +272,8 @@ function renderResults(){
         <div class="text">
           <b>${highlight(i.label,contentSearch.value)}</b><br>
           ${highlight(i.text,contentSearch.value)}
-        </div>
+       </div>
+  ${renderImage(i.image)}
       </div>`;
     resultsEl.appendChild(card);
   });
@@ -288,3 +297,4 @@ document.querySelectorAll('.preset').forEach(b=>{
 
 </body>
 </html>
+
