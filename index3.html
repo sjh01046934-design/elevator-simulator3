@@ -102,12 +102,21 @@ button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
   border-radius:14px;
   padding:12px;
 }
-.title{font-weight:800;margin-bottom:6px}
-.row{display:grid;grid-template-columns:140px 1fr;gap:10px}
-.badge{font-size:12px;font-weight:800}
+
+/* title + badge */
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+.title{font-weight:800}
+.badge{font-size:12px;font-weight:800;text-align:right}
 .ok{color:var(--green)}
 .no{color:var(--red)}
 .range{font-size:12px;color:var(--muted)}
+
+.row{margin-top:6px}
 .text{white-space:pre-wrap;line-height:1.5;font-size:13px}
 mark{background:yellow;color:black}
 
@@ -250,12 +259,7 @@ function renderImage(imagePath){
       <img src="${imagePath}"
            style="width:100%; max-width:400px; cursor:zoom-in; border:1px solid #22314f; border-radius:8px;"
            onclick="openImageModal('${imagePath}')">
-      <div style="
-        margin-top:4px;
-        font-size:12px;
-        color:#9fb0d0;
-        text-align:center;
-      ">
+      <div style="margin-top:4px;font-size:12px;color:#9fb0d0;text-align:center">
         ※ 이미지를 크게 보려면 클릭하시오.
       </div>
     </div>
@@ -263,10 +267,8 @@ function renderImage(imagePath){
 }
 
 function openImageModal(src){
-  const modal=document.getElementById('imageModal');
-  const img=document.getElementById('modalImage');
-  img.src=src;
-  modal.style.display='flex';
+  document.getElementById('modalImage').src=src;
+  document.getElementById('imageModal').style.display='flex';
 }
 function closeImageModal(){
   document.getElementById('imageModal').style.display='none';
@@ -305,17 +307,21 @@ function renderResults(){
     const card=document.createElement('div');
     card.className='card';
     card.innerHTML=`
-      <div class="title">${highlight(i.title,contentSearch.value)}</div>
-      <div class="row">
+      <div class="card-header">
+        <div class="title">${highlight(i.title,contentSearch.value)}</div>
         <div class="badge ${isApplied(dateEl.value,i.from,i.to)?'ok':'no'}">
           ${isApplied(dateEl.value,i.from,i.to)?'🟩 적용':'🟥 미적용'}
           <div class="range">${i.from||'—'} ~ ${i.to||'현재'}</div>
         </div>
+      </div>
+
+      <div class="row">
         <div class="text">
           <b>${highlight(i.label,contentSearch.value)}</b><br>
           ${highlight(i.text,contentSearch.value)}
         </div>
       </div>
+
       ${renderImage(i.image)}
     `;
     resultsEl.appendChild(card);
@@ -340,4 +346,3 @@ document.querySelectorAll('.preset').forEach(b=>{
 
 </body>
 </html>
-
