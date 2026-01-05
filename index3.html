@@ -190,8 +190,10 @@ mark{background:yellow;color:black}
   <!-- 건축허가일 -->
   <div>
     <label>건축허가일</label>
-    <div style="display:flex;gap:6px;margin-bottom:6px">
+    <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
       <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
+      <button class="preset" data-d="2015-05-13">2015.05.13 이후</button>
+      <button class="preset" data-d="2017-01-28">2017.01.28 이후</button>
       <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
     </div>
     <input type="date" id="date">
@@ -345,6 +347,3 @@ document.querySelectorAll('.preset').forEach(b=>{
 
 </body>
 </html>
-
-
-
