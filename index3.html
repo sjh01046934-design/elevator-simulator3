@@ -167,7 +167,8 @@ mark{background:yellow;color:black}
 }
 
 @media(max-width:900px){
-  #titleSearch,#contentSearch,#date{
+  /* ✅ (기존) 여기서 contentSearch -> search 로 바뀜 */
+  #titleSearch,#search,#date{
     font-size:16px;
     padding:14px;
     height:48px;
@@ -222,7 +223,8 @@ mark{background:yellow;color:black}
   <!-- 검사항목 -->
   <div>
     <input id="titleSearch" placeholder="검사항목(제목) 검색">
-    <input id="contentSearch" placeholder="기준 내용 검색 (예: 0.7 m, 조도, 피난공간)" style="margin-top:6px">
+    <!-- ✅ 변경: 검색창 통합 -->
+    <input id="search" placeholder="통합 검색 (검사항목/내용)  예: 0.7 m, 조도, 피난공간" style="margin-top:6px">
 
     <div style="display:flex;gap:6px;margin:6px 0">
       <button id="run">적용 표시</button>
@@ -267,13 +269,18 @@ const topicsEl=document.getElementById('topics');
 const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
 const titleSearch=document.getElementById('titleSearch');
-const contentSearch=document.getElementById('contentSearch');
+const search=document.getElementById('search');
 const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range';
 
 function applyFont(){
   document.querySelectorAll(fontTargets).forEach(e=>{
     e.style.fontSize=currentFontSize+'px';
   });
+}
+
+/* ✅ 추가: 띄어쓰기 무시 검색용 정규화 */
+function norm(s){
+  return (s||'').toLowerCase().replace(/\s+/g,'');
 }
 
 fetch('./data/criteria.json')
@@ -289,15 +296,22 @@ fetch('./data/criteria.json')
 
 function renderTopics(){
   topicsEl.innerHTML='';
+  const q = norm(search.value);
+
   Object.keys(TITLE_MAP).forEach(t=>{
-    if(titleSearch.value && !t.includes(titleSearch.value)) return;
+    if(q){
+      const hitTitle = norm(t).includes(q);
+      const hitAnyItem = (TITLE_MAP[t]||[]).some(i => norm(i.title + i.label + i.text).includes(q));
+      if(!hitTitle && !hitAnyItem) return;
+    }
+
     const l=document.createElement('label');
     l.className='topic';
     const c=document.createElement('input');
     c.type='checkbox'; c.value=t;
     c.onchange=renderResults;
     const s=document.createElement('span');
-    s.innerHTML=highlight(t,titleSearch.value);
+    s.innerHTML=highlight(t,search.value);
     l.append(c,s);
     topicsEl.appendChild(l);
   });
@@ -340,7 +354,7 @@ function highlight(t,k){
 
 function renderResults(){
   resultsEl.innerHTML='';
-  const keyword = contentSearch.value.trim().toLowerCase();
+  const keyword = norm(search.value);
   let targets = [];
 
   if (keyword) {
@@ -352,14 +366,14 @@ function renderResults(){
   }
 
   targets.forEach(i=>{
-    const hay=(i.title+i.label+i.text).toLowerCase();
+    const hay = norm(i.title+i.label+i.text);
     if(keyword && !hay.includes(keyword)) return;
 
     const card=document.createElement('div');
     card.className='card';
     card.innerHTML=`
       <div class="card-header">
-        <div class="title">${highlight(i.title,contentSearch.value)}</div>
+        <div class="title">${highlight(i.title,search.value)}</div>
         <div class="badge ${isApplied(dateEl.value,i.from,i.to)?'ok':'no'}">
           ${isApplied(dateEl.value,i.from,i.to)?'🟩 적용':'🟥 미적용'}
           <div class="range">${i.from||'—'} ~ ${i.to||'현재'}</div>
@@ -368,7 +382,7 @@ function renderResults(){
 
       <div class="row">
         <div class="text">
-          ${highlight(i.text,contentSearch.value)}
+          ${highlight(i.text,search.value)}
         </div>
       </div>
 
@@ -383,12 +397,14 @@ document.getElementById('increase-font').onclick=()=>{currentFontSize++;applyFon
 document.getElementById('decrease-font').onclick=()=>{currentFontSize=Math.max(10,currentFontSize-1);applyFont()};
 document.getElementById('run').onclick=renderResults;
 document.getElementById('reset').onclick=()=>{
-  titleSearch.value=''; contentSearch.value=''; dateEl.value='';
+  titleSearch.value=''; search.value=''; dateEl.value='';
   document.querySelectorAll('#topics input').forEach(c=>c.checked=false);
   renderTopics(); renderResults();
 };
 titleSearch.oninput=renderTopics;
-contentSearch.oninput=renderResults;
+/* ✅ 변경: 통합 검색 입력 시 topics+results 동시에 갱신 */
+search.oninput=()=>{ renderTopics(); renderResults(); };
+
 document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
@@ -405,4 +421,3 @@ backToTopBtn.addEventListener('click', ()=>{
 
 </body>
 </html>
-
