@@ -183,19 +183,19 @@ mark{background:yellow;color:black}
 
   /* ✅ 추가: 모바일에서 빠른선택 버튼 4개 한 줄 + 높이 2배 */
   .preset-row{
-    display:grid !important;
-    grid-template-columns:repeat(4, 1fr) !important;
-    gap:6px !important;
-    margin-bottom:6px !important;
-  }
-  .preset-row .preset{
-    width:100%;
-    padding:14px 6px;
-    font-size:11px;
-    line-height:1.05;
-    white-space:nowrap;
-    text-align:center;
-  }
+  display:grid !important;
+  grid-template-columns:repeat(4, 1fr) !important;
+  gap:4px !important;              /* 6 → 4 */
+  margin-bottom:6px !important;
+}
+.preset-row .preset{
+  width:100%;
+  padding:14px 2px;                /* 좌우 패딩 6 → 2 */
+  font-size:8.5px;                 /* 9 → 8.5 */
+  letter-spacing:-0.2px;           /* 글자폭 살짝 압축 */
+  white-space:nowrap;
+  text-align:center;
+}
 }
 </style>
 </head>
@@ -405,3 +405,4 @@ backToTopBtn.addEventListener('click', ()=>{
 
 </body>
 </html>
+
