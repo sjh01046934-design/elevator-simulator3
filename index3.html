@@ -83,7 +83,7 @@ button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
   border:1px solid var(--line);
   border-radius:12px;
   padding:8px;
-  max-height:220px;   /* ✅ 원복: 버튼 외 변경 금지 조건 */
+  max-height:220px;
   overflow-y:auto;
 }
 .topic{
@@ -126,6 +126,16 @@ mark{background:yellow;color:black}
   color:var(--muted);
 }
 
+/* ✅ 추가: 선택된 검사항목 title 형광(연두) 표시 */
+.selected-title{
+  display:inline-block;
+  background:#b6ff5c;  /* 형광 연두 */
+  color:#000;
+  padding:2px 6px;
+  border-radius:6px;
+  line-height:1.3;
+}
+
 /* ===== 이미지 확대 모달 ===== */
 .image-modal{
   position:fixed;
@@ -158,7 +168,7 @@ mark{background:yellow;color:black}
   font-weight:800;
   cursor:pointer;
   box-shadow:var(--shadow);
-  display:none;           /* 스크롤 내릴 때만 표시 */
+  display:none;
   z-index:999;
   user-select:none;
 }
@@ -167,14 +177,12 @@ mark{background:yellow;color:black}
 }
 
 @media(max-width:900px){
-  /* ✅ (기존) 여기서 titleSearch/contentSearch -> search 로 통합 */
   #search,#date{
     font-size:16px;
     padding:14px;
     height:48px;
   }
 
-  /* ✅ 추가: 모바일에서 버튼이 너무 커 보이면 살짝 축소 */
   #backToTopBtn{
     right:12px;
     bottom:12px;
@@ -182,21 +190,20 @@ mark{background:yellow;color:black}
     border-radius:12px;
   }
 
-  /* ✅ 추가: 모바일에서 빠른선택 버튼 4개 한 줄 + 높이 2배 */
   .preset-row{
-  display:grid !important;
-  grid-template-columns:repeat(4, 1fr) !important;
-  gap:4px !important;              /* 6 → 4 */
-  margin-bottom:6px !important;
-}
-.preset-row .preset{
-  width:100%;
-  padding:14px 2px;                /* 좌우 패딩 6 → 2 */
-  font-size:8.5px;                 /* 9 → 8.5 */
-  letter-spacing:-0.2px;           /* 글자폭 살짝 압축 */
-  white-space:nowrap;
-  text-align:center;
-}
+    display:grid !important;
+    grid-template-columns:repeat(4, 1fr) !important;
+    gap:4px !important;
+    margin-bottom:6px !important;
+  }
+  .preset-row .preset{
+    width:100%;
+    padding:14px 2px;
+    font-size:8.5px;
+    letter-spacing:-0.2px;
+    white-space:nowrap;
+    text-align:center;
+  }
 }
 </style>
 </head>
@@ -222,12 +229,10 @@ mark{background:yellow;color:black}
 
   <!-- 검사항목 -->
   <div>
-    <!-- ✅ 1번: 검사항목(제목) 검색 창 제거 -->
-    <!-- ✅ 2번: 통합검색 문구 변경 -->
     <input id="search" placeholder="검사항목 or 기준내용 검색">
 
     <div style="display:flex;gap:6px;margin:6px 0">
-      <button id="run">검색</button>
+      <button id="run">적용 표시</button>
       <button id="reset">초기화</button>
     </div>
 
@@ -260,7 +265,7 @@ mark{background:yellow;color:black}
   <img id="modalImage">
 </div>
 
-<!-- ✅ 추가: 검색 돌아가기(맨위로) 버튼 -->
+<!-- ✅ 검색 돌아가기(맨위로) 버튼 -->
 <button id="backToTopBtn" type="button">🔍 검색 돌아가기</button>
 
 <script>
@@ -277,7 +282,7 @@ function applyFont(){
   });
 }
 
-/* ✅ 4번: 띄어쓰기 무시 검색용 정규화 */
+/* ✅ 띄어쓰기 무시 검색용 정규화 */
 function norm(s){
   return (s||'').toLowerCase().replace(/\s+/g,'');
 }
@@ -291,7 +296,7 @@ fetch('./data/criteria.json')
     TITLE_MAP[i.title].push(i);
   });
   renderTopics();
-  renderResults(); /* ✅ 초기에도 한 번 렌더 */
+  renderResults();
 });
 
 function renderTopics(){
@@ -299,7 +304,6 @@ function renderTopics(){
   const q = norm(search.value);
 
   Object.keys(TITLE_MAP).forEach(t=>{
-    /* ✅ 3번: 검색어가 있으면 매칭되는 항목만 topics에 표시 */
     if(q){
       const hitTitle = norm(t).includes(q);
       const hitAnyItem = (TITLE_MAP[t]||[]).some(i => norm(i.title + i.label + i.text).includes(q));
@@ -353,30 +357,52 @@ function highlight(t,k){
   return t.replace(new RegExp(`(${k})`,'gi'),'<mark>$1</mark>');
 }
 
+function getSelectedTitles(){
+  const set=new Set();
+  document.querySelectorAll('#topics input:checked').forEach(cb=>set.add(cb.value));
+  return set;
+}
+
 function renderResults(){
   resultsEl.innerHTML='';
   const keyword = norm(search.value);
-  let targets = [];
+  const selectedTitles = getSelectedTitles();
 
+  // 1) 검색 결과 타겟 수집
+  let matches = [];
   if (keyword) {
-    /* ✅ 검색어가 있으면 DATA 전체에서 제목/내용 매칭만 추려서 표시 */
-    targets = DATA;
+    // 검색어가 있으면 매칭되는 것만
+    DATA.forEach((i, idx)=>{
+      const hay = norm(i.title+i.label+i.text);
+      if(hay.includes(keyword)) matches.push({i, idx});
+    });
+
+    // ✅ 추가 기능: 체크된 검사항목(title) 결과를 상단으로 정렬 (안정 정렬)
+    matches.sort((a,b)=>{
+      const ap = selectedTitles.has(a.i.title) ? 0 : 1;
+      const bp = selectedTitles.has(b.i.title) ? 0 : 1;
+      if(ap !== bp) return ap - bp;
+      return a.idx - b.idx; // 원래 순서 유지
+    });
   } else {
-    /* ✅ 검색어 없을 때만 체크박스 선택 기반 */
+    // 검색어 없을 때는 체크된 검사항목만
     document.querySelectorAll('#topics input:checked').forEach(cb=>{
-      (TITLE_MAP[cb.value]||[]).forEach(i=>targets.push(i));
+      (TITLE_MAP[cb.value]||[]).forEach(i=>matches.push({i, idx: 0}));
     });
   }
 
-  targets.forEach(i=>{
-    const hay = norm(i.title+i.label+i.text);
-    if(keyword && !hay.includes(keyword)) return;
+  // 2) 렌더
+  matches.forEach(({i})=>{
+    const isSelected = selectedTitles.has(i.title);
+    const titleHtml = isSelected
+      ? `<span class="selected-title">${highlight(i.title,search.value)}</span>`
+      : `${highlight(i.title,search.value)}`;
 
     const card=document.createElement('div');
     card.className='card';
     card.innerHTML=`
       <div class="card-header">
-        <div class="title">${highlight(i.title,search.value)}</div>
+        <div class="title">${titleHtml}</div>
         <div class="badge ${isApplied(dateEl.value,i.from,i.to)?'ok':'no'}">
           ${isApplied(dateEl.value,i.from,i.to)?'🟩 적용':'🟥 미적용'}
           <div class="range">${i.from||'—'} ~ ${i.to||'현재'}</div>
@@ -405,14 +431,13 @@ document.getElementById('reset').onclick=()=>{
   renderTopics(); renderResults();
 };
 
-/* ✅ 검색 입력 시 topics + results 동시 갱신 */
 search.oninput=()=>{ renderTopics(); renderResults(); };
 
 document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
 
-/* ✅ 추가: 검색 돌아가기(맨위로) 버튼 동작 */
+/* ✅ 검색 돌아가기(맨위로) 버튼 동작 */
 const backToTopBtn = document.getElementById('backToTopBtn');
 window.addEventListener('scroll', ()=>{
   backToTopBtn.style.display = (window.scrollY > 250) ? 'block' : 'none';
@@ -424,4 +449,3 @@ backToTopBtn.addEventListener('click', ()=>{
 
 </body>
 </html>
-
