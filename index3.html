@@ -167,8 +167,8 @@ mark{background:yellow;color:black}
 }
 
 @media(max-width:900px){
-  /* ✅ (기존) 여기서 contentSearch -> search 로 바뀜 */
-  #titleSearch,#search,#date{
+  /* ✅ (기존) 여기서 titleSearch/contentSearch -> search 로 통합 */
+  #search,#date{
     font-size:16px;
     padding:14px;
     height:48px;
@@ -222,9 +222,9 @@ mark{background:yellow;color:black}
 
   <!-- 검사항목 -->
   <div>
-    <input id="titleSearch" placeholder="검사항목(제목) 검색">
-    <!-- ✅ 변경: 검색창 통합 -->
-    <input id="search" placeholder="통합 검색 (검사항목/내용)  예: 0.7 m, 조도, 피난공간" style="margin-top:6px">
+    <!-- ✅ 1번: 검사항목(제목) 검색 창 제거 -->
+    <!-- ✅ 2번: 통합검색 문구 변경 -->
+    <input id="search" placeholder="검사항목 or 기준내용 검색">
 
     <div style="display:flex;gap:6px;margin:6px 0">
       <button id="run">적용 표시</button>
@@ -268,7 +268,6 @@ let DATA=[], TITLE_MAP={}, currentFontSize=14;
 const topicsEl=document.getElementById('topics');
 const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
-const titleSearch=document.getElementById('titleSearch');
 const search=document.getElementById('search');
 const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range';
 
@@ -278,7 +277,7 @@ function applyFont(){
   });
 }
 
-/* ✅ 추가: 띄어쓰기 무시 검색용 정규화 */
+/* ✅ 4번: 띄어쓰기 무시 검색용 정규화 */
 function norm(s){
   return (s||'').toLowerCase().replace(/\s+/g,'');
 }
@@ -292,6 +291,7 @@ fetch('./data/criteria.json')
     TITLE_MAP[i.title].push(i);
   });
   renderTopics();
+  renderResults(); /* ✅ 초기에도 한 번 렌더 */
 });
 
 function renderTopics(){
@@ -299,6 +299,7 @@ function renderTopics(){
   const q = norm(search.value);
 
   Object.keys(TITLE_MAP).forEach(t=>{
+    /* ✅ 3번: 검색어가 있으면 매칭되는 항목만 topics에 표시 */
     if(q){
       const hitTitle = norm(t).includes(q);
       const hitAnyItem = (TITLE_MAP[t]||[]).some(i => norm(i.title + i.label + i.text).includes(q));
@@ -358,8 +359,10 @@ function renderResults(){
   let targets = [];
 
   if (keyword) {
+    /* ✅ 검색어가 있으면 DATA 전체에서 제목/내용 매칭만 추려서 표시 */
     targets = DATA;
   } else {
+    /* ✅ 검색어 없을 때만 체크박스 선택 기반 */
     document.querySelectorAll('#topics input:checked').forEach(cb=>{
       (TITLE_MAP[cb.value]||[]).forEach(i=>targets.push(i));
     });
@@ -397,12 +400,12 @@ document.getElementById('increase-font').onclick=()=>{currentFontSize++;applyFon
 document.getElementById('decrease-font').onclick=()=>{currentFontSize=Math.max(10,currentFontSize-1);applyFont()};
 document.getElementById('run').onclick=renderResults;
 document.getElementById('reset').onclick=()=>{
-  titleSearch.value=''; search.value=''; dateEl.value='';
+  search.value=''; dateEl.value='';
   document.querySelectorAll('#topics input').forEach(c=>c.checked=false);
   renderTopics(); renderResults();
 };
-titleSearch.oninput=renderTopics;
-/* ✅ 변경: 통합 검색 입력 시 topics+results 동시에 갱신 */
+
+/* ✅ 검색 입력 시 topics + results 동시 갱신 */
 search.oninput=()=>{ renderTopics(); renderResults(); };
 
 document.querySelectorAll('.preset').forEach(b=>{
