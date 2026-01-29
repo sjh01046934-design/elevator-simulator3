@@ -305,9 +305,9 @@ function renderTopics(){
 
   Object.keys(TITLE_MAP).forEach(t=>{
     if(q){
+      // ✅ 제목에 검색어가 포함된 경우만 검사항목에 남김
       const hitTitle = norm(t).includes(q);
-      const hitAnyItem = (TITLE_MAP[t]||[]).some(i => norm(i.title + i.label + i.text).includes(q));
-      if(!hitTitle && !hitAnyItem) return;
+      if(!hitTitle) return;
     }
 
     const l=document.createElement('label');
