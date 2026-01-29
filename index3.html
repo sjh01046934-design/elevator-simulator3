@@ -35,10 +35,11 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:12px;
 }
 h1{margin:0;font-size:18px}
 .sub{font-size:12px;color:var(--muted)}
-.font-controls{display:flex;gap:6px}
+.font-controls{display:flex;gap:6px;align-items:center}
 .font-controls button{
   width:32px;height:32px;
   font-size:12px;font-weight:800;
@@ -48,6 +49,48 @@ h1{margin:0;font-size:18px}
   color:var(--text);
   cursor:pointer;
 }
+
+/* ✅ 추가: 헤더 좌측(이름 옆) 탭 버튼 */
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.brand{
+  min-width:0;
+}
+.tab-buttons{
+  display:inline-flex;
+  gap:6px;
+  align-items:center;
+}
+.tab-btn{
+  width:auto;
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:rgba(22,37,69,.55);
+  color:var(--text);
+  cursor:pointer;
+  font-weight:900;
+  white-space:nowrap;
+}
+.tab-btn.active{
+  background:rgba(25,195,125,.95);
+  color:#00120a;
+  border-color:rgba(25,195,125,.95);
+}
+@media(max-width:900px){
+  .header-inner{flex-direction:column;align-items:stretch}
+  .header-left{justify-content:space-between}
+  .tab-buttons{gap:6px}
+  .tab-btn{padding:10px 12px}
+}
+
+/* ✅ 추가: 탭 콘텐츠 display 제어 */
+.tab-content{display:none}
+.tab-content.active{display:block}
 
 /* ===== PANEL ===== */
 .panel{
@@ -126,10 +169,10 @@ mark{background:yellow;color:black}
   color:var(--muted);
 }
 
-/* ✅ 추가: 선택된 검사항목 title 형광(연두) 표시 */
+/* ✅ 선택된 검사항목 title 형광(연두) 표시 */
 .selected-title{
   display:inline-block;
-  background:#b6ff5c;  /* 형광 연두 */
+  background:#b6ff5c;
   color:#000;
   padding:2px 6px;
   border-radius:6px;
@@ -154,7 +197,7 @@ mark{background:yellow;color:black}
   box-shadow:0 0 30px rgba(0,0,0,0.6);
 }
 
-/* ✅ 추가: 검색 돌아가기(맨위로) 버튼 스타일 */
+/* ✅ 검색 돌아가기(맨위로) 버튼 스타일 */
 #backToTopBtn{
   position:fixed;
   right:18px;
@@ -176,7 +219,7 @@ mark{background:yellow;color:black}
   background:rgba(35,60,105,.95);
 }
 
-/* ✅ 추가: 음성검색 버튼 스타일 */
+/* ✅ 음성검색 버튼 스타일 */
 #voiceBtn{
   width:auto;
   padding:15px 20px;
@@ -228,6 +271,69 @@ mark{background:yellow;color:black}
     height:48px;
   }
 }
+
+/* ✅ 표준화자료 화면 기본 스타일 */
+.standard-wrap{
+  margin-top:10px;
+}
+.standard-hero{
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:var(--shadow);
+}
+.standard-hero h2{
+  margin:0 0 6px 0;
+  font-size:16px;
+}
+.standard-hero p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.5;
+}
+.standard-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+  margin-top:12px;
+}
+@media(max-width:900px){
+  .standard-grid{grid-template-columns:1fr}
+}
+.std-card{
+  background:rgba(17,27,46,.72);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+}
+.std-title{
+  font-weight:900;
+  margin-bottom:6px;
+}
+.std-meta{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+.std-links a{
+  display:block;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(10,16,30,.55);
+  color:var(--text);
+  text-decoration:none;
+  margin-top:6px;
+}
+.std-links a:hover{
+  background:rgba(35,60,105,.35);
+}
+.small-note{
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+}
 </style>
 </head>
 
@@ -235,74 +341,177 @@ mark{background:yellow;color:black}
 
 <header>
   <div class="header-inner">
-    <div>
-      <h1>승강기 검사기준 시뮬레이터</h1>
-      <div class="sub">건축허가일 기반 검사기준 자동 판별</div>
+
+    <!-- ✅ 좌측: 타이틀 + 탭 버튼(검사기준/표준화자료) -->
+    <div class="header-left">
+      <div class="brand">
+        <h1>승강기 검사기준 시뮬레이터</h1>
+        <div class="sub">건축허가일 기반 검사기준 자동 판별</div>
+      </div>
+
+      <div class="tab-buttons" aria-label="화면 전환 탭">
+        <button class="tab-btn active" type="button" data-tab="criteria">검사기준</button>
+        <button class="tab-btn" type="button" data-tab="standard">표준화자료</button>
+      </div>
     </div>
+
     <div class="font-controls">
-      <button id="increase-font">A+</button>
-      <button id="decrease-font">A−</button>
+      <button id="increase-font" type="button">A+</button>
+      <button id="decrease-font" type="button">A−</button>
     </div>
+
   </div>
 </header>
 
 <div class="wrap">
-<div class="panel">
-<div class="controls">
 
-  <!-- 검사항목 -->
-  <div>
-    <!-- ✅ 검색창 + 음성버튼 -->
-    <div style="display:flex; gap:6px; align-items:center;">
-      <input id="search" placeholder="검사항목 or 기준내용 검색">
-      <button id="voiceBtn" type="button" aria-label="음성으로 검색" title="음성으로 검색">🎤</button>
+  <!-- =========================
+       ✅ 탭 1) 검사기준(기존 화면)
+       ========================= -->
+  <section id="criteria" class="tab-content active">
+
+    <div class="panel">
+      <div class="controls">
+
+        <!-- 검사항목 -->
+        <div>
+          <!-- 검색창 + 음성버튼 -->
+          <div style="display:flex; gap:6px; align-items:center;">
+            <input id="search" placeholder="검사항목 or 기준내용 검색">
+            <button id="voiceBtn" type="button" aria-label="음성으로 검색" title="음성으로 검색">🎤</button>
+          </div>
+          <div id="voiceStatus" style="font-size:12px; margin-top:6px; opacity:0.75;"></div>
+
+          <div style="display:flex;gap:6px;margin:6px 0">
+            <button id="run" type="button">검색</button>
+            <button id="reset" type="button">초기화</button>
+          </div>
+
+          <label>검사항목 선택</label>
+          <div class="topics" id="topics"></div>
+        </div>
+
+        <!-- 건축허가일 -->
+        <div>
+          <label>건축허가일</label>
+          <div class="preset-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+            <button class="preset" type="button" data-d="2013-09-15">2013.09.15 이후</button>
+            <button class="preset" type="button" data-d="2015-05-13">2015.05.13 이후</button>
+            <button class="preset" type="button" data-d="2017-01-28">2017.01.28 이후</button>
+            <button class="preset" type="button" data-d="2019-03-28">2019.03.28 이후</button>
+          </div>
+          <input type="date" id="date">
+          <div class="help-text">※ 건축허가일 날짜를 입력하세요</div>
+        </div>
+
+      </div>
     </div>
-    <div id="voiceStatus" style="font-size:12px; margin-top:6px; opacity:0.75;"></div>
 
-    <div style="display:flex;gap:6px;margin:6px 0">
-      <button id="run">검색</button>
-      <button id="reset">초기화</button>
+    <div class="grid" id="results"></div>
+    <footer style="margin-top:10px">🟩 적용 / 🟥 미적용</footer>
+
+  </section>
+
+  <!-- =========================
+       ✅ 탭 2) 표준화자료(새 화면)
+       ========================= -->
+  <section id="standard" class="tab-content">
+    <div class="standard-wrap">
+
+      <div class="standard-hero">
+        <h2>승강기 검사기준 표준화자료</h2>
+        <p>
+          표준화자료는 검사기준 적용 판단과 별개로, 현장에서 동일한 기준 해석·판단을 돕는 참고 화면입니다.
+          (여기는 템플릿이며, 링크/콘텐츠는 네 자료에 맞게 교체하면 됩니다.)
+        </p>
+        <div class="small-note">※ 이 탭은 “같은 페이지 안에서” 전환됩니다. (새 탭이 아니라 화면 전환 방식)</div>
+      </div>
+
+      <div class="standard-grid">
+        <div class="std-card">
+          <div class="std-title">기계실 · 기계류 공간</div>
+          <div class="std-meta">예: 작업구역/이동통로/개구부/안내표지</div>
+          <div class="std-links">
+            <a href="#" onclick="return false;">📄 표준화 문서(예시)</a>
+            <a href="#" onclick="return false;">🖼️ 도면/사진(예시)</a>
+            <a href="#" onclick="return false;">✅ 체크리스트(예시)</a>
+          </div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-title">승강로 · 승강장문</div>
+          <div class="std-meta">예: 작업공간/안전거리/문 안전장치</div>
+          <div class="std-links">
+            <a href="#" onclick="return false;">📄 표준화 문서(예시)</a>
+            <a href="#" onclick="return false;">🖼️ 도면/사진(예시)</a>
+            <a href="#" onclick="return false;">✅ 체크리스트(예시)</a>
+          </div>
+        </div>
+
+        <div class="std-card">
+          <div class="std-title">피트 · 피난공간</div>
+          <div class="std-meta">예: 피난공간 유형/깊이/전기설비</div>
+          <div class="std-links">
+            <a href="#" onclick="return false;">📄 표준화 문서(예시)</a>
+            <a href="#" onclick="return false;">🖼️ 도면/사진(예시)</a>
+            <a href="#" onclick="return false;">✅ 체크리스트(예시)</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="small-note">
+        다음 단계 추천: 표준화자료도 JSON(예: <code>data/standard.json</code>)로 만들어서
+        카테고리/검색/링크 자동 생성하면 유지보수가 편해져.
+      </div>
+
     </div>
+  </section>
 
-    <label>검사항목 선택</label>
-    <div class="topics" id="topics"></div>
-  </div>
-
-  <!-- 건축허가일 -->
-  <div>
-    <label>건축허가일</label>
-    <div class="preset-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
-      <button class="preset" data-d="2013-09-15">2013.09.15 이후</button>
-      <button class="preset" data-d="2015-05-13">2015.05.13 이후</button>
-      <button class="preset" data-d="2017-01-28">2017.01.28 이후</button>
-      <button class="preset" data-d="2019-03-28">2019.03.28 이후</button>
-    </div>
-    <input type="date" id="date">
-    <div class="help-text">※ 건축허가일 날짜를 입력하세요</div>
-  </div>
-
-</div>
-</div>
-
-<div class="grid" id="results"></div>
-<footer style="margin-top:10px">🟩 적용 / 🟥 미적용</footer>
 </div>
 
 <!-- 이미지 확대 모달 -->
 <div id="imageModal" class="image-modal" onclick="closeImageModal()">
-  <img id="modalImage">
+  <img id="modalImage" alt="">
 </div>
 
-<!-- ✅ 검색 돌아가기(맨위로) 버튼 -->
+<!-- 검색 돌아가기(맨위로) 버튼 -->
 <button id="backToTopBtn" type="button">🔍 검색 돌아가기</button>
 
 <script>
 let DATA=[], TITLE_MAP={}, currentFontSize=14;
+
 const topicsEl=document.getElementById('topics');
 const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
 const search=document.getElementById('search');
+
 const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range';
+
+/* =========================
+   ✅ 탭 전환(검사기준/표준화자료)
+   ========================= */
+const tabButtons = document.querySelectorAll(".tab-btn");
+const tabContents = document.querySelectorAll(".tab-content");
+
+tabButtons.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const target = btn.dataset.tab;
+
+    tabButtons.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+
+    tabContents.forEach(section=>{
+      section.classList.toggle("active", section.id === target);
+    });
+
+    // UX: 표준화자료로 가면 상단으로
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // 표준화자료 탭에서는 검색 돌아가기 버튼 숨김
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    if (target !== "criteria") backToTopBtn.style.display = "none";
+  });
+});
 
 function applyFont(){
   document.querySelectorAll(fontTargets).forEach(e=>{
@@ -310,7 +519,7 @@ function applyFont(){
   });
 }
 
-/* ✅ 띄어쓰기 무시 검색용 정규화 */
+/* 띄어쓰기 무시 검색용 정규화 */
 function norm(s){
   return (s||'').toLowerCase().replace(/\s+/g,'');
 }
@@ -325,15 +534,25 @@ fetch('./data/criteria.json')
   });
   renderTopics();
   renderResults();
+})
+.catch(()=>{
+  // fetch 실패 시(경로 오류 등)에도 화면이 죽지 않게
+  resultsEl.innerHTML = `
+    <div class="card">
+      <div class="title">데이터를 불러오지 못했습니다.</div>
+      <div class="row"><div class="text">./data/criteria.json 경로와 파일명을 확인하세요.</div></div>
+    </div>
+  `;
 });
 
 function renderTopics(){
+  if(!topicsEl) return;
   topicsEl.innerHTML='';
   const q = norm(search.value);
 
   Object.keys(TITLE_MAP).forEach(t=>{
     if(q){
-      // ✅ 제목에 검색어가 포함된 경우만 검사항목에 남김
+      // 제목에 검색어가 포함된 경우만 검사항목에 남김
       const hitTitle = norm(t).includes(q);
       if(!hitTitle) return;
     }
@@ -356,7 +575,7 @@ function renderImage(imagePath){
     <div style="margin-top:10px">
       <img src="${imagePath}"
            style="width:100%; max-width:400px; cursor:zoom-in; border:1px solid #22314f; border-radius:8px;"
-           onclick="openImageModal('${imagePath}')">
+           onclick="openImageModal('${imagePath}')" alt="">
       <div style="margin-top:4px;font-size:12px;color:#9fb0d0;text-align:center">
         ※ 이미지를 크게 보려면 클릭하시오.
       </div>
@@ -380,9 +599,15 @@ function isApplied(d,f,t){
   return true;
 }
 
+function escapeRegExp(s){
+  return (s||'').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function highlight(t,k){
   if(!k) return t;
-  return t.replace(new RegExp(`(${k})`,'gi'),'<mark>$1</mark>');
+  // ✅ 검색어에 특수문자 들어가도 깨지지 않게 escape
+  const safe = escapeRegExp(k);
+  return t.replace(new RegExp(`(${safe})`,'gi'),'<mark>$1</mark>');
 }
 
 function getSelectedTitles(){
@@ -392,11 +617,12 @@ function getSelectedTitles(){
 }
 
 function renderResults(){
+  if(!resultsEl) return;
   resultsEl.innerHTML='';
   const keyword = norm(search.value);
   const selectedTitles = getSelectedTitles();
 
-  // 1) 검색 결과 타겟 수집
+  // 검색 결과 타겟 수집
   let matches = [];
   if (keyword) {
     // 검색어가 있으면 매칭되는 것만
@@ -405,12 +631,12 @@ function renderResults(){
       if(hay.includes(keyword)) matches.push({i, idx});
     });
 
-    // ✅ 추가 기능: 체크된 검사항목(title) 결과를 상단으로 정렬 (안정 정렬)
+    // 체크된 검사항목(title) 결과를 상단으로 정렬(안정 정렬)
     matches.sort((a,b)=>{
       const ap = selectedTitles.has(a.i.title) ? 0 : 1;
       const bp = selectedTitles.has(b.i.title) ? 0 : 1;
       if(ap !== bp) return ap - bp;
-      return a.idx - b.idx; // 원래 순서 유지
+      return a.idx - b.idx;
     });
   } else {
     // 검색어 없을 때는 체크된 검사항목만
@@ -419,7 +645,7 @@ function renderResults(){
     });
   }
 
-  // 2) 렌더
+  // 렌더
   matches.forEach(({i})=>{
     const isSelected = selectedTitles.has(i.title);
     const titleHtml = isSelected
@@ -465,9 +691,15 @@ document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
 
-/* ✅ 검색 돌아가기(맨위로) 버튼 동작 */
+/* 검색 돌아가기(맨위로) 버튼 동작 */
 const backToTopBtn = document.getElementById('backToTopBtn');
 window.addEventListener('scroll', ()=>{
+  // 검사기준 탭일 때만 표시
+  const criteriaActive = document.getElementById('criteria').classList.contains('active');
+  if(!criteriaActive){
+    backToTopBtn.style.display = 'none';
+    return;
+  }
   backToTopBtn.style.display = (window.scrollY > 250) ? 'block' : 'none';
 });
 backToTopBtn.addEventListener('click', ()=>{
@@ -475,7 +707,7 @@ backToTopBtn.addEventListener('click', ()=>{
 });
 
 /* =========================
-   ✅ 음성인식(검색용) 추가
+   음성인식(검색용)
    ========================= */
 (() => {
   const voiceBtn = document.getElementById('voiceBtn');
@@ -490,8 +722,8 @@ backToTopBtn.addEventListener('click', ()=>{
 
   const recognition = new SpeechRecognition();
   recognition.lang = "ko-KR";
-  recognition.interimResults = true;   // 말하는 중간에도 검색 반영
-  recognition.continuous = false;      // 한 번 말하고 종료
+  recognition.interimResults = true;
+  recognition.continuous = false;
 
   let listening = false;
 
@@ -527,7 +759,7 @@ backToTopBtn.addEventListener('click', ()=>{
     const text = (finalText || interim || "").trim();
     search.value = text;
 
-    // ✅ 기존 검색 로직 태우기(토픽/결과 자동 갱신)
+    // 기존 검색 로직 태우기(토픽/결과 자동 갱신)
     search.dispatchEvent(new Event("input", { bubbles: true }));
 
     if (finalText) setStatus(`인식됨: ${finalText.trim()}`);
@@ -546,6 +778,3 @@ backToTopBtn.addEventListener('click', ()=>{
 
 </body>
 </html>
-
-
-
