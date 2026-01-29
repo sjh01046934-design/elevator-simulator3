@@ -176,6 +176,23 @@ mark{background:yellow;color:black}
   background:rgba(35,60,105,.95);
 }
 
+/* ✅ 추가: 음성검색 버튼 스타일 */
+#voiceBtn{
+  width:auto;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(22,37,69,.85);
+  color:var(--text);
+  cursor:pointer;
+  font-weight:900;
+  flex:0 0 auto;
+}
+#voiceBtn.listening{
+  border-color:var(--green);
+  box-shadow:0 0 0 2px rgba(25,195,125,.15);
+}
+
 @media(max-width:900px){
   #search,#date{
     font-size:16px;
@@ -204,6 +221,12 @@ mark{background:yellow;color:black}
     white-space:nowrap;
     text-align:center;
   }
+
+  /* ✅ 모바일에서 음성버튼도 높이 맞춤 */
+  #voiceBtn{
+    padding:14px 12px;
+    height:48px;
+  }
 }
 </style>
 </head>
@@ -229,7 +252,12 @@ mark{background:yellow;color:black}
 
   <!-- 검사항목 -->
   <div>
-    <input id="search" placeholder="검사항목 or 기준내용 검색">
+    <!-- ✅ 검색창 + 음성버튼 -->
+    <div style="display:flex; gap:6px; align-items:center;">
+      <input id="search" placeholder="검사항목 or 기준내용 검색">
+      <button id="voiceBtn" type="button" aria-label="음성으로 검색" title="음성으로 검색">🎤</button>
+    </div>
+    <div id="voiceStatus" style="font-size:12px; margin-top:6px; opacity:0.75;"></div>
 
     <div style="display:flex;gap:6px;margin:6px 0">
       <button id="run">적용 표시</button>
@@ -445,6 +473,75 @@ window.addEventListener('scroll', ()=>{
 backToTopBtn.addEventListener('click', ()=>{
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+/* =========================
+   ✅ 음성인식(검색용) 추가
+   ========================= */
+(() => {
+  const voiceBtn = document.getElementById('voiceBtn');
+  const voiceStatus = document.getElementById('voiceStatus');
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    voiceBtn.disabled = true;
+    voiceStatus.textContent = "음성인식 미지원 브라우저입니다. (PC 크롬 권장)";
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "ko-KR";
+  recognition.interimResults = true;   // 말하는 중간에도 검색 반영
+  recognition.continuous = false;      // 한 번 말하고 종료
+
+  let listening = false;
+
+  const setStatus = (msg) => { voiceStatus.textContent = msg || ""; };
+
+  voiceBtn.addEventListener('click', () => {
+    if (listening) {
+      recognition.stop();
+      return;
+    }
+    try {
+      listening = true;
+      voiceBtn.classList.add('listening');
+      setStatus("🎙️ 듣는 중… 말씀하세요");
+      recognition.start();
+    } catch (e) {
+      listening = false;
+      voiceBtn.classList.remove('listening');
+      setStatus("음성인식 시작 실패. 다시 눌러주세요.");
+    }
+  });
+
+  recognition.onresult = (event) => {
+    let interim = "";
+    let finalText = "";
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const t = event.results[i][0].transcript;
+      if (event.results[i].isFinal) finalText += t;
+      else interim += t;
+    }
+
+    const text = (finalText || interim || "").trim();
+    search.value = text;
+
+    // ✅ 기존 검색 로직 태우기(토픽/결과 자동 갱신)
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+
+    if (finalText) setStatus(`인식됨: ${finalText.trim()}`);
+  };
+
+  recognition.onerror = (event) => {
+    setStatus(`음성인식 오류: ${event.error}`);
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    voiceBtn.classList.remove('listening');
+  };
+})();
 </script>
 
 </body>
