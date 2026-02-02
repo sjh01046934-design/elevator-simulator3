@@ -303,44 +303,152 @@ mark{background:yellow;color:black}
   }
 }
 
-/* ✅ 표준화자료 화면 기본 스타일 */
+/* ✅ 표준화자료 화면 (검색 + chapter + 리스트) */
 .standard-wrap{margin-top:10px}
-.standard-hero{
+
+.std-panel{
   background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
   border:1px solid var(--line);
   border-radius:14px;
-  padding:14px;
+  padding:12px;
   box-shadow:var(--shadow);
 }
-.standard-hero h2{margin:0 0 6px 0;font-size:16px}
-.standard-hero p{margin:0;color:var(--muted);line-height:1.5}
-.standard-grid{
+
+.std-toolbar{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+#stdSearch{
+  flex:1;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(10,16,30,.55);
+  color:var(--text);
+}
+#stdClear{
+  width:auto;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(22,37,69,.85);
+  color:var(--text);
+  font-weight:800;
+}
+
+.std-chapters{
+  margin-top:10px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  background:rgba(17,27,46,.45);
+}
+.std-chapters-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+  color:var(--muted);
+  font-size:12px;
+}
+.std-chapters-actions{
+  display:flex;
+  gap:6px;
+}
+.std-chapters-actions button{
+  width:auto;
+  padding:6px 10px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:rgba(22,37,69,.6);
+  color:var(--text);
+  font-weight:800;
+}
+.std-chapters-grid{
   display:grid;
-  grid-template-columns:repeat(3, 1fr);
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+}
+@media(max-width:900px){
+  .std-chapters-grid{grid-template-columns:1fr}
+}
+.std-chk{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+  padding:6px 6px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(10,16,30,.25);
+}
+.std-chk input{width:auto;margin-top:2px}
+.std-chk span{font-size:13px;line-height:1.35}
+
+.std-count{
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.std-list{
+  display:grid;
   gap:12px;
   margin-top:12px;
 }
-@media(max-width:900px){.standard-grid{grid-template-columns:1fr}}
-.std-card{
+.std-item{
   background:rgba(17,27,46,.72);
   border:1px solid var(--line);
   border-radius:14px;
   padding:12px;
 }
-.std-title{font-weight:900;margin-bottom:6px}
-.std-meta{font-size:12px;color:var(--muted);margin-bottom:10px}
-.std-links a{
-  display:block;
-  padding:10px 12px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:rgba(10,16,30,.55);
-  color:var(--text);
-  text-decoration:none;
-  margin-top:6px;
+.std-item-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
 }
-.std-links a:hover{background:rgba(35,60,105,.35)}
-.small-note{margin-top:10px;font-size:12px;color:var(--muted)}
+.std-badge{
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  white-space:nowrap;
+}
+.std-title{
+  margin:0;
+  font-size:14px;
+  font-weight:900;
+  line-height:1.35;
+}
+.std-tags{
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.std-tag{
+  font-size:12px;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  color:var(--muted);
+}
+.std-content{
+  margin-top:10px;
+  white-space:pre-line;
+  line-height:1.5;
+  opacity:.95;
+}
+.std-empty{
+  padding:18px;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  color:var(--muted);
+  text-align:center;
+}
 </style>
 </head>
 
@@ -419,50 +527,18 @@ mark{background:yellow;color:black}
   <section id="standard" class="tab-content">
     <div class="standard-wrap">
 
-      <div class="standard-hero">
-        <h2>승강기 검사기준 표준화자료</h2>
-        <p>
-          표준화자료는 검사기준 적용 판단과 별개로, 현장에서 동일한 기준 해석·판단을 돕는 참고 화면입니다.
-          (여기는 템플릿이며, 링크/콘텐츠는 네 자료에 맞게 교체하면 됩니다.)
-        </p>
-        <div class="small-note">※ 이 탭은 “같은 페이지 안에서” 전환됩니다. (새 탭이 아니라 화면 전환 방식)</div>
-      </div>
-
-      <div class="standard-grid">
-        <div class="std-card">
-          <div class="std-title">기계실 · 기계류 공간</div>
-          <div class="std-meta">예: 작업구역/이동통로/개구부/안내표지</div>
-          <div class="std-links">
-            <a href="#" onclick="return false;">📄 표준화 문서(예시)</a>
-            <a href="#" onclick="return false;">🖼️ 도면/사진(예시)</a>
-            <a href="#" onclick="return false;">✅ 체크리스트(예시)</a>
-          </div>
+      <div class="std-panel">
+        <div class="std-toolbar">
+          <input id="stdSearch" placeholder="표준화자료 검색 (제목/키워드/내용)" />
+          <button id="stdClear" type="button">지우기</button>
         </div>
 
-        <div class="std-card">
-          <div class="std-title">승강로 · 승강장문</div>
-          <div class="std-meta">예: 작업공간/안전거리/문 안전장치</div>
-          <div class="std-links">
-            <a href="#" onclick="return false;">📄 표준화 문서(예시)</a>
-            <a href="#" onclick="return false;">🖼️ 도면/사진(예시)</a>
-            <a href="#" onclick="return false;">✅ 체크리스트(예시)</a>
-          </div>
-        </div>
+        <div class="std-chapters" id="stdChapters"></div>
 
-        <div class="std-card">
-          <div class="std-title">피트 · 피난공간</div>
-          <div class="std-meta">예: 피난공간 유형/깊이/전기설비</div>
-          <div class="std-links">
-            <a href="#" onclick="return false;">📄 표준화 문서(예시)</a>
-            <a href="#" onclick="return false;">🖼️ 도면/사진(예시)</a>
-            <a href="#" onclick="return false;">✅ 체크리스트(예시)</a>
-          </div>
-        </div>
+        <div class="std-count" id="stdCount"></div>
       </div>
 
-      <div class="small-note">
-        테스트 중입니다.
-      </div>
+      <div class="std-list" id="stdList"></div>
 
     </div>
   </section>
@@ -485,7 +561,7 @@ const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
 const search=document.getElementById('search');
 
-const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range';
+const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-chk span, .std-tag';
 
 /* ✅ 탭 전환 */
 const tabButtons = document.querySelectorAll(".tab-btn");
@@ -507,6 +583,11 @@ tabButtons.forEach(btn=>{
     // 표준화자료 탭에서는 검색 돌아가기 버튼 숨김
     const backToTopBtn = document.getElementById('backToTopBtn');
     if (target !== "criteria") backToTopBtn.style.display = "none";
+
+    // 표준화자료 탭 진입 시 렌더 보장
+    if (target === "standard") {
+      initStandardTab();
+    }
   });
 });
 
@@ -748,6 +829,179 @@ backToTopBtn.addEventListener('click', ()=>{
     voiceBtn.classList.remove('listening');
   };
 })();
+
+/* =========================
+   ✅ 표준화자료: 검색 + Chapter 필터
+   ========================= */
+
+/* Chapter 정의(5~17) */
+const STD_CHAPTERS = [
+  { no: 5,  title: "일반사항" },
+  { no: 6,  title: "승강로, 기계실·기계류 공간 및 풀리실" },
+  { no: 7,  title: "승강장문 및 카문" },
+  { no: 8,  title: "카, 균형추 및 평형추" },
+  { no: 9,  title: "매다는 장치(현수), 보상수단 및 관련 보호수단" },
+  { no: 10, title: "자유낙하·과속·개문출발 및 크리핑에 대한 예방조치" },
+  { no: 11, title: "주행안내 레일" },
+  { no: 12, title: "완충기" },
+  { no: 13, title: "엘리베이터 구동기 및 관련 설비" },
+  { no: 14, title: "전기설비 및 전기기기" },
+  { no: 15, title: "전기적 결함에 대한 보호; 고장분석; 전기안전장치" },
+  { no: 16, title: "제어-파이널 리미트 스위치-우선순위" },
+  { no: 17, title: "장애인용, 소방구조용 및 피난용 엘리베이터에 대한 추가요건" }
+];
+
+/* 샘플 데이터(나중에 standards.json으로 대체 가능) */
+let STD_DATA = [
+  {
+    id: "STD-05-001",
+    chapter: 5,
+    title: "표준화자료 예시(5장)",
+    keywords: ["일반사항", "표준화", "예시"],
+    content: "여기에 표준화자료 내용이 들어갑니다.\n(검색: 제목/키워드/내용, 띄어쓰기 무시)"
+  },
+  {
+    id: "STD-06-001",
+    chapter: 6,
+    title: "표준화자료 예시(6장)",
+    keywords: ["승강로", "기계실", "풀리실"],
+    content: "6장 예시 내용입니다.\n'기계실' 같은 키워드로 검색 테스트 가능"
+  },
+  {
+    id: "STD-14-001",
+    chapter: 14,
+    title: "표준화자료 예시(14장)",
+    keywords: ["전기설비", "전기기기", "점검"],
+    content: "14장 예시 내용입니다.\n전기 관련 키워드 검색 테스트"
+  }
+];
+
+let stdInitialized = false;
+
+function stdEscapeHtml(str){
+  return (str ?? "").toString()
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function renderStdChapters(){
+  const wrap = document.getElementById("stdChapters");
+  if(!wrap) return;
+
+  wrap.innerHTML = `
+    <div class="std-chapters-head">
+      <span>목차(Chapter) 선택</span>
+      <div class="std-chapters-actions">
+        <button id="stdAll" type="button">전체</button>
+        <button id="stdNone" type="button">해제</button>
+      </div>
+    </div>
+    <div class="std-chapters-grid">
+      ${STD_CHAPTERS.map(c=>`
+        <label class="std-chk">
+          <input class="stdChapter" type="checkbox" value="${c.no}" checked>
+          <span>${c.no}. ${stdEscapeHtml(c.title)}</span>
+        </label>
+      `).join("")}
+    </div>
+  `;
+}
+
+function getStdCheckedChapters(){
+  return [...document.querySelectorAll(".stdChapter:checked")].map(el=>Number(el.value));
+}
+
+function filterStd(){
+  const q = norm((document.getElementById("stdSearch")||{}).value || "");
+  const chapters = new Set(getStdCheckedChapters());
+
+  return STD_DATA.filter(item=>{
+    if(!chapters.has(item.chapter)) return false;
+    if(!q) return true;
+
+    const inTitle = norm(item.title).includes(q);
+    const inKeywords = (item.keywords||[]).some(k=>norm(k).includes(q));
+    const inContent = norm(item.content).includes(q);
+
+    return inTitle || inKeywords || inContent;
+  });
+}
+
+function renderStdList(){
+  const listEl = document.getElementById("stdList");
+  const countEl = document.getElementById("stdCount");
+  if(!listEl) return;
+
+  const list = filterStd();
+  if(countEl) countEl.textContent = `검색 결과: ${list.length}건`;
+
+  if(!list.length){
+    listEl.innerHTML = `<div class="std-empty">검색 결과가 없습니다.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = list.map(item=>`
+    <div class="std-item">
+      <div class="std-item-top">
+        <h3 class="std-title">${stdEscapeHtml(item.title)}</h3>
+        <div class="std-badge">${item.chapter}장</div>
+      </div>
+      <div class="std-tags">
+        ${(item.keywords||[]).map(k=>`<span class="std-tag">${stdEscapeHtml(k)}</span>`).join("")}
+      </div>
+      <div class="std-content">${stdEscapeHtml(item.content)}</div>
+    </div>
+  `).join("");
+}
+
+function bindStdEvents(){
+  const stdSearch = document.getElementById("stdSearch");
+  const stdClear = document.getElementById("stdClear");
+  const stdChapters = document.getElementById("stdChapters");
+
+  if(stdSearch){
+    stdSearch.addEventListener("input", renderStdList);
+  }
+  if(stdClear){
+    stdClear.addEventListener("click", ()=>{
+      if(stdSearch) stdSearch.value = "";
+      renderStdList();
+    });
+  }
+  if(stdChapters){
+    stdChapters.addEventListener("change", (e)=>{
+      if(e.target && e.target.classList && e.target.classList.contains("stdChapter")){
+        renderStdList();
+      }
+    });
+
+    stdChapters.addEventListener("click", (e)=>{
+      if(!e.target) return;
+      if(e.target.id === "stdAll"){
+        document.querySelectorAll(".stdChapter").forEach(cb=>cb.checked = true);
+        renderStdList();
+      }
+      if(e.target.id === "stdNone"){
+        document.querySelectorAll(".stdChapter").forEach(cb=>cb.checked = false);
+        renderStdList();
+      }
+    });
+  }
+}
+
+function initStandardTab(){
+  if(stdInitialized) return;
+  stdInitialized = true;
+  renderStdChapters();
+  bindStdEvents();
+  renderStdList();
+}
+
+/* 페이지 로드 시 표준화자료도 초기화(선택: 탭 눌렀을 때만 하고 싶으면 이 줄 제거) */
+initStandardTab();
 </script>
 
 </body>
