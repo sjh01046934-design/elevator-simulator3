@@ -80,16 +80,14 @@ h1{margin:0;font-size:18px}
   border-color:rgba(25,195,125,.95);
 }
 
-/* ✅ 모바일 헤더 깨짐 해결 (탭버튼 아래로 + 버튼 축소 + 타이틀 한 줄 유지) */
+/* ✅ 모바일 헤더 깨짐 해결 */
 @media(max-width:900px){
   .header-inner{flex-direction:column;align-items:stretch}
-
   .header-left{
     flex-direction:column;
     align-items:flex-start;
     gap:8px;
   }
-
   h1{
     font-size:16px;
     line-height:1.2;
@@ -106,18 +104,13 @@ h1{margin:0;font-size:18px}
     text-overflow:ellipsis;
     max-width:100%;
   }
-
-  .tab-buttons{
-    width:100%;
-    gap:6px;
-  }
+  .tab-buttons{width:100%;gap:6px}
   .tab-btn{
     padding:8px 10px;
     font-size:12px;
     border-radius:10px;
-    flex:1;           /* 두 버튼 반반 */
+    flex:1;
   }
-
   .font-controls{justify-content:flex-end}
 }
 
@@ -196,13 +189,9 @@ button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
 .text{white-space:pre-line;line-height:1.5;font-size:13px;margin:0;padding:0}
 mark{background:yellow;color:black}
 
-.help-text{
-  margin-top:4px;
-  font-size:12px;
-  color:var(--muted);
-}
+.help-text{margin-top:4px;font-size:12px;color:var(--muted)}
 
-/* ✅ 선택된 검사항목 title 형광(연두) 표시 */
+/* ✅ 선택된 검사항목 title 형광 */
 .selected-title{
   display:inline-block;
   background:#b6ff5c;
@@ -230,7 +219,7 @@ mark{background:yellow;color:black}
   box-shadow:0 0 30px rgba(0,0,0,0.6);
 }
 
-/* ✅ 검색 돌아가기(맨위로) 버튼 스타일 */
+/* ✅ 검색 돌아가기 버튼 */
 #backToTopBtn{
   position:fixed;
   right:18px;
@@ -250,7 +239,7 @@ mark{background:yellow;color:black}
 }
 #backToTopBtn:hover{background:rgba(35,60,105,.95)}
 
-/* ✅ 음성검색 버튼 스타일 */
+/* ✅ 음성검색 버튼 */
 #voiceBtn{
   width:auto;
   padding:15px 20px;
@@ -268,19 +257,8 @@ mark{background:yellow;color:black}
 }
 
 @media(max-width:900px){
-  #search,#date{
-    font-size:16px;
-    padding:14px;
-    height:48px;
-  }
-
-  #backToTopBtn{
-    right:12px;
-    bottom:12px;
-    padding:11px 12px;
-    border-radius:12px;
-  }
-
+  #search,#date{font-size:16px;padding:14px;height:48px}
+  #backToTopBtn{right:12px;bottom:12px;padding:11px 12px;border-radius:12px}
   .preset-row{
     display:grid !important;
     grid-template-columns:repeat(4, 1fr) !important;
@@ -295,17 +273,11 @@ mark{background:yellow;color:black}
     white-space:nowrap;
     text-align:center;
   }
-
-  /* ✅ 모바일에서 음성버튼도 높이 맞춤 */
-  #voiceBtn{
-    padding:14px 12px;
-    height:48px;
-  }
+  #voiceBtn{padding:14px 12px;height:48px}
 }
 
-/* ✅ 표준화자료 화면 (검색 + chapter + 리스트) */
+/* ✅ 표준화자료 화면 */
 .standard-wrap{margin-top:10px}
-
 .std-panel{
   background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
   border:1px solid var(--line);
@@ -313,12 +285,7 @@ mark{background:yellow;color:black}
   padding:12px;
   box-shadow:var(--shadow);
 }
-
-.std-toolbar{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
+.std-toolbar{display:flex;gap:8px;align-items:center}
 #stdSearch{
   flex:1;
   padding:10px 12px;
@@ -336,7 +303,6 @@ mark{background:yellow;color:black}
   color:var(--text);
   font-weight:800;
 }
-
 .std-chapters{
   margin-top:10px;
   border:1px solid var(--line);
@@ -345,155 +311,123 @@ mark{background:yellow;color:black}
   background:rgba(17,27,46,.45);
 }
 .std-chapters-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-bottom:10px;
-  color:var(--muted);
-  font-size:12px;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-bottom:10px;color:var(--muted);font-size:12px;
 }
-.std-chapters-actions{
-  display:flex;
-  gap:6px;
-}
+.std-chapters-actions{display:flex;gap:6px}
 .std-chapters-actions button{
-  width:auto;
-  padding:6px 10px;
-  border-radius:10px;
-  border:1px solid var(--line);
-  background:rgba(22,37,69,.6);
-  color:var(--text);
-  font-weight:800;
+  width:auto;padding:6px 10px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(22,37,69,.6);color:var(--text);font-weight:800;
 }
 .std-chapters-grid{
   display:grid;
   grid-template-columns:repeat(2, minmax(0, 1fr));
   gap:8px;
 }
-@media(max-width:900px){
-  .std-chapters-grid{grid-template-columns:1fr}
-}
+@media(max-width:900px){.std-chapters-grid{grid-template-columns:1fr}}
 .std-chk{
-  display:flex;
-  gap:8px;
-  align-items:flex-start;
-  padding:6px 6px;
-  border-radius:12px;
+  display:flex;gap:8px;align-items:flex-start;
+  padding:6px 6px;border-radius:12px;
   border:1px solid rgba(255,255,255,.06);
   background:rgba(10,16,30,.25);
 }
 .std-chk input{width:auto;margin-top:2px}
 .std-chk span{font-size:13px;line-height:1.35}
-
-.std-count{
-  margin-top:10px;
-  font-size:12px;
-  color:var(--muted);
-}
-
-.std-list{
-  display:grid;
-  gap:12px;
-  margin-top:12px;
-}
+.std-count{margin-top:10px;font-size:12px;color:var(--muted)}
+.std-list{display:grid;gap:12px;margin-top:12px}
 .std-item{
   background:rgba(17,27,46,.72);
   border:1px solid var(--line);
   border-radius:14px;
   padding:12px;
 }
-.std-item-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:flex-start;
-}
+.std-item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .std-badge{
-  font-size:12px;
-  padding:4px 8px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  color:var(--muted);
-  white-space:nowrap;
+  font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);
+  color:var(--muted);white-space:nowrap;
 }
-.std-title{
-  margin:0;
-  font-size:14px;
-  font-weight:900;
-  line-height:1.35;
-}
-.std-tags{
-  margin-top:8px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
+.std-title{margin:0;font-size:14px;font-weight:900;line-height:1.35}
+.std-tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
 .std-tag{
-  font-size:12px;
-  padding:3px 8px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.10);
-  color:var(--muted);
+  font-size:12px;padding:3px 8px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);color:var(--muted);
 }
-.std-content{
-  margin-top:10px;
-  white-space:pre-line;
-  line-height:1.5;
-  opacity:.95;
-}
+.std-content{margin-top:10px;white-space:pre-line;line-height:1.5;opacity:.95}
 .std-empty{
-  padding:18px;
-  border:1px dashed var(--line);
-  border-radius:14px;
-  color:var(--muted);
-  text-align:center;
+  padding:18px;border:1px dashed var(--line);border-radius:14px;
+  color:var(--muted);text-align:center;
 }
 
 /* =========================
    ✅ 피드백 버튼 + 모달
    ========================= */
-
-/* ✅ 피드백 버튼(헤더 우측) */
 #feedbackBtn{
+  width:auto;height:32px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(22,37,69,.85);color:var(--text);cursor:pointer;
+  font-weight:900;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;
+}
+#feedbackBtn:hover{background:rgba(35,60,105,.95)}
+.fb-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;
+  align-items:center;justify-content:center;z-index:12000;
+}
+.fb-box{
+  width:min(820px, 92vw);height:min(720px, 88vh);
+  background:rgba(17,27,46,.98);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;
+}
+.fb-head{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08);
+}
+.fb-title{font-weight:900}
+.fb-close{
+  width:auto;padding:6px 10px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(22,37,69,.65);color:var(--text);cursor:pointer;font-weight:900;
+}
+.fb-iframe{width:100%;height:100%;border:0;background:#fff}
+
+/* =========================
+   ✅ GA4 전송 확인 UI (추가)
+   ========================= */
+#gaBadge{
   width:auto;
   height:32px;
-  padding:8px 12px;
+  padding:6px 10px;
   border-radius:10px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.85);
+  background:rgba(22,37,69,.65);
   color:var(--text);
   cursor:pointer;
   font-weight:900;
   white-space:nowrap;
   display:inline-flex;
   align-items:center;
-  justify-content:center;
+  gap:8px;
 }
-#feedbackBtn:hover{background:rgba(35,60,105,.95)}
+#gaDot{
+  width:10px;height:10px;border-radius:99px;
+  background:#9fb0d0;
+  box-shadow:0 0 0 2px rgba(159,176,208,.15);
+}
+.ga-ok #gaDot{background:var(--green); box-shadow:0 0 0 2px rgba(25,195,125,.18)}
+.ga-bad #gaDot{background:var(--red);   box-shadow:0 0 0 2px rgba(255,77,79,.18)}
 
-/* ✅ 피드백 모달 */
-.fb-modal{
+#gaPanel{
   position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.72);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:12000;
-}
-.fb-box{
-  width:min(820px, 92vw);
-  height:min(720px, 88vh);
+  top:72px;
+  right:18px;
+  width:min(420px, 92vw);
+  max-height:62vh;
+  overflow:auto;
   background:rgba(17,27,46,.98);
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:14px;
   box-shadow:var(--shadow);
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
+  z-index:13000;
+  display:none;
 }
-.fb-head{
+.gaPanelHead{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -501,8 +435,8 @@ mark{background:yellow;color:black}
   padding:10px 12px;
   border-bottom:1px solid rgba(255,255,255,.08);
 }
-.fb-title{font-weight:900}
-.fb-close{
+.gaPanelTitle{font-weight:900}
+.gaPanelClose{
   width:auto;
   padding:6px 10px;
   border-radius:10px;
@@ -512,15 +446,44 @@ mark{background:yellow;color:black}
   cursor:pointer;
   font-weight:900;
 }
-.fb-iframe{
-  width:100%;
-  height:100%;
-  border:0;
-  background:#fff;
+.gaPanelBody{padding:10px 12px}
+.gaLine{font-size:12px;line-height:1.45;color:var(--muted);white-space:pre-wrap}
+.gaLine strong{color:var(--text)}
+.gaHint{
+  margin-top:10px;
+  padding:10px;
+  border-radius:12px;
+  border:1px dashed rgba(255,255,255,.14);
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+}
+.gaBtnRow{display:flex;gap:6px;margin-top:10px}
+.gaBtnRow button{
+  width:auto;
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:rgba(22,37,69,.65);
+  color:var(--text);
+  font-weight:900;
 }
 </style>
 
-<!-- ✅ GA4 스니펫은 너가 이미 적용했다 했으니, 여기는 건드리지 않았음 -->
+<!-- =========================
+     ✅ GA4 스니펫 (추가)
+     - 아래 측정 ID만 교체
+     ========================= -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YR8SYEVY0J"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YR8SYEVY0J', {
+    // 디버깅용(전송 자체는 동일)
+    send_page_view: true
+  });
+</script>
 </head>
 
 <body>
@@ -540,8 +503,14 @@ mark{background:yellow;color:black}
       </div>
     </div>
 
-    <!-- ✅ 우측 상단 버튼 영역: 피드백 버튼 추가 -->
+    <!-- ✅ 우측 상단 버튼 영역 -->
     <div class="font-controls">
+      <!-- ✅ GA 상태 배지(추가) -->
+      <button id="gaBadge" type="button" title="GA4 전송 상태 보기">
+        <span id="gaDot"></span>
+        <span id="gaText">GA 확인중…</span>
+      </button>
+
       <button id="feedbackBtn" type="button" title="익명 피드백 남기기">피드백</button>
       <button id="increase-font" type="button">A+</button>
       <button id="decrease-font" type="button">A−</button>
@@ -634,7 +603,6 @@ mark{background:yellow;color:black}
       <button id="fbClose" class="fb-close" type="button">닫기 ✕</button>
     </div>
 
-    <!-- ✅ 아래 URL만 네 Google Form 링크로 교체 -->
     <iframe
       id="fbFrame"
       class="fb-iframe"
@@ -645,6 +613,133 @@ mark{background:yellow;color:black}
     </iframe>
   </div>
 </div>
+
+<!-- ✅ GA 패널(추가) -->
+<div id="gaPanel" aria-hidden="true">
+  <div class="gaPanelHead">
+    <div class="gaPanelTitle">GA4 전송 확인</div>
+    <button id="gaClose" class="gaPanelClose" type="button">닫기 ✕</button>
+  </div>
+  <div class="gaPanelBody">
+    <div class="gaLine"><strong>현재 페이지:</strong> <span id="gaLoc"></span></div>
+    <div class="gaLine"><strong>측정 ID:</strong> <span id="gaIdTxt"></span></div>
+    <div class="gaLine"><strong>상태:</strong> <span id="gaStatus"></span></div>
+    <div class="gaLine" style="margin-top:8px"><strong>최근 전송 로그(최대 20개)</strong></div>
+    <div id="gaLogs" class="gaLine" style="margin-top:6px"></div>
+
+    <div class="gaBtnRow">
+      <button id="gaSendPing" type="button">테스트 전송</button>
+      <button id="gaClearLogs" type="button">로그 지우기</button>
+    </div>
+
+    <div class="gaHint">
+      - <strong>전송 성공</strong>: 보통 Network에 <strong>g/collect</strong> 요청이 보이고 상태가 200/204로 나옵니다.<br>
+      - <strong>차단</strong>: 광고차단/기관망 정책이면 요청이 안 나가거나 <strong>ERR_BLOCKED_BY_CLIENT</strong>가 뜹니다.<br>
+      - 실시간 사용자 수는 "나 혼자 반복 접속"이면 1로 유지되는 게 정상일 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================
+   ✅ GA4 전송 상태 확인(추가)
+   - 콘솔 없이 화면에서 확인 가능
+   ========================= */
+(() => {
+  const MEASUREMENT_ID = "G-YR8SYEVY0J"; // ✅ 너 측정 ID로 교체(스니펫과 동일하게)
+
+  const badge = document.getElementById('gaBadge');
+  const dot = document.getElementById('gaDot');
+  const text = document.getElementById('gaText');
+
+  const panel = document.getElementById('gaPanel');
+  const closeBtn = document.getElementById('gaClose');
+  const locEl = document.getElementById('gaLoc');
+  const idEl = document.getElementById('gaIdTxt');
+  const statusEl = document.getElementById('gaStatus');
+  const logsEl = document.getElementById('gaLogs');
+  const sendPingBtn = document.getElementById('gaSendPing');
+  const clearBtn = document.getElementById('gaClearLogs');
+
+  const maxLogs = 20;
+  const logs = [];
+
+  function fmtTime(d){
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    const ss = String(d.getSeconds()).padStart(2,'0');
+    return `${hh}:${mm}:${ss}`;
+  }
+  function pushLog(msg){
+    logs.unshift(`[${fmtTime(new Date())}] ${msg}`);
+    if (logs.length > maxLogs) logs.pop();
+    logsEl.textContent = logs.join("\n");
+  }
+  function setBadge(state, msg){
+    badge.classList.remove('ga-ok','ga-bad');
+    if(state === 'ok') badge.classList.add('ga-ok');
+    if(state === 'bad') badge.classList.add('ga-bad');
+    text.textContent = msg;
+    statusEl.textContent = msg;
+  }
+
+  // 패널 기본 값
+  locEl.textContent = location.href;
+  idEl.textContent = MEASUREMENT_ID;
+
+  // gtag 존재 여부
+  const hasGtag = (typeof window.gtag === "function");
+  if (!hasGtag) {
+    setBadge('bad', "GA 스크립트 미로딩/차단");
+    pushLog("gtag() 없음: 스니펫 누락 또는 차단 가능");
+  } else {
+    setBadge('ok', "GA 로딩됨(전송 확인 필요)");
+    pushLog("gtag() 감지됨: 스크립트 로딩 OK");
+  }
+
+  // Network로 실제 전송(collect) 발생 여부를 '간접' 확인: fetch-beacon 실패 감지
+  // (브라우저에서 beacon 실패 콜백은 제한적이라, 테스트 이벤트를 보내고 GA 실시간에서 같이 확인 권장)
+  function sendTestPing(){
+    if (typeof window.gtag !== "function") {
+      setBadge('bad', "gtag 없음(전송 불가)");
+      pushLog("테스트 전송 실패: gtag() 없음");
+      return;
+    }
+    const eid = "debug_ping_" + Math.random().toString(16).slice(2);
+    window.gtag('event', 'debug_ping', {
+      event_id: eid,
+      page_location: location.href
+    });
+    pushLog(`테스트 전송 호출: debug_ping (event_id=${eid})`);
+    setBadge('ok', "테스트 전송 호출됨");
+  }
+
+  // 배지 클릭 => 패널 토글
+  function openPanel(){
+    panel.style.display = 'block';
+    panel.setAttribute('aria-hidden','false');
+  }
+  function closePanel(){
+    panel.style.display = 'none';
+    panel.setAttribute('aria-hidden','true');
+  }
+  badge.addEventListener('click', () => {
+    const opened = panel.style.display === 'block';
+    opened ? closePanel() : openPanel();
+  });
+  closeBtn.addEventListener('click', closePanel);
+
+  sendPingBtn.addEventListener('click', sendTestPing);
+  clearBtn.addEventListener('click', () => {
+    logs.length = 0;
+    logsEl.textContent = "";
+  });
+
+  // 자동으로 1회 테스트 전송(원치 않으면 이 줄 주석 처리)
+  setTimeout(sendTestPing, 800);
+
+})();
+</script>
 
 <script>
 let DATA=[], TITLE_MAP={}, currentFontSize=14;
@@ -944,7 +1039,7 @@ const STD_CHAPTERS = [
   { no: 17, title: "장애인용, 소방구조용 및 피난용 엘리베이터에 대한 추가요건" }
 ];
 
-/* 샘플 데이터(나중에 standards.json으로 대체 가능) */
+/* 샘플 데이터 */
 let STD_DATA = [
   {
     id: "STD-05-001",
@@ -1093,15 +1188,12 @@ function initStandardTab(){
   renderStdList();
 }
 
-/* 페이지 로드 시 표준화자료도 초기화(선택: 탭 눌렀을 때만 하고 싶으면 이 줄 제거) */
 initStandardTab();
 
 /* =========================
    ✅ 피드백: Google Form 모달
    ========================= */
 (() => {
-  // ✅ 여기만 네 Google Form 링크로 교체
-  // 권장: viewform 뒤에 ?embedded=true 붙이면 iframe에 잘 맞음
   const FB_FORM_URL = "https://naver.me/5xgAWwSb";
 
   const btn = document.getElementById('feedbackBtn');
@@ -1128,12 +1220,8 @@ initStandardTab();
   btn.addEventListener('click', open);
   closeBtn.addEventListener('click', close);
 
-  // 배경 클릭하면 닫기
-  modal.addEventListener('click', (e) => {
-    if(e.target === modal) close();
-  });
+  modal.addEventListener('click', (e) => { if(e.target === modal) close(); });
 
-  // ESC로 닫기
   window.addEventListener('keydown', (e) => {
     if(e.key === 'Escape' && modal.style.display === 'flex') close();
   });
@@ -1142,4 +1230,3 @@ initStandardTab();
 
 </body>
 </html>
-
