@@ -790,28 +790,6 @@ function norm(s){
   return (s||'').toLowerCase().replace(/\s+/g,'');
 }
 
-/* ✅ 문자 단위 유사도 점수(키워드 사전 없이) */
-function scoreMatch(haystackRaw, queryRaw){
-  const hay = norm(haystackRaw);
-  const q = norm(queryRaw);
-  if(!q) return 0;
-
-  // 1) 한 글자 단위 일치(중복 제거)
-  const qChars = new Set([...q]);
-  let charHit = 0;
-  qChars.forEach(ch => { if(hay.includes(ch)) charHit++; });
-
-  // 2) 연속 2글자(바이그램) 일치 보너스
-  let biHit = 0;
-  for(let i=0;i<q.length-1;i++){
-    const bi = q.slice(i,i+2);
-    if(hay.includes(bi)) biHit++;
-  }
-
-  return (charHit * 1) + (biHit * 2);
-}
-
-
 fetch('./data/criteria.json')
 .then(r=>r.json())
 .then(j=>{
@@ -835,36 +813,25 @@ fetch('./data/criteria.json')
 function renderTopics(){
   if(!topicsEl) return;
   topicsEl.innerHTML='';
+  const q = norm(search.value);
 
-  const rawQ = search.value || '';
-  const q = norm(rawQ);
+  Object.keys(TITLE_MAP).forEach(t=>{
+    if(q){
+      const hitTitle = norm(t).includes(q);
+      if(!hitTitle) return;
+    }
 
-  const titles = Object.keys(TITLE_MAP);
-
-  // 검색어가 있으면: 문자 유사도 점수로 랭킹(많이 포함된 항목을 위로)
-  let ordered = titles;
-  if(q){
-    ordered = titles
-      .map(t => ({ t, s: scoreMatch(t, rawQ) }))
-      .filter(x => x.s > 0)
-      .sort((a,b) => b.s - a.s)
-      .slice(0, 200) // ✅ 과도한 목록 방지(필요시 조정)
-      .map(x => x.t);
-  }
-
-  ordered.forEach(t=>{
     const l=document.createElement('label');
     l.className='topic';
     const c=document.createElement('input');
     c.type='checkbox'; c.value=t;
     c.onchange=renderResults;
     const s=document.createElement('span');
-    s.innerHTML=highlight(t,rawQ);
+    s.innerHTML=highlight(t,search.value);
     l.append(c,s);
     topicsEl.appendChild(l);
   });
 }
-
 
 function renderImage(imagePath){
   if(!imagePath) return '';
@@ -914,57 +881,33 @@ function getSelectedTitles(){
 function renderResults(){
   if(!resultsEl) return;
   resultsEl.innerHTML='';
-
-  const rawQ = search.value || '';
-  const keyword = norm(rawQ);
+  const keyword = norm(search.value);
   const selectedTitles = getSelectedTitles();
 
   let matches = [];
-
   if (keyword) {
-    matches = DATA.map((i, idx) => {
-      const titleScore = scoreMatch(i.title || '', rawQ) * 2; // ✅ 제목 가중치
-      const textScore  = scoreMatch((i.label||'') + ' ' + (i.text||''), rawQ) * 1;
-      const total = titleScore + textScore;
-      return { i, idx, total };
-    })
-    .filter(x => x.total > 0)
-    .sort((a,b)=>{
-      // ✅ 선택된 검사항목 우선
+    DATA.forEach((i, idx)=>{
+      const hay = norm(i.title+i.label+i.text);
+      if(hay.includes(keyword)) matches.push({i, idx});
+    });
+
+    matches.sort((a,b)=>{
       const ap = selectedTitles.has(a.i.title) ? 0 : 1;
       const bp = selectedTitles.has(b.i.title) ? 0 : 1;
       if(ap !== bp) return ap - bp;
-
-      // ✅ 점수 높은 순
-      if(b.total !== a.total) return b.total - a.total;
-
-      // ✅ 동일 점수면 원문 순서
       return a.idx - b.idx;
-    })
-    .slice(0, 200); // ✅ 과도한 결과 방지(필요시 조정)
-  } else {
-    // 검색어가 없으면: 선택된 검사항목만 표시
-    document.querySelectorAll('#topics input:checked').forEach(cb=>{
-      (TITLE_MAP[cb.value]||[]).forEach(i=>matches.push({ i, idx: 0, total: 0 }));
     });
-  }
-
-  // 결과 없음 안내
-  if(matches.length === 0){
-    resultsEl.innerHTML = `
-      <div class="card">
-        <div class="title">검색 결과가 없습니다.</div>
-        <div class="row"><div class="text">검색어를 줄이거나, 건축허가일/검사항목 선택을 확인하세요.</div></div>
-      </div>
-    `;
-    return;
+  } else {
+    document.querySelectorAll('#topics input:checked').forEach(cb=>{
+      (TITLE_MAP[cb.value]||[]).forEach(i=>matches.push({i, idx: 0}));
+    });
   }
 
   matches.forEach(({i})=>{
     const isSelected = selectedTitles.has(i.title);
     const titleHtml = isSelected
-      ? `<span class="selected-title">${highlight(i.title,rawQ)}</span>`
-      : `${highlight(i.title,rawQ)}`;
+      ? `<span class="selected-title">${highlight(i.title,search.value)}</span>`
+      : `${highlight(i.title,search.value)}`;
 
     const card=document.createElement('div');
     card.className='card';
@@ -979,7 +922,7 @@ function renderResults(){
 
       <div class="row">
         <div class="text">
-          ${highlight(i.text,rawQ)}
+          ${highlight(i.text,search.value)}
         </div>
       </div>
 
@@ -988,7 +931,6 @@ function renderResults(){
     resultsEl.appendChild(card);
   });
 }
-
 
 /* 이벤트 */
 document.getElementById('increase-font').onclick=()=>{currentFontSize++;applyFont()};
