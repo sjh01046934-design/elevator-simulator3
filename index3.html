@@ -790,6 +790,93 @@ function norm(s){
   return (s||'').toLowerCase().replace(/\s+/g,'');
 }
 
+/* =========================
+   ✅ 검색 개선(추가): 결과 '축소' + '랭킹'
+   - 1차: 연속 2글자(바이그램) 포함 여부로 필터링하여 결과를 줄임
+   - 2차: (한글자 포함 + 바이그램 보너스) 점수로 정렬하여 상단에 노출
+   - 키워드 사전 없이 동작
+   ========================= */
+function passFilter(hayRaw, qRaw){
+  const hay = norm(hayRaw);
+  const q = norm(qRaw);
+  if(!q) return true;
+
+  // 2글자 이상이면, 연속 2글자 중 하나라도 포함되면 통과(결과 축소 핵심)
+  if(q.length >= 2){
+    for(let i=0;i<q.length-1;i++){
+      const bi = q.slice(i,i+2);
+      if(hay.includes(bi)) return true;
+    }
+    return false;
+  }
+  // 1글자 검색은 너무 많이 걸릴 수 있어 그대로 통과(정렬에서 점수로 상위만 보여줌)
+  return true;
+}
+
+function scoreMatch(hayRaw, qRaw){
+  const hay = norm(hayRaw);
+  const q = norm(qRaw);
+  if(!q) return 0;
+
+  // 한 글자 포함(중복 제거)
+  const chars = new Set([...q]);
+  let charHit = 0;
+  chars.forEach(ch => { if(hay.includes(ch)) charHit++; });
+
+  // 연속 2글자 포함 보너스
+  let biHit = 0;
+  if(q.length >= 2){
+    for(let i=0;i<q.length-1;i++){
+      const bi = q.slice(i,i+2);
+      if(hay.includes(bi)) biHit++;
+    }
+  }
+
+  return (charHit * 1) + (biHit * 3);
+}
+
+function getRankedMatches(query, selectedTitles){
+  const qRaw = query || "";
+  const q = norm(qRaw);
+  if(!q) return [];
+
+  // 1차 필터
+  let pool = [];
+  for(let idx=0; idx<DATA.length; idx++){
+    const i = DATA[idx];
+    const hayAll = (i.title||"") + " " + (i.label||"") + " " + (i.text||"");
+    if(passFilter(hayAll, qRaw)) pool.push({i, idx});
+  }
+
+  // 너무 빡세서 0건이면(또는 극히 적으면) → 완화: 전체에서 점수로만 랭킹
+  if(pool.length === 0){
+    for(let idx=0; idx<DATA.length; idx++){
+      pool.push({i: DATA[idx], idx});
+    }
+  }
+
+  // 2차 랭킹(정렬)
+  const ranked = pool.map(({i, idx})=>{
+    const total =
+      scoreMatch(i.title, qRaw) * 2 +  // title 가중치
+      scoreMatch(i.text,  qRaw) * 1 +
+      scoreMatch(i.label, qRaw) * 1;
+
+    return {i, idx, total};
+  }).filter(x => x.total > 0);
+
+  ranked.sort((a,b)=>{
+    const ap = selectedTitles.has(a.i.title) ? 0 : 1;
+    const bp = selectedTitles.has(b.i.title) ? 0 : 1;
+    if(ap !== bp) return ap - bp;
+    if(b.total !== a.total) return b.total - a.total;
+    return a.idx - b.idx;
+  });
+
+  // 상위 N개만 표시(너무 많아지는 것 방지)
+  return ranked.slice(0, 120);
+}
+
 fetch('./data/criteria.json')
 .then(r=>r.json())
 .then(j=>{
@@ -813,14 +900,27 @@ fetch('./data/criteria.json')
 function renderTopics(){
   if(!topicsEl) return;
   topicsEl.innerHTML='';
-  const q = norm(search.value);
+  const qRaw = search.value || "";
+  const q = norm(qRaw);
 
-  Object.keys(TITLE_MAP).forEach(t=>{
-    if(q){
-      const hitTitle = norm(t).includes(q);
-      if(!hitTitle) return;
-    }
+  const titles = Object.keys(TITLE_MAP);
 
+  // 검색어가 있으면: 제목을 필터+랭킹하여 상단에 관련 항목만 노출(선택하기 쉽게)
+  let show = titles;
+  if(q){
+    show = titles
+      .map(t => {
+        const s = scoreMatch(t, qRaw);
+        const p = passFilter(t, qRaw);
+        return { t, s, p };
+      })
+      .filter(x => x.p || x.s > 0)
+      .sort((a,b)=> (b.s - a.s) || a.t.localeCompare(b.t, 'ko'))
+      .slice(0, 200)
+      .map(x => x.t);
+  }
+
+  show.forEach(t=>{
     const l=document.createElement('label');
     l.className='topic';
     const c=document.createElement('input');
@@ -881,26 +981,32 @@ function getSelectedTitles(){
 function renderResults(){
   if(!resultsEl) return;
   resultsEl.innerHTML='';
-  const keyword = norm(search.value);
   const selectedTitles = getSelectedTitles();
 
-  let matches = [];
-  if (keyword) {
-    DATA.forEach((i, idx)=>{
-      const hay = norm(i.title+i.label+i.text);
-      if(hay.includes(keyword)) matches.push({i, idx});
-    });
+  const keywordRaw = search.value || "";
+  const keyword = norm(keywordRaw);
 
-    matches.sort((a,b)=>{
-      const ap = selectedTitles.has(a.i.title) ? 0 : 1;
-      const bp = selectedTitles.has(b.i.title) ? 0 : 1;
-      if(ap !== bp) return ap - bp;
-      return a.idx - b.idx;
-    });
+  let matches = [];
+
+  // ✅ 검색어가 있으면: (필터로 결과 축소) + (점수로 랭킹)
+  if (keyword) {
+    matches = getRankedMatches(keywordRaw, selectedTitles).map(x => ({ i: x.i }));
   } else {
+    // ✅ 검색어가 없으면: 기존처럼 '선택된 검사항목'만 표시
     document.querySelectorAll('#topics input:checked').forEach(cb=>{
-      (TITLE_MAP[cb.value]||[]).forEach(i=>matches.push({i, idx: 0}));
+      (TITLE_MAP[cb.value]||[]).forEach(i=>matches.push({i}));
     });
+  }
+
+  // 표시할 것이 없을 때 안내
+  if(!matches.length){
+    resultsEl.innerHTML = `
+      <div class="card">
+        <div class="title">검색 결과가 없습니다.</div>
+        <div class="row"><div class="text">검색어를 더 구체적으로 입력하거나, 검사항목을 선택해보세요.</div></div>
+      </div>
+    `;
+    return;
   }
 
   matches.forEach(({i})=>{
