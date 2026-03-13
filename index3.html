@@ -480,7 +480,6 @@ mark{background:yellow;color:black}
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-YR8SYEVY0J', {
-    // 디버깅용(전송 자체는 동일)
     send_page_view: true
   });
 </script>
@@ -503,9 +502,7 @@ mark{background:yellow;color:black}
       </div>
     </div>
 
-    <!-- ✅ 우측 상단 버튼 영역 -->
     <div class="font-controls">
-      <!-- ✅ GA 상태 배지(추가) -->
       <button id="gaBadge" type="button" title="GA4 전송 상태 보기">
         <span id="gaDot"></span>
         <span id="gaText">GA 확인중…</span>
@@ -521,13 +518,11 @@ mark{background:yellow;color:black}
 
 <div class="wrap">
 
-  <!-- 탭 1) 검사기준 -->
   <section id="criteria" class="tab-content active">
 
     <div class="panel">
       <div class="controls">
 
-        <!-- 검사항목 -->
         <div>
           <div style="display:flex; gap:6px; align-items:center;">
             <input id="search" placeholder="검사항목 or 기준내용 검색">
@@ -544,7 +539,6 @@ mark{background:yellow;color:black}
           <div class="topics" id="topics"></div>
         </div>
 
-        <!-- 건축허가일 -->
         <div>
           <label>건축허가일</label>
           <div class="preset-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
@@ -565,7 +559,6 @@ mark{background:yellow;color:black}
 
   </section>
 
-  <!-- 탭 2) 표준화자료 -->
   <section id="standard" class="tab-content">
     <div class="standard-wrap">
 
@@ -587,15 +580,12 @@ mark{background:yellow;color:black}
 
 </div>
 
-<!-- 이미지 확대 모달 -->
 <div id="imageModal" class="image-modal" onclick="closeImageModal()">
   <img id="modalImage" alt="">
 </div>
 
-<!-- 검색 돌아가기(맨위로) 버튼 -->
 <button id="backToTopBtn" type="button">🔍 검색 돌아가기</button>
 
-<!-- ✅ 피드백 모달 -->
 <div id="fbModal" class="fb-modal" aria-hidden="true">
   <div class="fb-box" role="dialog" aria-modal="true" aria-label="피드백 작성">
     <div class="fb-head">
@@ -614,7 +604,6 @@ mark{background:yellow;color:black}
   </div>
 </div>
 
-<!-- ✅ GA 패널(추가) -->
 <div id="gaPanel" aria-hidden="true">
   <div class="gaPanelHead">
     <div class="gaPanelTitle">GA4 전송 확인</div>
@@ -641,15 +630,10 @@ mark{background:yellow;color:black}
 </div>
 
 <script>
-/* =========================
-   ✅ GA4 전송 상태 확인(추가)
-   - 콘솔 없이 화면에서 확인 가능
-   ========================= */
 (() => {
-  const MEASUREMENT_ID = "G-YR8SYEVY0J"; // ✅ 너 측정 ID로 교체(스니펫과 동일하게)
+  const MEASUREMENT_ID = "G-YR8SYEVY0J";
 
   const badge = document.getElementById('gaBadge');
-  const dot = document.getElementById('gaDot');
   const text = document.getElementById('gaText');
 
   const panel = document.getElementById('gaPanel');
@@ -683,11 +667,9 @@ mark{background:yellow;color:black}
     statusEl.textContent = msg;
   }
 
-  // 패널 기본 값
   locEl.textContent = location.href;
   idEl.textContent = MEASUREMENT_ID;
 
-  // gtag 존재 여부
   const hasGtag = (typeof window.gtag === "function");
   if (!hasGtag) {
     setBadge('bad', "GA 스크립트 미로딩/차단");
@@ -697,8 +679,6 @@ mark{background:yellow;color:black}
     pushLog("gtag() 감지됨: 스크립트 로딩 OK");
   }
 
-  // Network로 실제 전송(collect) 발생 여부를 '간접' 확인: fetch-beacon 실패 감지
-  // (브라우저에서 beacon 실패 콜백은 제한적이라, 테스트 이벤트를 보내고 GA 실시간에서 같이 확인 권장)
   function sendTestPing(){
     if (typeof window.gtag !== "function") {
       setBadge('bad', "gtag 없음(전송 불가)");
@@ -714,7 +694,6 @@ mark{background:yellow;color:black}
     setBadge('ok', "테스트 전송 호출됨");
   }
 
-  // 배지 클릭 => 패널 토글
   function openPanel(){
     panel.style.display = 'block';
     panel.setAttribute('aria-hidden','false');
@@ -735,7 +714,6 @@ mark{background:yellow;color:black}
     logsEl.textContent = "";
   });
 
-  // 자동으로 1회 테스트 전송(원치 않으면 이 줄 주석 처리)
   setTimeout(sendTestPing, 800);
 
 })();
@@ -751,7 +729,6 @@ const search=document.getElementById('search');
 
 const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-chk span, .std-tag';
 
-/* ✅ 탭 전환 */
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabContents = document.querySelectorAll(".tab-content");
 
@@ -768,11 +745,9 @@ tabButtons.forEach(btn=>{
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // 표준화자료 탭에서는 검색 돌아가기 버튼 숨김
     const backToTopBtn = document.getElementById('backToTopBtn');
     if (target !== "criteria") backToTopBtn.style.display = "none";
 
-    // 표준화자료 탭 진입 시 렌더 보장
     if (target === "standard") {
       initStandardTab();
     }
@@ -785,23 +760,15 @@ function applyFont(){
   });
 }
 
-/* 띄어쓰기 무시 검색용 정규화 */
 function norm(s){
   return (s||'').toLowerCase().replace(/\s+/g,'');
 }
 
-/* =========================
-   ✅ 검색 개선(추가): 결과 '축소' + '랭킹'
-   - 1차: 연속 2글자(바이그램) 포함 여부로 필터링하여 결과를 줄임
-   - 2차: (한글자 포함 + 바이그램 보너스) 점수로 정렬하여 상단에 노출
-   - 키워드 사전 없이 동작
-   ========================= */
 function passFilter(hayRaw, qRaw){
   const hay = norm(hayRaw);
   const q = norm(qRaw);
   if(!q) return true;
 
-  // 2글자 이상이면, 연속 2글자 중 하나라도 포함되면 통과(결과 축소 핵심)
   if(q.length >= 2){
     for(let i=0;i<q.length-1;i++){
       const bi = q.slice(i,i+2);
@@ -809,7 +776,6 @@ function passFilter(hayRaw, qRaw){
     }
     return false;
   }
-  // 1글자 검색은 너무 많이 걸릴 수 있어 그대로 통과(정렬에서 점수로 상위만 보여줌)
   return true;
 }
 
@@ -818,12 +784,10 @@ function scoreMatch(hayRaw, qRaw){
   const q = norm(qRaw);
   if(!q) return 0;
 
-  // 한 글자 포함(중복 제거)
   const chars = new Set([...q]);
   let charHit = 0;
   chars.forEach(ch => { if(hay.includes(ch)) charHit++; });
 
-  // 연속 2글자 포함 보너스
   let biHit = 0;
   if(q.length >= 2){
     for(let i=0;i<q.length-1;i++){
@@ -840,7 +804,6 @@ function getRankedMatches(query, selectedTitles){
   const q = norm(qRaw);
   if(!q) return [];
 
-  // 1차 필터
   let pool = [];
   for(let idx=0; idx<DATA.length; idx++){
     const i = DATA[idx];
@@ -848,17 +811,15 @@ function getRankedMatches(query, selectedTitles){
     if(passFilter(hayAll, qRaw)) pool.push({i, idx});
   }
 
-  // 너무 빡세서 0건이면(또는 극히 적으면) → 완화: 전체에서 점수로만 랭킹
   if(pool.length === 0){
     for(let idx=0; idx<DATA.length; idx++){
       pool.push({i: DATA[idx], idx});
     }
   }
 
-  // 2차 랭킹(정렬)
   const ranked = pool.map(({i, idx})=>{
     const total =
-      scoreMatch(i.title, qRaw) * 2 +  // title 가중치
+      scoreMatch(i.title, qRaw) * 2 +
       scoreMatch(i.text,  qRaw) * 1 +
       scoreMatch(i.label, qRaw) * 1;
 
@@ -873,7 +834,6 @@ function getRankedMatches(query, selectedTitles){
     return a.idx - b.idx;
   });
 
-  // 상위 N개만 표시(너무 많아지는 것 방지)
   return ranked.slice(0, 120);
 }
 
@@ -905,7 +865,6 @@ function renderTopics(){
 
   const titles = Object.keys(TITLE_MAP);
 
-  // 검색어가 있으면: 제목을 필터+랭킹하여 상단에 관련 항목만 노출(선택하기 쉽게)
   let show = titles;
   if(q){
     show = titles
@@ -966,10 +925,72 @@ function isApplied(d,f,t){
 function escapeRegExp(s){
   return (s||'').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
-function highlight(t,k){
-  if(!k) return t;
-  const safe = escapeRegExp(k);
-  return t.replace(new RegExp(`(${safe})`,'gi'),'<mark>$1</mark>');
+
+/* ✅ 검색어 여러 개 형광 + 띄어쓰기 무시 형광 */
+function highlight(text, keyword){
+  if(!text || !keyword) return text;
+
+  const rawKeywords = [...new Set(
+    keyword
+      .split(/[\s,]+/)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .sort((a,b) => b.length - a.length)
+  )];
+
+  if(!rawKeywords.length) return text;
+
+  const ranges = [];
+
+  rawKeywords.forEach(word => {
+    const target = word.replace(/\s+/g, '');
+    if(!target) return;
+
+    let compact = '';
+    const map = [];
+
+    for(let i=0; i<text.length; i++){
+      const ch = text[i];
+      if(/\s/.test(ch)) continue;
+      compact += ch;
+      map.push(i);
+    }
+
+    let start = 0;
+    while(true){
+      const idx = compact.toLowerCase().indexOf(target.toLowerCase(), start);
+      if(idx === -1) break;
+
+      const origStart = map[idx];
+      const origEnd = map[idx + target.length - 1] + 1;
+      ranges.push([origStart, origEnd]);
+
+      start = idx + target.length;
+    }
+  });
+
+  if(!ranges.length) return text;
+
+  ranges.sort((a,b) => a[0] - b[0]);
+  const merged = [];
+  for(const [s,e] of ranges){
+    if(!merged.length || s > merged[merged.length - 1][1]){
+      merged.push([s,e]);
+    }else{
+      merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], e);
+    }
+  }
+
+  let result = '';
+  let last = 0;
+  for(const [s,e] of merged){
+    result += text.slice(last, s);
+    result += '<mark>' + text.slice(s, e) + '</mark>';
+    last = e;
+  }
+  result += text.slice(last);
+
+  return result;
 }
 
 function getSelectedTitles(){
@@ -988,17 +1009,14 @@ function renderResults(){
 
   let matches = [];
 
-  // ✅ 검색어가 있으면: (필터로 결과 축소) + (점수로 랭킹)
   if (keyword) {
     matches = getRankedMatches(keywordRaw, selectedTitles).map(x => ({ i: x.i }));
   } else {
-    // ✅ 검색어가 없으면: 기존처럼 '선택된 검사항목'만 표시
     document.querySelectorAll('#topics input:checked').forEach(cb=>{
       (TITLE_MAP[cb.value]||[]).forEach(i=>matches.push({i}));
     });
   }
 
-  // 표시할 것이 없을 때 안내
   if(!matches.length){
     resultsEl.innerHTML = `
       <div class="card">
@@ -1038,7 +1056,6 @@ function renderResults(){
   });
 }
 
-/* 이벤트 */
 document.getElementById('increase-font').onclick=()=>{currentFontSize++;applyFont()};
 document.getElementById('decrease-font').onclick=()=>{currentFontSize=Math.max(10,currentFontSize-1);applyFont()};
 document.getElementById('run').onclick=renderResults;
@@ -1054,7 +1071,6 @@ document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
 
-/* 검색 돌아가기(맨위로) 버튼 */
 const backToTopBtn = document.getElementById('backToTopBtn');
 window.addEventListener('scroll', ()=>{
   const criteriaActive = document.getElementById('criteria').classList.contains('active');
@@ -1068,7 +1084,6 @@ backToTopBtn.addEventListener('click', ()=>{
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-/* 음성인식(검색용) */
 (() => {
   const voiceBtn = document.getElementById('voiceBtn');
   const voiceStatus = document.getElementById('voiceStatus');
@@ -1124,11 +1139,6 @@ backToTopBtn.addEventListener('click', ()=>{
   };
 })();
 
-/* =========================
-   ✅ 표준화자료: 검색 + Chapter 필터
-   ========================= */
-
-/* Chapter 정의(5~17) */
 const STD_CHAPTERS = [
   { no: 5,  title: "일반사항" },
   { no: 6,  title: "승강로, 기계실·기계류 공간 및 풀리실" },
@@ -1145,7 +1155,6 @@ const STD_CHAPTERS = [
   { no: 17, title: "장애인용, 소방구조용 및 피난용 엘리베이터에 대한 추가요건" }
 ];
 
-/* 샘플 데이터 */
 let STD_DATA = [
   {
     id: "STD-05-001",
@@ -1296,9 +1305,6 @@ function initStandardTab(){
 
 initStandardTab();
 
-/* =========================
-   ✅ 피드백: Google Form 모달
-   ========================= */
 (() => {
   const FB_FORM_URL = "https://naver.me/5xgAWwSb";
 
