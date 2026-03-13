@@ -1,0 +1,31 @@
+{
+  "standardization": [
+    {
+      "keyword": "권상기",
+      "title": "권상기 점검사항",
+      "label": "M-001",
+      "text": "권상기의 고정상태, 이상 소음, 회전부 노출 여부 등을 확인한다.",
+      "from": "2019-03-28",
+      "to": null,
+      "image": "images/machine_001.jpg"
+    },
+    {
+      "keyword": "권상기",
+      "title": "권상기 주변 작업공간",
+      "label": "M-002",
+      "text": "권상기 주변에는 점검 및 유지관리에 필요한 작업공간이 확보되어야 한다.",
+      "from": "2019-03-28",
+      "to": null,
+      "image": "images/machine_002.jpg"
+    },
+    {
+      "keyword": "피트",
+      "title": "피트 사다리",
+      "label": "P-001",
+      "text": "피트 출입 및 피난을 위한 사다리 설치 상태를 확인한다.",
+      "from": "2019-03-28",
+      "to": null,
+      "image": "images/pit_001.jpg"
+    }
+  ]
+}
