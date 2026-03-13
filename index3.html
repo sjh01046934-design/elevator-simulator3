@@ -201,6 +201,23 @@ mark{background:yellow;color:black}
   line-height:1.3;
 }
 
+/* ✅ 적용기준만 보기 토글 */
+.toggle-btn{
+  width:auto;
+  min-width:112px;
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:rgba(22,37,69,.85);
+  color:var(--text);
+  font-weight:900;
+}
+.toggle-btn.active{
+  background:rgba(25,195,125,.95);
+  color:#00120a;
+  border-color:rgba(25,195,125,.95);
+}
+
 /* ===== 이미지 확대 모달 ===== */
 .image-modal{
   position:fixed;
@@ -274,6 +291,14 @@ mark{background:yellow;color:black}
     text-align:center;
   }
   #voiceBtn{padding:14px 12px;height:48px}
+  .action-row{
+    flex-wrap:wrap;
+  }
+  .action-row .toggle-btn,
+  .action-row #reset{
+    flex:1 1 auto;
+    width:auto;
+  }
 }
 
 /* ✅ 표준화자료 화면 */
@@ -470,10 +495,6 @@ mark{background:yellow;color:black}
 }
 </style>
 
-<!-- =========================
-     ✅ GA4 스니펫 (추가)
-     - 아래 측정 ID만 교체
-     ========================= -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YR8SYEVY0J"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -530,8 +551,8 @@ mark{background:yellow;color:black}
           </div>
           <div id="voiceStatus" style="font-size:12px; margin-top:6px; opacity:0.75;"></div>
 
-          <div style="display:flex;gap:6px;margin:6px 0">
-            <button id="run" type="button">검색</button>
+          <div class="action-row" style="display:flex;gap:6px;margin:6px 0">
+            <button id="appliedOnlyBtn" class="toggle-btn" type="button">적용기준만 보기 OFF</button>
             <button id="reset" type="button">초기화</button>
           </div>
 
@@ -721,11 +742,13 @@ mark{background:yellow;color:black}
 
 <script>
 let DATA=[], TITLE_MAP={}, currentFontSize=14;
+let appliedOnly = false;
 
 const topicsEl=document.getElementById('topics');
 const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
 const search=document.getElementById('search');
+const appliedOnlyBtn=document.getElementById('appliedOnlyBtn');
 
 const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-chk span, .std-tag';
 
@@ -758,6 +781,12 @@ function applyFont(){
   document.querySelectorAll(fontTargets).forEach(e=>{
     e.style.fontSize=currentFontSize+'px';
   });
+}
+
+function updateAppliedOnlyButton(){
+  if(!appliedOnlyBtn) return;
+  appliedOnlyBtn.classList.toggle('active', appliedOnly);
+  appliedOnlyBtn.textContent = appliedOnly ? '적용기준만 보기 ON' : '적용기준만 보기 OFF';
 }
 
 function norm(s){
@@ -926,7 +955,6 @@ function escapeRegExp(s){
   return (s||'').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/* ✅ 검색어 여러 개 형광 + 띄어쓰기 무시 형광 */
 function highlight(text, keyword){
   if(!text || !keyword) return text;
 
@@ -1017,17 +1045,26 @@ function renderResults(){
     });
   }
 
+  if(appliedOnly){
+    matches = matches.filter(({i}) => isApplied(dateEl.value, i.from, i.to));
+  }
+
   if(!matches.length){
+    const msg = appliedOnly
+      ? '적용기준만 보기 조건에 맞는 결과가 없습니다. 건축허가일을 입력했는지 확인하거나 토글을 꺼보세요.'
+      : '검색어를 더 구체적으로 입력하거나, 검사항목을 선택해보세요.';
+
     resultsEl.innerHTML = `
       <div class="card">
         <div class="title">검색 결과가 없습니다.</div>
-        <div class="row"><div class="text">검색어를 더 구체적으로 입력하거나, 검사항목을 선택해보세요.</div></div>
+        <div class="row"><div class="text">${msg}</div></div>
       </div>
     `;
     return;
   }
 
   matches.forEach(({i})=>{
+    const applied = isApplied(dateEl.value,i.from,i.to);
     const isSelected = selectedTitles.has(i.title);
     const titleHtml = isSelected
       ? `<span class="selected-title">${highlight(i.title,search.value)}</span>`
@@ -1038,8 +1075,8 @@ function renderResults(){
     card.innerHTML=`
       <div class="card-header">
         <div class="title">${titleHtml}</div>
-        <div class="badge ${isApplied(dateEl.value,i.from,i.to)?'ok':'no'}">
-          ${isApplied(dateEl.value,i.from,i.to)?'🟩 적용':'🟥 미적용'}
+        <div class="badge ${applied?'ok':'no'}">
+          ${applied?'🟩 적용':'🟥 미적용'}
           <div class="range">${i.from||'—'} ~ ${i.to||'현재'}</div>
         </div>
       </div>
@@ -1058,18 +1095,33 @@ function renderResults(){
 
 document.getElementById('increase-font').onclick=()=>{currentFontSize++;applyFont()};
 document.getElementById('decrease-font').onclick=()=>{currentFontSize=Math.max(10,currentFontSize-1);applyFont()};
-document.getElementById('run').onclick=renderResults;
 document.getElementById('reset').onclick=()=>{
-  search.value=''; dateEl.value='';
+  search.value=''; 
+  dateEl.value='';
+  appliedOnly=false;
+  updateAppliedOnlyButton();
   document.querySelectorAll('#topics input').forEach(c=>c.checked=false);
-  renderTopics(); renderResults();
+  renderTopics(); 
+  renderResults();
 };
+
+if(appliedOnlyBtn){
+  appliedOnlyBtn.addEventListener('click', ()=>{
+    appliedOnly = !appliedOnly;
+    updateAppliedOnlyButton();
+    renderResults();
+  });
+}
+updateAppliedOnlyButton();
 
 search.oninput=()=>{ renderTopics(); renderResults(); };
 
 document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
 });
+
+dateEl.addEventListener('input', renderResults);
+dateEl.addEventListener('change', renderResults);
 
 const backToTopBtn = document.getElementById('backToTopBtn');
 window.addEventListener('scroll', ()=>{
