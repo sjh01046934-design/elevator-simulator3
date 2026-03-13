@@ -350,14 +350,33 @@ mark{background:yellow;color:black}
   gap:8px;
 }
 @media(max-width:900px){.std-chapters-grid{grid-template-columns:1fr}}
+.std-keyword-block{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  background:rgba(10,16,30,.25);
+  padding:8px;
+}
 .std-chk{
   display:flex;gap:8px;align-items:flex-start;
   padding:6px 6px;border-radius:12px;
-  border:1px solid rgba(255,255,255,.06);
-  background:rgba(10,16,30,.25);
 }
 .std-chk input{width:auto;margin-top:2px}
 .std-chk span{font-size:13px;line-height:1.35}
+.std-title-list{
+  margin-top:6px;
+  margin-left:26px;
+  display:grid;
+  gap:4px;
+}
+.std-title-chk{
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+  padding:4px 6px;
+  border-radius:10px;
+}
+.std-title-chk input{width:auto;margin-top:2px}
+.std-title-chk span{font-size:12.5px;line-height:1.35;color:var(--text)}
 .std-count{margin-top:10px;font-size:12px;color:var(--muted)}
 .std-list{display:grid;gap:12px;margin-top:12px}
 .std-item{
@@ -372,11 +391,6 @@ mark{background:yellow;color:black}
   color:var(--muted);white-space:nowrap;
 }
 .std-title{margin:0;font-size:14px;font-weight:900;line-height:1.35}
-.std-tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
-.std-tag{
-  font-size:12px;padding:3px 8px;border-radius:999px;
-  border:1px solid rgba(255,255,255,.10);color:var(--muted);
-}
 .std-content{margin-top:10px;white-space:pre-line;line-height:1.5;opacity:.95}
 .std-empty{
   padding:18px;border:1px dashed var(--line);border-radius:14px;
@@ -585,7 +599,7 @@ mark{background:yellow;color:black}
 
       <div class="std-panel">
         <div class="std-toolbar">
-          <input id="stdSearch" placeholder="표준화자료 검색 (제목/키워드/내용)" />
+          <input id="stdSearch" placeholder="표준화자료 검색 (키워드/제목/내용)" />
           <button id="stdClear" type="button">지우기</button>
         </div>
 
@@ -750,7 +764,7 @@ const dateEl=document.getElementById('date');
 const search=document.getElementById('search');
 const appliedOnlyBtn=document.getElementById('appliedOnlyBtn');
 
-const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-chk span, .std-tag';
+const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-chk span, .std-title-chk span';
 
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabContents = document.querySelectorAll(".tab-content");
@@ -1191,47 +1205,13 @@ backToTopBtn.addEventListener('click', ()=>{
   };
 })();
 
-const STD_CHAPTERS = [
-  { no: 5,  title: "일반사항" },
-  { no: 6,  title: "승강로, 기계실·기계류 공간 및 풀리실" },
-  { no: 7,  title: "승강장문 및 카문" },
-  { no: 8,  title: "카, 균형추 및 평형추" },
-  { no: 9,  title: "매다는 장치(현수), 보상수단 및 관련 보호수단" },
-  { no: 10, title: "자유낙하·과속·개문출발 및 크리핑에 대한 예방조치" },
-  { no: 11, title: "주행안내 레일" },
-  { no: 12, title: "완충기" },
-  { no: 13, title: "엘리베이터 구동기 및 관련 설비" },
-  { no: 14, title: "전기설비 및 전기기기" },
-  { no: 15, title: "전기적 결함에 대한 보호; 고장분석; 전기안전장치" },
-  { no: 16, title: "제어-파이널 리미트 스위치-우선순위" },
-  { no: 17, title: "장애인용, 소방구조용 및 피난용 엘리베이터에 대한 추가요건" }
-];
-
-let STD_DATA = [
-  {
-    id: "STD-05-001",
-    chapter: 5,
-    title: "표준화자료 예시(5장)",
-    keywords: ["일반사항", "표준화", "예시"],
-    content: "여기에 표준화자료 내용이 들어갑니다.\n(검색: 제목/키워드/내용, 띄어쓰기 무시)"
-  },
-  {
-    id: "STD-06-001",
-    chapter: 6,
-    title: "표준화자료 예시(6장)",
-    keywords: ["승강로", "기계실", "풀리실"],
-    content: "6장 예시 내용입니다.\n'기계실' 같은 키워드로 검색 테스트 가능"
-  },
-  {
-    id: "STD-14-001",
-    chapter: 14,
-    title: "표준화자료 예시(14장)",
-    keywords: ["전기설비", "전기기기", "점검"],
-    content: "14장 예시 내용입니다.\n전기 관련 키워드 검색 테스트"
-  }
-];
-
+/* =========================
+   ✅ 표준화자료
+   ========================= */
+let STD_DATA = [];
+let STD_KEYWORD_MAP = {};
 let stdInitialized = false;
+let stdLoaded = false;
 
 function stdEscapeHtml(str){
   return (str ?? "").toString()
@@ -1242,47 +1222,157 @@ function stdEscapeHtml(str){
     .replaceAll("'","&#039;");
 }
 
-function renderStdChapters(){
+function buildStdKeywordMap(){
+  STD_KEYWORD_MAP = {};
+  STD_DATA.forEach(item=>{
+    const key = item.keyword || "기타";
+    if(!STD_KEYWORD_MAP[key]) STD_KEYWORD_MAP[key] = [];
+    STD_KEYWORD_MAP[key].push(item);
+  });
+}
+
+function fetchStandardData(){
+  if(stdLoaded) return Promise.resolve();
+  return fetch('./data/standardization.json')
+    .then(r=>r.json())
+    .then(j=>{
+      STD_DATA = Array.isArray(j) ? j : (j.standardization || []);
+      buildStdKeywordMap();
+      stdLoaded = true;
+    })
+    .catch(()=>{
+      STD_DATA = [];
+      STD_KEYWORD_MAP = {};
+      stdLoaded = true;
+    });
+}
+
+function getStdSelectedTitles(){
+  const set = new Set();
+  document.querySelectorAll('.stdTitle:checked').forEach(cb=>{
+    set.add(cb.value);
+  });
+  return set;
+}
+
+function getStdSelectedKeywords(){
+  const set = new Set();
+  document.querySelectorAll('.stdKeyword:checked').forEach(cb=>{
+    set.add(cb.value);
+  });
+  return set;
+}
+
+function getStdRankedMatches(query, selectedTitles){
+  const qRaw = query || "";
+  const q = norm(qRaw);
+  if(!q) return [];
+
+  let pool = [];
+  for(let idx=0; idx<STD_DATA.length; idx++){
+    const i = STD_DATA[idx];
+    const hayAll = (i.keyword||"") + " " + (i.title||"") + " " + (i.label||"") + " " + (i.text||"");
+    if(passFilter(hayAll, qRaw)) pool.push({i, idx});
+  }
+
+  if(pool.length === 0){
+    for(let idx=0; idx<STD_DATA.length; idx++){
+      pool.push({i: STD_DATA[idx], idx});
+    }
+  }
+
+  const ranked = pool.map(({i, idx})=>{
+    const total =
+      scoreMatch(i.keyword, qRaw) * 3 +
+      scoreMatch(i.title, qRaw)   * 2 +
+      scoreMatch(i.text, qRaw)    * 1 +
+      scoreMatch(i.label, qRaw)   * 1;
+
+    return {i, idx, total};
+  }).filter(x => x.total > 0);
+
+  ranked.sort((a,b)=>{
+    const ap = selectedTitles.has(a.i.title) ? 0 : 1;
+    const bp = selectedTitles.has(b.i.title) ? 0 : 1;
+    if(ap !== bp) return ap - bp;
+    if(b.total !== a.total) return b.total - a.total;
+    return a.idx - b.idx;
+  });
+
+  return ranked.slice(0, 120);
+}
+
+function renderStdTree(){
   const wrap = document.getElementById("stdChapters");
   if(!wrap) return;
 
+  const qRaw = (document.getElementById("stdSearch") || {}).value || "";
+  const keywords = Object.keys(STD_KEYWORD_MAP);
+
+  let showKeywords = keywords;
+  if(qRaw){
+    showKeywords = keywords
+      .map(k=>{
+        const related = STD_KEYWORD_MAP[k] || [];
+        const score =
+          scoreMatch(k, qRaw) * 3 +
+          related.reduce((sum, item)=> sum + scoreMatch(item.title, qRaw) * 2 + scoreMatch(item.text, qRaw), 0);
+        const pass =
+          passFilter(k, qRaw) ||
+          related.some(item => passFilter((item.title||"") + " " + (item.text||"") + " " + (item.label||""), qRaw));
+        return { k, score, pass };
+      })
+      .filter(x => x.pass || x.score > 0)
+      .sort((a,b)=> (b.score - a.score) || a.k.localeCompare(b.k, 'ko'))
+      .map(x => x.k);
+  }
+
   wrap.innerHTML = `
     <div class="std-chapters-head">
-      <span>목차(Chapter) 선택</span>
+      <span>키워드 / 제목 선택</span>
       <div class="std-chapters-actions">
         <button id="stdAll" type="button">전체</button>
         <button id="stdNone" type="button">해제</button>
       </div>
     </div>
     <div class="std-chapters-grid">
-      ${STD_CHAPTERS.map(c=>`
-        <label class="std-chk">
-          <input class="stdChapter" type="checkbox" value="${c.no}" checked>
-          <span>${c.no}. ${stdEscapeHtml(c.title)}</span>
-        </label>
-      `).join("")}
+      ${showKeywords.map(keyword=>{
+        const titles = STD_KEYWORD_MAP[keyword] || [];
+        const filteredTitles = qRaw
+          ? titles
+              .map(item=>{
+                const score =
+                  scoreMatch(item.title, qRaw) * 2 +
+                  scoreMatch(item.keyword, qRaw) * 3 +
+                  scoreMatch(item.text, qRaw) +
+                  scoreMatch(item.label, qRaw);
+                const pass = passFilter((item.keyword||"") + " " + (item.title||"") + " " + (item.text||"") + " " + (item.label||""), qRaw);
+                return { item, score, pass };
+              })
+              .filter(x => x.pass || x.score > 0)
+              .sort((a,b)=> (b.score - a.score) || a.item.title.localeCompare(b.item.title, 'ko'))
+              .map(x => x.item)
+          : titles;
+
+        return `
+          <div class="std-keyword-block">
+            <label class="std-chk">
+              <input class="stdKeyword" type="checkbox" value="${stdEscapeHtml(keyword)}">
+              <span>${highlight(stdEscapeHtml(keyword), qRaw)}</span>
+            </label>
+            <div class="std-title-list">
+              ${filteredTitles.map(item=>`
+                <label class="std-title-chk">
+                  <input class="stdTitle" type="checkbox" data-keyword="${stdEscapeHtml(keyword)}" value="${stdEscapeHtml(item.title)}">
+                  <span>${highlight(stdEscapeHtml(item.title), qRaw)}</span>
+                </label>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("")}
     </div>
   `;
-}
-
-function getStdCheckedChapters(){
-  return [...document.querySelectorAll(".stdChapter:checked")].map(el=>Number(el.value));
-}
-
-function filterStd(){
-  const q = norm((document.getElementById("stdSearch")||{}).value || "");
-  const chapters = new Set(getStdCheckedChapters());
-
-  return STD_DATA.filter(item=>{
-    if(!chapters.has(item.chapter)) return false;
-    if(!q) return true;
-
-    const inTitle = norm(item.title).includes(q);
-    const inKeywords = (item.keywords||[]).some(k=>norm(k).includes(q));
-    const inContent = norm(item.content).includes(q);
-
-    return inTitle || inKeywords || inContent;
-  });
 }
 
 function renderStdList(){
@@ -1290,26 +1380,58 @@ function renderStdList(){
   const countEl = document.getElementById("stdCount");
   if(!listEl) return;
 
-  const list = filterStd();
-  if(countEl) countEl.textContent = `검색 결과: ${list.length}건`;
-
-  if(!list.length){
-    listEl.innerHTML = `<div class="std-empty">검색 결과가 없습니다.</div>`;
+  if(!stdLoaded){
+    listEl.innerHTML = `<div class="std-empty">표준화자료를 불러오는 중입니다.</div>`;
     return;
   }
 
-  listEl.innerHTML = list.map(item=>`
-    <div class="std-item">
-      <div class="std-item-top">
-        <h3 class="std-title">${stdEscapeHtml(item.title)}</h3>
-        <div class="std-badge">${item.chapter}장</div>
+  if(!STD_DATA.length){
+    listEl.innerHTML = `<div class="std-empty">./data/standardization.json 경로와 파일명을 확인하세요.</div>`;
+    if(countEl) countEl.textContent = `검색 결과: 0건`;
+    return;
+  }
+
+  const qRaw = (document.getElementById("stdSearch") || {}).value || "";
+  const selectedTitles = getStdSelectedTitles();
+  const selectedKeywords = getStdSelectedKeywords();
+
+  let list = [];
+  if(norm(qRaw)){
+    list = getStdRankedMatches(qRaw, selectedTitles).map(x => x.i);
+  }else{
+    list = STD_DATA.filter(item =>
+      selectedTitles.has(item.title) || selectedKeywords.has(item.keyword)
+    );
+  }
+
+  if(countEl) countEl.textContent = `검색 결과: ${list.length}건`;
+
+  if(!list.length){
+    listEl.innerHTML = `<div class="std-empty">검색 결과가 없습니다. 검색어를 입력하거나 키워드/제목을 선택해보세요.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = list.map(item=>{
+    const applied = isApplied(dateEl.value, item.from, item.to);
+    const isSelected = selectedTitles.has(item.title);
+    const titleHtml = isSelected
+      ? `<span class="selected-title">${highlight(stdEscapeHtml(item.title), qRaw)}</span>`
+      : `${highlight(stdEscapeHtml(item.title), qRaw)}`;
+
+    return `
+      <div class="std-item">
+        <div class="std-item-top">
+          <h3 class="std-title">${titleHtml}</h3>
+          <div class="std-badge">${highlight(stdEscapeHtml(item.keyword || ''), qRaw)}</div>
+        </div>
+        <div class="std-content">${highlight(stdEscapeHtml(item.text || ''), qRaw)}</div>
+        <div class="range" style="margin-top:8px">
+          ${applied ? '🟩 적용' : '🟥 미적용'} / ${stdEscapeHtml(item.from || '—')} ~ ${stdEscapeHtml(item.to || '현재')}
+        </div>
+        ${renderImage(item.image)}
       </div>
-      <div class="std-tags">
-        ${(item.keywords||[]).map(k=>`<span class="std-tag">${stdEscapeHtml(k)}</span>`).join("")}
-      </div>
-      <div class="std-content">${stdEscapeHtml(item.content)}</div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 function bindStdEvents(){
@@ -1318,29 +1440,54 @@ function bindStdEvents(){
   const stdChapters = document.getElementById("stdChapters");
 
   if(stdSearch){
-    stdSearch.addEventListener("input", renderStdList);
-  }
-  if(stdClear){
-    stdClear.addEventListener("click", ()=>{
-      if(stdSearch) stdSearch.value = "";
+    stdSearch.addEventListener("input", ()=>{
+      renderStdTree();
       renderStdList();
     });
   }
+
+  if(stdClear){
+    stdClear.addEventListener("click", ()=>{
+      if(stdSearch) stdSearch.value = "";
+      renderStdTree();
+      renderStdList();
+    });
+  }
+
   if(stdChapters){
     stdChapters.addEventListener("change", (e)=>{
-      if(e.target && e.target.classList && e.target.classList.contains("stdChapter")){
+      const target = e.target;
+      if(!target) return;
+
+      if(target.classList.contains("stdKeyword")){
+        const keyword = target.value;
+        document.querySelectorAll(`.stdTitle[data-keyword="${CSS.escape(keyword)}"]`).forEach(cb=>{
+          cb.checked = target.checked;
+        });
+        renderStdList();
+      }
+
+      if(target.classList.contains("stdTitle")){
+        const keyword = target.dataset.keyword;
+        const children = [...document.querySelectorAll(`.stdTitle[data-keyword="${CSS.escape(keyword)}"]`)];
+        const keywordCb = document.querySelector(`.stdKeyword[value="${CSS.escape(keyword)}"]`);
+        if(keywordCb){
+          keywordCb.checked = children.length > 0 && children.every(cb => cb.checked);
+        }
         renderStdList();
       }
     });
 
     stdChapters.addEventListener("click", (e)=>{
       if(!e.target) return;
+
       if(e.target.id === "stdAll"){
-        document.querySelectorAll(".stdChapter").forEach(cb=>cb.checked = true);
+        document.querySelectorAll(".stdKeyword, .stdTitle").forEach(cb=>cb.checked = true);
         renderStdList();
       }
+
       if(e.target.id === "stdNone"){
-        document.querySelectorAll(".stdChapter").forEach(cb=>cb.checked = false);
+        document.querySelectorAll(".stdKeyword, .stdTitle").forEach(cb=>cb.checked = false);
         renderStdList();
       }
     });
@@ -1350,9 +1497,12 @@ function bindStdEvents(){
 function initStandardTab(){
   if(stdInitialized) return;
   stdInitialized = true;
-  renderStdChapters();
-  bindStdEvents();
-  renderStdList();
+
+  fetchStandardData().then(()=>{
+    renderStdTree();
+    bindStdEvents();
+    renderStdList();
+  });
 }
 
 initStandardTab();
