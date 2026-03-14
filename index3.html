@@ -257,24 +257,26 @@ mark{background:yellow;color:black}
 #backToTopBtn:hover{background:rgba(35,60,105,.95)}
 
 /* ✅ 음성검색 버튼 */
-#voiceBtn{
+#voiceBtn,
+#stdVoiceBtn{
   width:auto;
   padding:15px 20px;
   border-radius:12px;
   border:1px solid var(--line);
   background:rgba(22,37,69,.85);
   color:var(--text);
-  cursor:pointer;
+  cursor: pointer;
   font-weight:900;
   flex:0 0 auto;
 }
-#voiceBtn.listening{
+#voiceBtn.listening,
+#stdVoiceBtn.listening{
   border-color:var(--green);
   box-shadow:0 0 0 2px rgba(25,195,125,.15);
 }
 
 @media(max-width:900px){
-  #search,#date{font-size:16px;padding:14px;height:48px}
+  #search,#date,#stdSearch{font-size:16px;padding:14px;height:48px}
   #backToTopBtn{right:12px;bottom:12px;padding:11px 12px;border-radius:12px}
   .preset-row{
     display:grid !important;
@@ -290,7 +292,8 @@ mark{background:yellow;color:black}
     white-space:nowrap;
     text-align:center;
   }
-  #voiceBtn{padding:14px 12px;height:48px}
+  #voiceBtn,
+  #stdVoiceBtn{padding:14px 12px;height:48px}
   .action-row{
     flex-wrap:wrap;
   }
@@ -310,7 +313,11 @@ mark{background:yellow;color:black}
   padding:12px;
   box-shadow:var(--shadow);
 }
-.std-toolbar{display:flex;gap:8px;align-items:center}
+.std-toolbar{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
 #stdSearch{
   flex:1;
   padding:10px 12px;
@@ -328,55 +335,99 @@ mark{background:yellow;color:black}
   color:var(--text);
   font-weight:800;
 }
+#stdVoiceStatus{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--muted);
+  min-height:18px;
+}
+
 .std-chapters{
   margin-top:10px;
   border:1px solid var(--line);
   border-radius:14px;
-  padding:12px;
+  padding:10px;
   background:rgba(17,27,46,.45);
+  max-height:290px;
+  overflow-y:auto;
 }
 .std-chapters-head{
-  display:flex;justify-content:space-between;align-items:center;gap:10px;
-  margin-bottom:10px;color:var(--muted);font-size:12px;
-}
-.std-chapters-actions{display:flex;gap:6px}
-.std-chapters-actions button{
-  width:auto;padding:6px 10px;border-radius:10px;border:1px solid var(--line);
-  background:rgba(22,37,69,.6);color:var(--text);font-weight:800;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+  color:var(--muted);
+  font-size:12px;
 }
 .std-chapters-grid{
   display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:8px;
+  grid-template-columns:1fr;
+  gap:6px;
 }
-@media(max-width:900px){.std-chapters-grid{grid-template-columns:1fr}}
 .std-keyword-block{
   border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  background:rgba(10,16,30,.25);
-  padding:8px;
-}
-.std-chk{
-  display:flex;gap:8px;align-items:flex-start;
-  padding:6px 6px;border-radius:12px;
-}
-.std-chk input{width:auto;margin-top:2px}
-.std-chk span{font-size:13px;line-height:1.35}
-.std-title-list{
-  margin-top:6px;
-  margin-left:26px;
-  display:grid;
-  gap:4px;
-}
-.std-title-chk{
-  display:flex;
-  gap:8px;
-  align-items:flex-start;
-  padding:4px 6px;
   border-radius:10px;
+  background:rgba(10,16,30,.25);
+  overflow:hidden;
 }
-.std-title-chk input{width:auto;margin-top:2px}
-.std-title-chk span{font-size:12.5px;line-height:1.35;color:var(--text)}
+.std-keyword-btn{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border:none;
+  border-radius:0;
+  background:transparent;
+  color:var(--text);
+  font-weight:800;
+  font-size:12px;
+  text-align:left;
+}
+.std-keyword-btn:hover{
+  background:rgba(255,255,255,.04);
+}
+.std-keyword-btn.active{
+  background:rgba(25,195,125,.12);
+}
+.std-keyword-name{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.std-arrow{
+  font-size:11px;
+  color:var(--muted);
+  flex:0 0 auto;
+}
+.std-title-list{
+  display:none;
+  border-top:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.02);
+  padding:4px 6px 6px;
+}
+.std-title-list.open{display:grid;gap:4px}
+.std-title-btn{
+  width:100%;
+  text-align:left;
+  padding:6px 8px;
+  border-radius:8px;
+  border:1px solid transparent;
+  background:rgba(255,255,255,.02);
+  color:var(--text);
+  font-size:12px;
+  font-weight:700;
+  line-height:1.3;
+}
+.std-title-btn:hover{
+  background:rgba(255,255,255,.06);
+}
+.std-title-btn.active{
+  border-color:rgba(25,195,125,.65);
+  background:rgba(25,195,125,.14);
+}
 .std-count{margin-top:10px;font-size:12px;color:var(--muted)}
 .std-list{display:grid;gap:12px;margin-top:12px}
 .std-item{
@@ -385,16 +436,41 @@ mark{background:yellow;color:black}
   border-radius:14px;
   padding:12px;
 }
-.std-item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.std-badge{
-  font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);
-  color:var(--muted);white-space:nowrap;
+.std-item-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
 }
-.std-title{margin:0;font-size:14px;font-weight:900;line-height:1.35}
-.std-content{margin-top:10px;white-space:pre-line;line-height:1.5;opacity:.95}
+.std-badge{
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  white-space:nowrap;
+}
+.std-title{
+  margin:0;
+  font-size:13px;
+  font-weight:900;
+  line-height:1.35;
+}
+.std-content{
+  margin-top:10px;
+  white-space:pre-line;
+  line-height:1.5;
+  opacity:.95;
+  font-size:12.5px;
+}
 .std-empty{
   padding:18px;border:1px dashed var(--line);border-radius:14px;
   color:var(--muted);text-align:center;
+}
+.std-apply{
+  margin-top:8px;
+  font-size:12px;
+  color:var(--muted);
 }
 
 /* =========================
@@ -600,8 +676,10 @@ mark{background:yellow;color:black}
       <div class="std-panel">
         <div class="std-toolbar">
           <input id="stdSearch" placeholder="표준화자료 검색 (키워드/제목/내용)" />
+          <button id="stdVoiceBtn" type="button" aria-label="표준화자료 음성검색" title="표준화자료 음성검색">🎤</button>
           <button id="stdClear" type="button">지우기</button>
         </div>
+        <div id="stdVoiceStatus"></div>
 
         <div class="std-chapters" id="stdChapters"></div>
 
@@ -764,7 +842,7 @@ const dateEl=document.getElementById('date');
 const search=document.getElementById('search');
 const appliedOnlyBtn=document.getElementById('appliedOnlyBtn');
 
-const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-chk span, .std-title-chk span';
+const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-keyword-btn, .std-title-btn';
 
 const tabButtons = document.querySelectorAll(".tab-btn");
 const tabContents = document.querySelectorAll(".tab-content");
@@ -781,9 +859,6 @@ tabButtons.forEach(btn=>{
     });
 
     window.scrollTo({ top: 0, behavior: "smooth" });
-
-    const backToTopBtn = document.getElementById('backToTopBtn');
-    if (target !== "criteria") backToTopBtn.style.display = "none";
 
     if (target === "standard") {
       initStandardTab();
@@ -965,10 +1040,6 @@ function isApplied(d,f,t){
   return true;
 }
 
-function escapeRegExp(s){
-  return (s||'').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 function highlight(text, keyword){
   if(!text || !keyword) return text;
 
@@ -1110,12 +1181,12 @@ function renderResults(){
 document.getElementById('increase-font').onclick=()=>{currentFontSize++;applyFont()};
 document.getElementById('decrease-font').onclick=()=>{currentFontSize=Math.max(10,currentFontSize-1);applyFont()};
 document.getElementById('reset').onclick=()=>{
-  search.value=''; 
+  search.value='';
   dateEl.value='';
   appliedOnly=false;
   updateAppliedOnlyButton();
   document.querySelectorAll('#topics input').forEach(c=>c.checked=false);
-  renderTopics(); 
+  renderTopics();
   renderResults();
 };
 
@@ -1131,7 +1202,7 @@ updateAppliedOnlyButton();
 search.oninput=()=>{ renderTopics(); renderResults(); };
 
 document.querySelectorAll('.preset').forEach(b=>{
-  b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();}
+  b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();};
 });
 
 dateEl.addEventListener('input', renderResults);
@@ -1139,15 +1210,28 @@ dateEl.addEventListener('change', renderResults);
 
 const backToTopBtn = document.getElementById('backToTopBtn');
 window.addEventListener('scroll', ()=>{
-  const criteriaActive = document.getElementById('criteria').classList.contains('active');
-  if(!criteriaActive){
+  const activeTab = document.querySelector('.tab-content.active');
+  if(!activeTab){
     backToTopBtn.style.display = 'none';
     return;
   }
   backToTopBtn.style.display = (window.scrollY > 250) ? 'block' : 'none';
 });
 backToTopBtn.addEventListener('click', ()=>{
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const activeTab = document.querySelector('.tab-content.active');
+  if(activeTab && activeTab.id === 'standard'){
+    const target = document.getElementById('stdSearch');
+    if(target){
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(()=>target.focus(), 350);
+      return;
+    }
+  }
+  const target = document.getElementById('search');
+  if(target){
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(()=>target.focus(), 350);
+  }
 });
 
 (() => {
@@ -1212,6 +1296,8 @@ let STD_DATA = [];
 let STD_KEYWORD_MAP = {};
 let stdInitialized = false;
 let stdLoaded = false;
+let stdOpenKeyword = null;
+let stdSelectedTitle = null;
 
 function stdEscapeHtml(str){
   return (str ?? "").toString()
@@ -1247,23 +1333,7 @@ function fetchStandardData(){
     });
 }
 
-function getStdSelectedTitles(){
-  const set = new Set();
-  document.querySelectorAll('.stdTitle:checked').forEach(cb=>{
-    set.add(cb.value);
-  });
-  return set;
-}
-
-function getStdSelectedKeywords(){
-  const set = new Set();
-  document.querySelectorAll('.stdKeyword:checked').forEach(cb=>{
-    set.add(cb.value);
-  });
-  return set;
-}
-
-function getStdRankedMatches(query, selectedTitles){
+function getStdRankedMatches(query){
   const qRaw = query || "";
   const q = norm(qRaw);
   if(!q) return [];
@@ -1292,9 +1362,8 @@ function getStdRankedMatches(query, selectedTitles){
   }).filter(x => x.total > 0);
 
   ranked.sort((a,b)=>{
-    const ap = selectedTitles.has(a.i.title) ? 0 : 1;
-    const bp = selectedTitles.has(b.i.title) ? 0 : 1;
-    if(ap !== bp) return ap - bp;
+    if (stdSelectedTitle === a.i.title && stdSelectedTitle !== b.i.title) return -1;
+    if (stdSelectedTitle === b.i.title && stdSelectedTitle !== a.i.title) return 1;
     if(b.total !== a.total) return b.total - a.total;
     return a.idx - b.idx;
   });
@@ -1327,13 +1396,15 @@ function renderStdTree(){
       .map(x => x.k);
   }
 
+  if(!showKeywords.length){
+    wrap.innerHTML = `<div class="std-empty">일치하는 키워드가 없습니다.</div>`;
+    return;
+  }
+
   wrap.innerHTML = `
     <div class="std-chapters-head">
-      <span>키워드 / 제목 선택</span>
-      <div class="std-chapters-actions">
-        <button id="stdAll" type="button">전체</button>
-        <button id="stdNone" type="button">해제</button>
-      </div>
+      <span>키워드 선택</span>
+      <span>키워드를 누르면 제목이 펼쳐집니다</span>
     </div>
     <div class="std-chapters-grid">
       ${showKeywords.map(keyword=>{
@@ -1354,19 +1425,23 @@ function renderStdTree(){
               .map(x => x.item)
           : titles;
 
+        const isOpen = stdOpenKeyword === keyword;
         return `
           <div class="std-keyword-block">
-            <label class="std-chk">
-              <input class="stdKeyword" type="checkbox" value="${stdEscapeHtml(keyword)}">
-              <span>${highlight(stdEscapeHtml(keyword), qRaw)}</span>
-            </label>
-            <div class="std-title-list">
+            <button class="std-keyword-btn ${isOpen ? 'active' : ''}" type="button" data-keyword="${stdEscapeHtml(keyword)}">
+              <span class="std-keyword-name">${highlight(stdEscapeHtml(keyword), qRaw)}</span>
+              <span class="std-arrow">${isOpen ? '▲' : '▼'}</span>
+            </button>
+            <div class="std-title-list ${isOpen ? 'open' : ''}">
               ${filteredTitles.map(item=>`
-                <label class="std-title-chk">
-                  <input class="stdTitle" type="checkbox" data-keyword="${stdEscapeHtml(keyword)}" value="${stdEscapeHtml(item.title)}">
-                  <span>${highlight(stdEscapeHtml(item.title), qRaw)}</span>
-                </label>
-              `).join("")}
+                <button
+                  class="std-title-btn ${stdSelectedTitle === item.title ? 'active' : ''}"
+                  type="button"
+                  data-title="${stdEscapeHtml(item.title)}"
+                  data-keyword="${stdEscapeHtml(keyword)}">
+                  ${highlight(stdEscapeHtml(item.title), qRaw)}
+                </button>
+              `).join("") || `<div class="std-empty" style="padding:10px;font-size:12px">표시할 제목이 없습니다.</div>`}
             </div>
           </div>
         `;
@@ -1392,29 +1467,25 @@ function renderStdList(){
   }
 
   const qRaw = (document.getElementById("stdSearch") || {}).value || "";
-  const selectedTitles = getStdSelectedTitles();
-  const selectedKeywords = getStdSelectedKeywords();
-
   let list = [];
+
   if(norm(qRaw)){
-    list = getStdRankedMatches(qRaw, selectedTitles).map(x => x.i);
+    list = getStdRankedMatches(qRaw).map(x => x.i);
+  }else if(stdSelectedTitle){
+    list = STD_DATA.filter(item => item.title === stdSelectedTitle);
   }else{
-    list = STD_DATA.filter(item =>
-      selectedTitles.has(item.title) || selectedKeywords.has(item.keyword)
-    );
+    list = [];
   }
 
   if(countEl) countEl.textContent = `검색 결과: ${list.length}건`;
 
   if(!list.length){
-    listEl.innerHTML = `<div class="std-empty">검색 결과가 없습니다. 검색어를 입력하거나 키워드/제목을 선택해보세요.</div>`;
+    listEl.innerHTML = `<div class="std-empty">검색어를 입력하거나 키워드에서 제목을 선택해보세요.</div>`;
     return;
   }
 
   listEl.innerHTML = list.map(item=>{
-    const applied = isApplied(dateEl.value, item.from, item.to);
-    const isSelected = selectedTitles.has(item.title);
-    const titleHtml = isSelected
+    const titleHtml = stdSelectedTitle === item.title
       ? `<span class="selected-title">${highlight(stdEscapeHtml(item.title), qRaw)}</span>`
       : `${highlight(stdEscapeHtml(item.title), qRaw)}`;
 
@@ -1425,9 +1496,7 @@ function renderStdList(){
           <div class="std-badge">${highlight(stdEscapeHtml(item.keyword || ''), qRaw)}</div>
         </div>
         <div class="std-content">${highlight(stdEscapeHtml(item.text || ''), qRaw)}</div>
-        <div class="range" style="margin-top:8px">
-          ${applied ? '🟩 적용' : '🟥 미적용'} / ${stdEscapeHtml(item.from || '—')} ~ ${stdEscapeHtml(item.to || '현재')}
-        </div>
+        <div class="std-apply">적용시점 : ${stdEscapeHtml(item.from || '—')}</div>
         ${renderImage(item.image)}
       </div>
     `;
@@ -1449,45 +1518,29 @@ function bindStdEvents(){
   if(stdClear){
     stdClear.addEventListener("click", ()=>{
       if(stdSearch) stdSearch.value = "";
+      stdSelectedTitle = null;
+      stdOpenKeyword = null;
       renderStdTree();
       renderStdList();
     });
   }
 
   if(stdChapters){
-    stdChapters.addEventListener("change", (e)=>{
-      const target = e.target;
-      if(!target) return;
-
-      if(target.classList.contains("stdKeyword")){
-        const keyword = target.value;
-        document.querySelectorAll(`.stdTitle[data-keyword="${CSS.escape(keyword)}"]`).forEach(cb=>{
-          cb.checked = target.checked;
-        });
-        renderStdList();
-      }
-
-      if(target.classList.contains("stdTitle")){
-        const keyword = target.dataset.keyword;
-        const children = [...document.querySelectorAll(`.stdTitle[data-keyword="${CSS.escape(keyword)}"]`)];
-        const keywordCb = document.querySelector(`.stdKeyword[value="${CSS.escape(keyword)}"]`);
-        if(keywordCb){
-          keywordCb.checked = children.length > 0 && children.every(cb => cb.checked);
-        }
-        renderStdList();
-      }
-    });
-
     stdChapters.addEventListener("click", (e)=>{
-      if(!e.target) return;
+      const keywordBtn = e.target.closest(".std-keyword-btn");
+      const titleBtn = e.target.closest(".std-title-btn");
 
-      if(e.target.id === "stdAll"){
-        document.querySelectorAll(".stdKeyword, .stdTitle").forEach(cb=>cb.checked = true);
-        renderStdList();
+      if(keywordBtn){
+        const keyword = keywordBtn.dataset.keyword;
+        stdOpenKeyword = (stdOpenKeyword === keyword) ? null : keyword;
+        renderStdTree();
+        return;
       }
 
-      if(e.target.id === "stdNone"){
-        document.querySelectorAll(".stdKeyword, .stdTitle").forEach(cb=>cb.checked = false);
+      if(titleBtn){
+        stdSelectedTitle = titleBtn.dataset.title;
+        stdOpenKeyword = titleBtn.dataset.keyword || stdOpenKeyword;
+        renderStdTree();
         renderStdList();
       }
     });
@@ -1506,6 +1559,62 @@ function initStandardTab(){
 }
 
 initStandardTab();
+
+(() => {
+  const stdVoiceBtn = document.getElementById('stdVoiceBtn');
+  const stdVoiceStatus = document.getElementById('stdVoiceStatus');
+  const stdSearch = document.getElementById('stdSearch');
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    stdVoiceBtn.disabled = true;
+    stdVoiceStatus.textContent = "음성인식 미지원 브라우저입니다. (PC 크롬 권장)";
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "ko-KR";
+  recognition.interimResults = true;
+  recognition.continuous = false;
+
+  let listening = false;
+  const setStatus = (msg) => { stdVoiceStatus.textContent = msg || ""; };
+
+  stdVoiceBtn.addEventListener('click', () => {
+    if (listening) { recognition.stop(); return; }
+    try {
+      listening = true;
+      stdVoiceBtn.classList.add('listening');
+      setStatus("🎙️ 듣는 중… 말씀하세요");
+      recognition.start();
+    } catch (e) {
+      listening = false;
+      stdVoiceBtn.classList.remove('listening');
+      setStatus("음성인식 시작 실패. 다시 눌러주세요.");
+    }
+  });
+
+  recognition.onresult = (event) => {
+    let interim = "";
+    let finalText = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const t = event.results[i][0].transcript;
+      if (event.results[i].isFinal) finalText += t;
+      else interim += t;
+    }
+    const text = (finalText || interim || "").trim();
+    stdSearch.value = text;
+    stdSearch.dispatchEvent(new Event("input", { bubbles: true }));
+    if (finalText) setStatus(`인식됨: ${finalText.trim()}`);
+  };
+
+  recognition.onerror = (event) => { setStatus(`음성인식 오류: ${event.error}`); };
+
+  recognition.onend = () => {
+    listening = false;
+    stdVoiceBtn.classList.remove('listening');
+  };
+})();
 
 (() => {
   const FB_FORM_URL = "https://naver.me/5xgAWwSb";
