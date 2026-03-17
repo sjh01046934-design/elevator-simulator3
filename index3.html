@@ -7,24 +7,128 @@
 
 <style>
 :root{
-  --bg:#0b1220; --card:#111b2e; --muted:#9fb0d0; --text:#e7eefc;
-  --green:#19c37d; --red:#ff4d4f; --line:#22314f;
+  --bg:#0b1220;
+  --bg-grad-1:#14234a;
+  --bg-grad-2:#0b1220;
+
+  --card:#111b2e;
+  --card-soft:rgba(17,27,46,.72);
+  --panel-top:rgba(255,255,255,.04);
+  --panel-bottom:rgba(255,255,255,.02);
+
+  --muted:#9fb0d0;
+  --text:#e7eefc;
+  --green:#19c37d;
+  --red:#ff4d4f;
+  --line:#22314f;
   --shadow:0 10px 30px rgba(0,0,0,.35);
+
+  --input-bg:rgba(10,16,30,.55);
+  --button-bg:rgba(22,37,69,.85);
+  --button-bg-soft:rgba(22,37,69,.65);
+  --button-hover:rgba(35,60,105,.95);
+
+  --header-bg-1:rgba(11,18,32,.98);
+  --header-bg-2:rgba(11,18,32,.92);
+
+  --tab-bg:rgba(22,37,69,.55);
+  --tab-active-bg:rgba(25,195,125,.95);
+  --tab-active-text:#00120a;
+
+  --topic-border:rgba(255,255,255,.08);
+  --keyword-border:rgba(255,255,255,.08);
+  --keyword-bg:rgba(10,16,30,.25);
+  --keyword-hover:rgba(255,255,255,.04);
+  --title-list-border:rgba(255,255,255,.06);
+  --title-list-bg:rgba(255,255,255,.02);
+  --title-btn-bg:rgba(255,255,255,.02);
+  --title-btn-hover:rgba(255,255,255,.06);
+  --title-btn-active:rgba(25,195,125,.14);
+  --title-btn-active-border:rgba(25,195,125,.65);
+
+  --modal-bg:rgba(0,0,0,.85);
+  --fb-overlay:rgba(0,0,0,.72);
+  --fb-box-bg:rgba(17,27,46,.98);
+
+  --selected-bg:#b6ff5c;
+  --selected-text:#000;
+
+  --img-caption:#9fb0d0;
+  --img-border:#22314f;
+
+  --mark-bg:yellow;
+  --mark-text:black;
 }
+
+body.light-mode{
+  --bg:#f5f7fb;
+  --bg-grad-1:#ffffff;
+  --bg-grad-2:#eef3fb;
+
+  --card:#ffffff;
+  --card-soft:#ffffff;
+  --panel-top:rgba(255,255,255,.96);
+  --panel-bottom:rgba(245,248,252,.96);
+
+  --muted:#5f6f86;
+  --text:#1a2433;
+  --green:#0f9f61;
+  --red:#d83a3a;
+  --line:#d8e0ec;
+  --shadow:0 8px 24px rgba(17,24,39,.08);
+
+  --input-bg:#ffffff;
+  --button-bg:#edf2fa;
+  --button-bg-soft:#f4f7fb;
+  --button-hover:#dfe8f5;
+
+  --header-bg-1:rgba(255,255,255,.96);
+  --header-bg-2:rgba(248,250,253,.92);
+
+  --tab-bg:#f1f5fb;
+  --tab-active-bg:#19c37d;
+  --tab-active-text:#ffffff;
+
+  --topic-border:rgba(26,36,51,.08);
+  --keyword-border:rgba(26,36,51,.08);
+  --keyword-bg:#f8fafc;
+  --keyword-hover:#eef3f9;
+  --title-list-border:rgba(26,36,51,.08);
+  --title-list-bg:#fcfdff;
+  --title-btn-bg:#ffffff;
+  --title-btn-hover:#f3f7fc;
+  --title-btn-active:rgba(25,195,125,.10);
+  --title-btn-active-border:rgba(25,195,125,.45);
+
+  --modal-bg:rgba(20,28,40,.72);
+  --fb-overlay:rgba(20,28,40,.48);
+  --fb-box-bg:#ffffff;
+
+  --selected-bg:#d8ff85;
+  --selected-text:#111;
+
+  --img-caption:#5f6f86;
+  --img-border:#d8e0ec;
+
+  --mark-bg:#fff29a;
+  --mark-text:#111;
+}
+
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;
-  background:radial-gradient(1200px 600px at 20% 0%,#14234a 0%,var(--bg) 60%);
+  background:radial-gradient(1200px 600px at 20% 0%,var(--bg-grad-1) 0%,var(--bg-grad-2) 60%);
   color:var(--text);
   font-size:14px;
+  transition:background .25s ease,color .25s ease;
 }
 .wrap{max-width:1200px;margin:0 auto;padding:22px 16px 70px}
 
 /* ===== HEADER ===== */
 header{
   position:sticky;top:0;z-index:5;
-  background:linear-gradient(180deg, rgba(11,18,32,.98), rgba(11,18,32,.92));
+  background:linear-gradient(180deg, var(--header-bg-1), var(--header-bg-2));
   border-bottom:1px solid var(--line);
   backdrop-filter: blur(6px);
 }
@@ -39,15 +143,26 @@ header{
 }
 h1{margin:0;font-size:18px}
 .sub{font-size:12px;color:var(--muted)}
-.font-controls{display:flex;gap:6px;align-items:center}
+.font-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .font-controls button{
   width:32px;height:32px;
   font-size:12px;font-weight:800;
   border-radius:8px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.85);
+  background:var(--button-bg);
   color:var(--text);
   cursor:pointer;
+}
+#themeToggle{
+  width:auto;
+  padding:8px 12px;
+  height:32px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:var(--button-bg);
+  color:var(--text);
+  font-weight:900;
+  white-space:nowrap;
 }
 
 /* ✅ 헤더 좌측(이름 옆) 탭 버튼 */
@@ -68,16 +183,16 @@ h1{margin:0;font-size:18px}
   padding:8px 12px;
   border-radius:10px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.55);
+  background:var(--tab-bg);
   color:var(--text);
   cursor:pointer;
   font-weight:900;
   white-space:nowrap;
 }
 .tab-btn.active{
-  background:rgba(25,195,125,.95);
-  color:#00120a;
-  border-color:rgba(25,195,125,.95);
+  background:var(--tab-active-bg);
+  color:var(--tab-active-text);
+  border-color:var(--tab-active-bg);
 }
 
 /* ✅ 모바일 헤더 깨짐 해결 */
@@ -120,7 +235,7 @@ h1{margin:0;font-size:18px}
 
 /* ===== PANEL ===== */
 .panel{
-  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  background:linear-gradient(180deg, var(--panel-top), var(--panel-bottom));
   border:1px solid var(--line);
   border-radius:14px;
   padding:12px;
@@ -143,10 +258,10 @@ input,button{
   padding:10px 12px;
   border-radius:12px;
   border:1px solid var(--line);
-  background:rgba(10,16,30,.55);
+  background:var(--input-bg);
   color:var(--text);
 }
-button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
+button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 
 .topics{
   border:1px solid var(--line);
@@ -154,11 +269,12 @@ button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
   padding:8px;
   max-height:220px;
   overflow-y:auto;
+  background:var(--card);
 }
 .topic{
   display:flex;gap:8px;align-items:flex-start;
   padding:6px 4px;
-  border-bottom:1px dashed rgba(255,255,255,.08)
+  border-bottom:1px dashed var(--topic-border)
 }
 .topic:last-child{border-bottom:none}
 .topic input{width:auto;margin-top:2px}
@@ -166,10 +282,11 @@ button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
 
 .grid{display:grid;gap:12px;margin-top:14px}
 .card{
-  background:rgba(17,27,46,.72);
+  background:var(--card-soft);
   border:1px solid var(--line);
   border-radius:14px;
   padding:12px;
+  box-shadow:var(--shadow);
 }
 
 /* title + badge */
@@ -187,15 +304,15 @@ button{cursor:pointer;font-weight:700;background:rgba(22,37,69,.85)}
 
 .row{margin-top:6px}
 .text{white-space:pre-line;line-height:1.5;font-size:13px;margin:0;padding:0}
-mark{background:yellow;color:black}
+mark{background:var(--mark-bg);color:var(--mark-text)}
 
 .help-text{margin-top:4px;font-size:12px;color:var(--muted)}
 
 /* ✅ 선택된 검사항목 title 형광 */
 .selected-title{
   display:inline-block;
-  background:#b6ff5c;
-  color:#000;
+  background:var(--selected-bg);
+  color:var(--selected-text);
   padding:2px 6px;
   border-radius:6px;
   line-height:1.3;
@@ -208,21 +325,21 @@ mark{background:yellow;color:black}
   padding:10px 14px;
   border-radius:12px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.85);
+  background:var(--button-bg);
   color:var(--text);
   font-weight:900;
 }
 .toggle-btn.active{
-  background:rgba(25,195,125,.95);
-  color:#00120a;
-  border-color:rgba(25,195,125,.95);
+  background:var(--tab-active-bg);
+  color:var(--tab-active-text);
+  border-color:var(--tab-active-bg);
 }
 
 /* ===== 이미지 확대 모달 ===== */
 .image-modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.85);
+  background:var(--modal-bg);
   display:none;
   align-items:center;
   justify-content:center;
@@ -245,7 +362,7 @@ mark{background:yellow;color:black}
   padding:12px 14px;
   border-radius:14px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.92);
+  background:var(--button-bg);
   color:var(--text);
   font-weight:800;
   cursor:pointer;
@@ -254,7 +371,7 @@ mark{background:yellow;color:black}
   z-index:999;
   user-select:none;
 }
-#backToTopBtn:hover{background:rgba(35,60,105,.95)}
+#backToTopBtn:hover{background:var(--button-hover)}
 
 /* ✅ 음성검색 버튼 */
 #voiceBtn,
@@ -263,7 +380,7 @@ mark{background:yellow;color:black}
   padding:15px 20px;
   border-radius:12px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.85);
+  background:var(--button-bg);
   color:var(--text);
   cursor: pointer;
   font-weight:900;
@@ -307,7 +424,7 @@ mark{background:yellow;color:black}
 /* ✅ 표준화자료 화면 */
 .standard-wrap{margin-top:10px}
 .std-panel{
-  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  background:linear-gradient(180deg, var(--panel-top), var(--panel-bottom));
   border:1px solid var(--line);
   border-radius:14px;
   padding:12px;
@@ -323,7 +440,7 @@ mark{background:yellow;color:black}
   padding:10px 12px;
   border-radius:12px;
   border:1px solid var(--line);
-  background:rgba(10,16,30,.55);
+  background:var(--input-bg);
   color:var(--text);
 }
 #stdClear{
@@ -331,7 +448,7 @@ mark{background:yellow;color:black}
   padding:10px 12px;
   border-radius:12px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.85);
+  background:var(--button-bg);
   color:var(--text);
   font-weight:800;
 }
@@ -347,7 +464,7 @@ mark{background:yellow;color:black}
   border:1px solid var(--line);
   border-radius:14px;
   padding:10px;
-  background:rgba(17,27,46,.45);
+  background:var(--card-soft);
   max-height:290px;
   overflow-y:auto;
 }
@@ -366,9 +483,9 @@ mark{background:yellow;color:black}
   gap:6px;
 }
 .std-keyword-block{
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid var(--keyword-border);
   border-radius:10px;
-  background:rgba(10,16,30,.25);
+  background:var(--keyword-bg);
   overflow:hidden;
 }
 .std-keyword-btn{
@@ -387,7 +504,7 @@ mark{background:yellow;color:black}
   text-align:left;
 }
 .std-keyword-btn:hover{
-  background:rgba(255,255,255,.04);
+  background:var(--keyword-hover);
 }
 .std-keyword-btn.active{
   background:rgba(25,195,125,.12);
@@ -404,8 +521,8 @@ mark{background:yellow;color:black}
 }
 .std-title-list{
   display:none;
-  border-top:1px solid rgba(255,255,255,.06);
-  background:rgba(255,255,255,.02);
+  border-top:1px solid var(--title-list-border);
+  background:var(--title-list-bg);
   padding:4px 6px 6px;
 }
 .std-title-list.open{display:grid;gap:4px}
@@ -415,26 +532,27 @@ mark{background:yellow;color:black}
   padding:6px 8px;
   border-radius:8px;
   border:1px solid transparent;
-  background:rgba(255,255,255,.02);
+  background:var(--title-btn-bg);
   color:var(--text);
   font-size:12px;
   font-weight:700;
   line-height:1.3;
 }
 .std-title-btn:hover{
-  background:rgba(255,255,255,.06);
+  background:var(--title-btn-hover);
 }
 .std-title-btn.active{
-  border-color:rgba(25,195,125,.65);
-  background:rgba(25,195,125,.14);
+  border-color:var(--title-btn-active-border);
+  background:var(--title-btn-active);
 }
 .std-count{margin-top:10px;font-size:12px;color:var(--muted)}
 .std-list{display:grid;gap:12px;margin-top:12px}
 .std-item{
-  background:rgba(17,27,46,.72);
+  background:var(--card-soft);
   border:1px solid var(--line);
   border-radius:14px;
   padding:12px;
+  box-shadow:var(--shadow);
 }
 .std-item-top{
   display:flex;
@@ -466,6 +584,7 @@ mark{background:yellow;color:black}
 .std-empty{
   padding:18px;border:1px dashed var(--line);border-radius:14px;
   color:var(--muted);text-align:center;
+  background:var(--card);
 }
 .std-apply{
   margin-top:8px;
@@ -478,27 +597,27 @@ mark{background:yellow;color:black}
    ========================= */
 #feedbackBtn{
   width:auto;height:32px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);
-  background:rgba(22,37,69,.85);color:var(--text);cursor:pointer;
+  background:var(--button-bg);color:var(--text);cursor:pointer;
   font-weight:900;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;
 }
-#feedbackBtn:hover{background:rgba(35,60,105,.95)}
+#feedbackBtn:hover{background:var(--button-hover)}
 .fb-modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;
+  position:fixed;inset:0;background:var(--fb-overlay);display:none;
   align-items:center;justify-content:center;z-index:12000;
 }
 .fb-box{
   width:min(820px, 92vw);height:min(720px, 88vh);
-  background:rgba(17,27,46,.98);border:1px solid var(--line);border-radius:16px;
+  background:var(--fb-box-bg);border:1px solid var(--line);border-radius:16px;
   box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;
 }
 .fb-head{
   display:flex;justify-content:space-between;align-items:center;gap:10px;
-  padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08);
+  padding:10px 12px;border-bottom:1px solid var(--title-list-border);
 }
 .fb-title{font-weight:900}
 .fb-close{
   width:auto;padding:6px 10px;border-radius:10px;border:1px solid var(--line);
-  background:rgba(22,37,69,.65);color:var(--text);cursor:pointer;font-weight:900;
+  background:var(--button-bg-soft);color:var(--text);cursor:pointer;font-weight:900;
 }
 .fb-iframe{width:100%;height:100%;border:0;background:#fff}
 
@@ -511,7 +630,7 @@ mark{background:yellow;color:black}
   padding:6px 10px;
   border-radius:10px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.65);
+  background:var(--button-bg-soft);
   color:var(--text);
   cursor:pointer;
   font-weight:900;
@@ -535,7 +654,7 @@ mark{background:yellow;color:black}
   width:min(420px, 92vw);
   max-height:62vh;
   overflow:auto;
-  background:rgba(17,27,46,.98);
+  background:var(--fb-box-bg);
   border:1px solid var(--line);
   border-radius:14px;
   box-shadow:var(--shadow);
@@ -548,7 +667,7 @@ mark{background:yellow;color:black}
   align-items:center;
   gap:10px;
   padding:10px 12px;
-  border-bottom:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid var(--title-list-border);
 }
 .gaPanelTitle{font-weight:900}
 .gaPanelClose{
@@ -556,7 +675,7 @@ mark{background:yellow;color:black}
   padding:6px 10px;
   border-radius:10px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.65);
+  background:var(--button-bg-soft);
   color:var(--text);
   cursor:pointer;
   font-weight:900;
@@ -568,10 +687,11 @@ mark{background:yellow;color:black}
   margin-top:10px;
   padding:10px;
   border-radius:12px;
-  border:1px dashed rgba(255,255,255,.14);
+  border:1px dashed var(--line);
   color:var(--muted);
   font-size:12px;
   line-height:1.45;
+  background:var(--card);
 }
 .gaBtnRow{display:flex;gap:6px;margin-top:10px}
 .gaBtnRow button{
@@ -579,7 +699,7 @@ mark{background:yellow;color:black}
   padding:8px 10px;
   border-radius:10px;
   border:1px solid var(--line);
-  background:rgba(22,37,69,.65);
+  background:var(--button-bg-soft);
   color:var(--text);
   font-weight:900;
 }
@@ -614,6 +734,8 @@ mark{background:yellow;color:black}
     </div>
 
     <div class="font-controls">
+      <button id="themeToggle" type="button" title="화면 모드 전환">☀️ 화이트모드</button>
+
       <button id="gaBadge" type="button" title="GA4 전송 상태 보기">
         <span id="gaDot"></span>
         <span id="gaText">GA 확인중…</span>
@@ -639,7 +761,7 @@ mark{background:yellow;color:black}
             <input id="search" placeholder="검사항목 or 기준내용 검색">
             <button id="voiceBtn" type="button" aria-label="음성으로 검색" title="음성으로 검색">🎤</button>
           </div>
-          <div id="voiceStatus" style="font-size:12px; margin-top:6px; opacity:0.75;"></div>
+          <div id="voiceStatus" style="font-size:12px; margin-top:6px; opacity:0.75; color:var(--muted);"></div>
 
           <div class="action-row" style="display:flex;gap:6px;margin:6px 0">
             <button id="appliedOnlyBtn" class="toggle-btn" type="button">적용기준만 보기 OFF</button>
@@ -666,7 +788,7 @@ mark{background:yellow;color:black}
     </div>
 
     <div class="grid" id="results"></div>
-    <footer style="margin-top:10px">🟩 적용 / 🟥 미적용</footer>
+    <footer style="margin-top:10px;color:var(--muted)">🟩 적용 / 🟥 미적용</footer>
 
   </section>
 
@@ -741,6 +863,36 @@ mark{background:yellow;color:black}
     </div>
   </div>
 </div>
+
+<script>
+(() => {
+  const themeToggle = document.getElementById('themeToggle');
+  const body = document.body;
+  const savedTheme = localStorage.getItem('themeMode');
+
+  if (savedTheme === 'light') {
+    body.classList.add('light-mode');
+  }
+
+  function updateThemeButton(){
+    if(body.classList.contains('light-mode')){
+      themeToggle.textContent = '🌙 다크모드';
+      themeToggle.title = '다크모드로 전환';
+    }else{
+      themeToggle.textContent = '☀️ 화이트모드';
+      themeToggle.title = '화이트모드로 전환';
+    }
+  }
+
+  themeToggle.addEventListener('click', () => {
+    body.classList.toggle('light-mode');
+    localStorage.setItem('themeMode', body.classList.contains('light-mode') ? 'light' : 'dark');
+    updateThemeButton();
+  });
+
+  updateThemeButton();
+})();
+</script>
 
 <script>
 (() => {
@@ -1015,9 +1167,9 @@ function renderImage(imagePath){
   return `
     <div style="margin-top:10px">
       <img src="${imagePath}"
-           style="width:100%; max-width:400px; cursor:zoom-in; border:1px solid #22314f; border-radius:8px;"
+           style="width:100%; max-width:400px; cursor:zoom-in; border:1px solid var(--img-border); border-radius:8px;"
            onclick="openImageModal('${imagePath}')" alt="">
-      <div style="margin-top:4px;font-size:12px;color:#9fb0d0;text-align:center">
+      <div style="margin-top:4px;font-size:12px;color:var(--img-caption);text-align:center">
         ※ 이미지를 크게 보려면 클릭하시오.
       </div>
     </div>
