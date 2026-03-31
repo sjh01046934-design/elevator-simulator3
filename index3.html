@@ -910,7 +910,7 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
 
           <div class="action-row" style="display:flex;gap:6px;margin:6px 0">
             <button id="appliedOnlyBtn" class="toggle-btn" type="button">적용기준만 보기 OFF</button>
-            <button id="criteriaCollapseAllBtn" class="toggle-btn" type="button">카드 전체 접기 OFF</button>
+            <button id="criteriaCollapseAllBtn" class="toggle-btn" type="button">내용 접기 OFF</button>
             <button id="reset" type="button">초기화</button>
           </div>
 
@@ -968,7 +968,7 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
         <div id="stdVoiceStatus"></div>
 
         <div class="action-row" style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-          <button id="stdCollapseAllBtn" class="toggle-btn" type="button">카드 전체 접기 OFF</button>
+          <button id="stdCollapseAllBtn" class="toggle-btn" type="button">내용 접기 OFF</button>
         </div>
 
         <div class="utility-section">
@@ -1414,13 +1414,13 @@ function previewText(text, maxLen=100){
 function updateCriteriaCollapseButton(){
   if(!criteriaCollapseAllBtn) return;
   criteriaCollapseAllBtn.classList.toggle('active', criteriaCollapseAll);
-  criteriaCollapseAllBtn.textContent = criteriaCollapseAll ? '카드 전체 접기 ON' : '카드 전체 접기 OFF';
+  criteriaCollapseAllBtn.textContent = criteriaCollapseAll ? '내용 전체 접기 ON' : '내용 전체 접기 OFF';
 }
 
 function updateStdCollapseButton(){
   if(!stdCollapseAllBtn) return;
   stdCollapseAllBtn.classList.toggle('active', stdCollapseAll);
-  stdCollapseAllBtn.textContent = stdCollapseAll ? '카드 전체 접기 ON' : '카드 전체 접기 OFF';
+  stdCollapseAllBtn.textContent = stdCollapseAll ? '내용 전체 접기 ON' : '내용 전체 접기 OFF';
 }
 
 function getRankedMatches(query, selectedTitles){
