@@ -491,6 +491,50 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
 .chip.starred{border-color:rgba(255,213,74,.55)}
 .empty-chip{font-size:12px;color:var(--muted)}
 
+.card-toolbar,.std-card-toolbar{
+  display:flex;
+  justify-content:flex-end;
+  gap:6px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+.text-preview,.std-preview{
+  display:none;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+}
+.card.collapsed .row,
+.card.collapsed .card-image-wrap{
+  display:none;
+}
+.card.collapsed .text-preview{
+  display:block;
+}
+.std-item.collapsed .std-content,
+.std-item.collapsed .std-apply,
+.std-item.collapsed .std-image-wrap{
+  display:none;
+}
+.std-item.collapsed .std-preview{
+  display:block;
+}
+.small-action-btn{
+  width:auto;
+  padding:7px 10px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:var(--button-bg-soft);
+  color:var(--text);
+  font-weight:800;
+}
+.small-action-btn.starred{
+  border-color:rgba(255,213,74,.55);
+  color:var(--fav);
+}
+
+
 @media(max-width:900px){
   #search,#date,#stdSearch{font-size:16px;padding:14px;height:48px}
   #backToTopBtn{right:12px;bottom:12px;padding:11px 12px;border-radius:12px}
@@ -859,17 +903,14 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
 
         <div>
           <div style="display:flex; gap:6px; align-items:center;">
-            <div class="search-input-wrap">
-              <input id="search" placeholder="검사항목 or 기준내용 검색" autocomplete="off">
-              <button id="searchClearBtn" class="clear-input-btn" type="button" aria-label="검색어 지우기">✕</button>
-              <div id="autocompleteBox" class="autocomplete-box"></div>
-            </div>
+            <input id="search" placeholder="검사항목 or 기준내용 검색">
             <button id="voiceBtn" type="button" aria-label="음성으로 검색" title="음성으로 검색">🎤</button>
           </div>
           <div id="voiceStatus" style="font-size:12px; margin-top:6px; opacity:0.75; color:var(--muted);"></div>
 
           <div class="action-row" style="display:flex;gap:6px;margin:6px 0">
             <button id="appliedOnlyBtn" class="toggle-btn" type="button">적용기준만 보기 OFF</button>
+            <button id="criteriaCollapseAllBtn" class="toggle-btn" type="button">카드 전체 접기 OFF</button>
             <button id="reset" type="button">초기화</button>
           </div>
 
@@ -920,15 +961,15 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
 
       <div class="std-panel">
         <div class="std-toolbar">
-          <div class="search-input-wrap">
-            <input id="stdSearch" placeholder="표준화자료 검색 (키워드/제목/내용)" autocomplete="off" />
-            <button id="stdSearchClearBtn" class="clear-input-btn" type="button" aria-label="표준화자료 검색어 지우기">✕</button>
-            <div id="stdAutocompleteBox" class="autocomplete-box"></div>
-          </div>
+          <input id="stdSearch" placeholder="표준화자료 검색 (키워드/제목/내용)" />
           <button id="stdVoiceBtn" type="button" aria-label="표준화자료 음성검색" title="표준화자료 음성검색">🎤</button>
           <button id="stdClear" type="button">지우기</button>
         </div>
         <div id="stdVoiceStatus"></div>
+
+        <div class="action-row" style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+          <button id="stdCollapseAllBtn" class="toggle-btn" type="button">카드 전체 접기 OFF</button>
+        </div>
 
         <div class="utility-section">
           <div class="utility-box">
@@ -1132,6 +1173,8 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
 <script>
 let DATA=[], TITLE_MAP={}, currentFontSize=14;
 let appliedOnly = false;
+let criteriaCollapseAll = false;
+let stdCollapseAll = false;
 
 let STD_DATA = [];
 let STD_KEYWORD_MAP = {};
@@ -1159,11 +1202,9 @@ const resultsEl=document.getElementById('results');
 const dateEl=document.getElementById('date');
 const search=document.getElementById('search');
 const appliedOnlyBtn=document.getElementById('appliedOnlyBtn');
-const autocompleteBox = document.getElementById('autocompleteBox');
-const searchClearBtn = document.getElementById('searchClearBtn');
+const criteriaCollapseAllBtn = document.getElementById('criteriaCollapseAllBtn');
 const stdSearch = document.getElementById('stdSearch');
-const stdAutocompleteBox = document.getElementById('stdAutocompleteBox');
-const stdSearchClearBtn = document.getElementById('stdSearchClearBtn');
+const stdCollapseAllBtn = document.getElementById('stdCollapseAllBtn');
 
 const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-keyword-btn, .std-title-btn';
 
@@ -1335,9 +1376,11 @@ function renderFavoriteTitles(){
     el.innerHTML = '<div class="empty-chip">즐겨찾기한 기준이 없습니다.</div>';
     return;
   }
-  el.innerHTML = state.favoriteCriteria.map(item =>
-    `<button class="chip starred" type="button" data-favorite-criteria="${escapeHtml(item)}">⭐ ${escapeHtml(item)}</button>`
-  ).join('');
+  el.innerHTML = state.favoriteCriteria.map(key => {
+    const item = DATA.find(i => getCriteriaFavoriteKey(i) === key);
+    const label = item ? `${item.title} (${item.from||'—'}~${item.to||'현재'})` : key;
+    return `<button class="chip starred" type="button" data-favorite-criteria="${escapeHtml(key)}">⭐ ${escapeHtml(label)}</button>`;
+  }).join('');
 }
 
 function renderStdFavoriteTitles(){
@@ -1347,125 +1390,37 @@ function renderStdFavoriteTitles(){
     el.innerHTML = '<div class="empty-chip">즐겨찾기한 자료가 없습니다.</div>';
     return;
   }
-  el.innerHTML = state.favoriteStandard.map(item =>
-    `<button class="chip starred" type="button" data-favorite-standard="${escapeHtml(item)}">⭐ ${escapeHtml(item)}</button>`
-  ).join('');
+  el.innerHTML = state.favoriteStandard.map(key => {
+    const item = STD_DATA.find(i => getStandardFavoriteKey(i) === key);
+    const label = item ? `${item.title} (${item.from||'—'})` : key;
+    return `<button class="chip starred" type="button" data-favorite-standard="${escapeHtml(key)}">⭐ ${escapeHtml(label)}</button>`;
+  }).join('');
 }
 
-function updateSearchClearButton(){
-  if(searchClearBtn) searchClearBtn.classList.toggle('show', !!search.value.trim());
+
+function getCriteriaFavoriteKey(item){
+  return [item.label || '', item.title || '', item.from || '', item.to || ''].join('||');
 }
 
-function updateStdSearchClearButton(){
-  if(stdSearchClearBtn) stdSearchClearBtn.classList.toggle('show', !!stdSearch.value.trim());
+function getStandardFavoriteKey(item){
+  return [item.keyword || '', item.title || '', item.from || '', item.label || ''].join('||');
 }
 
-function hideCriteriaAutocomplete(){
-  if(autocompleteBox){
-    autocompleteBox.classList.remove('show');
-    autocompleteBox.innerHTML = '';
-  }
+function previewText(text, maxLen=100){
+  const s = (text || '').replace(/\s+/g,' ').trim();
+  return s.length > maxLen ? s.slice(0, maxLen) + '…' : s;
 }
 
-function hideStdAutocomplete(){
-  if(stdAutocompleteBox){
-    stdAutocompleteBox.classList.remove('show');
-    stdAutocompleteBox.innerHTML = '';
-  }
+function updateCriteriaCollapseButton(){
+  if(!criteriaCollapseAllBtn) return;
+  criteriaCollapseAllBtn.classList.toggle('active', criteriaCollapseAll);
+  criteriaCollapseAllBtn.textContent = criteriaCollapseAll ? '카드 전체 접기 ON' : '카드 전체 접기 OFF';
 }
 
-function buildCriteriaAutocompleteItems(){
-  const qRaw = search.value || "";
-  const q = norm(qRaw);
-  if(!q) return [];
-
-  const titleScores = new Map();
-
-  Object.keys(TITLE_MAP).forEach(title=>{
-    const score =
-      scoreMatch(title, qRaw) * 3 +
-      ((TITLE_MAP[title]||[]).some(item => passFilter((item.text||"") + " " + (item.label||""), qRaw)) ? 1 : 0);
-
-    if(score > 0 || passFilter(title, qRaw)){
-      titleScores.set(title, Math.max(titleScores.get(title) || 0, score));
-    }
-  });
-
-  return [...titleScores.entries()]
-    .map(([label, score]) => ({ label, score, meta: '검사항목' }))
-    .sort((a,b)=> (b.score - a.score) || a.label.localeCompare(b.label, 'ko'))
-    .slice(0, 8);
-}
-
-function renderCriteriaAutocomplete(){
-  if(!autocompleteBox) return;
-  const items = buildCriteriaAutocompleteItems();
-
-  if(!items.length){
-    hideCriteriaAutocomplete();
-    return;
-  }
-
-  autocompleteBox.innerHTML = items.map(item => `
-    <div class="autocomplete-item" data-criteria-auto="${escapeHtml(item.label)}">
-      ${highlight(escapeHtml(item.label), search.value)}
-      <small>${item.meta}</small>
-    </div>
-  `).join('');
-
-  autocompleteBox.classList.add('show');
-}
-
-function buildStdAutocompleteItems(){
-  const qRaw = stdSearch.value || "";
-  const q = norm(qRaw);
-  if(!q) return [];
-
-  const results = [];
-  STD_DATA.forEach(item=>{
-    const label = item.title || item.keyword || "";
-    const meta = item.keyword ? `키워드: ${item.keyword}` : '표준화자료';
-    const score =
-      scoreMatch(item.keyword, qRaw) * 3 +
-      scoreMatch(item.title, qRaw) * 2 +
-      scoreMatch(item.text, qRaw);
-
-    if(score > 0 || passFilter((item.keyword||"") + " " + (item.title||"") + " " + (item.text||""), qRaw)){
-      results.push({ label, meta, score });
-    }
-  });
-
-  const uniq = [];
-  const seen = new Set();
-  results
-    .sort((a,b)=> (b.score - a.score) || a.label.localeCompare(b.label, 'ko'))
-    .forEach(item=>{
-      const key = `${item.label}|${item.meta}`;
-      if(seen.has(key)) return;
-      seen.add(key);
-      if(uniq.length < 8) uniq.push(item);
-    });
-
-  return uniq;
-}
-
-function renderStdAutocomplete(){
-  if(!stdAutocompleteBox) return;
-  const items = buildStdAutocompleteItems();
-
-  if(!items.length){
-    hideStdAutocomplete();
-    return;
-  }
-
-  stdAutocompleteBox.innerHTML = items.map(item => `
-    <div class="autocomplete-item" data-std-auto="${escapeHtml(item.label)}">
-      ${highlight(escapeHtml(item.label), stdSearch.value)}
-      <small>${escapeHtml(item.meta)}</small>
-    </div>
-  `).join('');
-
-  stdAutocompleteBox.classList.add('show');
+function updateStdCollapseButton(){
+  if(!stdCollapseAllBtn) return;
+  stdCollapseAllBtn.classList.toggle('active', stdCollapseAll);
+  stdCollapseAllBtn.textContent = stdCollapseAll ? '카드 전체 접기 ON' : '카드 전체 접기 OFF';
 }
 
 function getRankedMatches(query, selectedTitles){
@@ -1522,6 +1477,7 @@ fetch('./data/criteria.json')
   renderResults();
   renderRecentSearches();
   renderFavoriteTitles();
+  updateCriteriaCollapseButton();
 })
 .catch(()=>{
   resultsEl.innerHTML = `
@@ -1688,8 +1644,10 @@ function renderResults(){
       (TITLE_MAP[cb.value]||[]).forEach(i=>matches.push({i}));
     });
   } else if (state.favoriteCriteria.length) {
-    state.favoriteCriteria.forEach(title=>{
-      (TITLE_MAP[title]||[]).forEach(i=>matches.push({i}));
+    state.favoriteCriteria.forEach(favKey=>{
+      DATA.forEach(i=>{
+        if(getCriteriaFavoriteKey(i) === favKey) matches.push({i});
+      });
     });
   }
 
@@ -1714,13 +1672,15 @@ function renderResults(){
   matches.forEach(({i})=>{
     const applied = isApplied(dateEl.value,i.from,i.to);
     const isSelected = selectedTitles.has(i.title);
-    const isFavorite = state.favoriteCriteria.includes(i.title);
+    const favKey = getCriteriaFavoriteKey(i);
+    const isFavorite = state.favoriteCriteria.includes(favKey);
     const titleHtml = isSelected
       ? `<span class="selected-title">${highlight(i.title,search.value)}</span>`
       : `${highlight(i.title,search.value)}`;
 
     const card=document.createElement('div');
-    card.className='card';
+    card.className='card' + (criteriaCollapseAll ? ' collapsed' : '');
+    card.dataset.favoriteKey = favKey;
     card.innerHTML=`
       <div class="card-header">
         <div class="title">${titleHtml}</div>
@@ -1730,21 +1690,30 @@ function renderResults(){
         </div>
       </div>
 
+      <div class="text-preview">${highlight(previewText(i.text), search.value)}</div>
+
       <div class="row">
         <div class="text">
           ${highlight(i.text,search.value)}
         </div>
       </div>
 
-      ${renderImage(i.image)}
+      <div class="card-image-wrap">
+        ${renderImage(i.image)}
+      </div>
 
-      <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+      <div class="card-toolbar">
         <button
           type="button"
-          class="chip ${isFavorite ? 'starred' : ''}"
-          style="cursor:pointer"
-          data-toggle-favorite="${escapeHtml(i.title)}">
+          class="small-action-btn ${isFavorite ? 'starred' : ''}"
+          data-toggle-favorite="${escapeHtml(favKey)}">
           ${isFavorite ? '⭐ 즐겨찾기 해제' : '☆ 즐겨찾기 추가'}
+        </button>
+        <button
+          type="button"
+          class="small-action-btn"
+          data-toggle-collapse="criteria">
+          ${criteriaCollapseAll ? '펼치기' : '접기'}
         </button>
       </div>
     `;
@@ -1759,8 +1728,6 @@ document.getElementById('reset').onclick=()=>{
   dateEl.value='';
   appliedOnly=false;
   updateAppliedOnlyButton();
-  updateSearchClearButton();
-  hideCriteriaAutocomplete();
   document.querySelectorAll('#topics input').forEach(c=>c.checked=false);
   renderTopics();
   renderResults();
@@ -1775,24 +1742,21 @@ if(appliedOnlyBtn){
 }
 updateAppliedOnlyButton();
 
+if(criteriaCollapseAllBtn){
+  criteriaCollapseAllBtn.addEventListener('click', ()=>{
+    criteriaCollapseAll = !criteriaCollapseAll;
+    updateCriteriaCollapseButton();
+    renderResults();
+  });
+}
+updateCriteriaCollapseButton();
+
 search.oninput=()=>{
   const q = search.value;
-  updateSearchClearButton();
-  renderCriteriaAutocomplete();
   renderTopics();
   renderResults();
   if(q.trim()) addRecentSearch('criteria', q);
 };
-
-search.addEventListener('blur', ()=>setTimeout(hideCriteriaAutocomplete, 120));
-searchClearBtn.addEventListener('click', ()=>{
-  search.value = '';
-  updateSearchClearButton();
-  hideCriteriaAutocomplete();
-  renderTopics();
-  renderResults();
-  search.focus();
-});
 
 document.querySelectorAll('.preset').forEach(b=>{
   b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();};
@@ -1831,7 +1795,6 @@ document.addEventListener('click', (e)=>{
   const recentCriteria = e.target.closest('[data-recent-criteria]');
   if(recentCriteria){
     search.value = recentCriteria.dataset.recentCriteria;
-    updateSearchClearButton();
     renderTopics();
     renderResults();
     return;
@@ -1839,41 +1802,37 @@ document.addEventListener('click', (e)=>{
 
   const favoriteCriteria = e.target.closest('[data-favorite-criteria]');
   if(favoriteCriteria){
-    const title = favoriteCriteria.dataset.favoriteCriteria;
+    const favKey = favoriteCriteria.dataset.favoriteCriteria;
     search.value = '';
-    updateSearchClearButton();
-    hideCriteriaAutocomplete();
     renderTopics();
-    document.querySelectorAll('#topics input').forEach(cb=>{
-      cb.checked = (cb.value === title);
-    });
+    document.querySelectorAll('#topics input').forEach(cb=>cb.checked=false);
     renderResults();
-    return;
-  }
-
-  const criteriaAuto = e.target.closest('[data-criteria-auto]');
-  if(criteriaAuto){
-    search.value = criteriaAuto.dataset.criteriaAuto;
-    updateSearchClearButton();
-    hideCriteriaAutocomplete();
-    renderTopics();
-    renderResults();
-    addRecentSearch('criteria', search.value);
+    const matchedCard = [...resultsEl.querySelectorAll('.card')].find(card => card.dataset.favoriteKey === favKey);
+    if(matchedCard) matchedCard.scrollIntoView({behavior:'smooth', block:'center'});
     return;
   }
 
   const favoriteToggle = e.target.closest('[data-toggle-favorite]');
   if(favoriteToggle){
     toggleFavorite('criteria', favoriteToggle.dataset.toggleFavorite);
+    renderFavoriteTitles();
     renderResults();
+    return;
+  }
+
+  const criteriaCollapseToggle = e.target.closest('[data-toggle-collapse="criteria"]');
+  if(criteriaCollapseToggle){
+    const card = criteriaCollapseToggle.closest('.card');
+    if(card){
+      card.classList.toggle('collapsed');
+      criteriaCollapseToggle.textContent = card.classList.contains('collapsed') ? '펼치기' : '접기';
+    }
     return;
   }
 
   const recentStandard = e.target.closest('[data-recent-standard]');
   if(recentStandard){
     stdSearch.value = recentStandard.dataset.recentStandard;
-    updateStdSearchClearButton();
-    renderStdAutocomplete();
     renderStdTree();
     renderStdList();
     return;
@@ -1881,28 +1840,37 @@ document.addEventListener('click', (e)=>{
 
   const favoriteStandard = e.target.closest('[data-favorite-standard]');
   if(favoriteStandard){
-    stdSearch.value = '';
-    updateStdSearchClearButton();
-    hideStdAutocomplete();
-    stdSelectedTitle = favoriteStandard.dataset.favoriteStandard;
-    renderStdTree();
+    const favKey = favoriteStandard.dataset.favoriteStandard;
+    const targetItem = STD_DATA.find(i => getStandardFavoriteKey(i) === favKey);
+    if(targetItem){
+      stdSearch.value = '';
+      stdSelectedTitle = targetItem.title;
+      stdOpenKeyword = targetItem.keyword || stdOpenKeyword;
+      renderStdTree();
+      renderStdList();
+      const matchedCard = [...document.querySelectorAll('#stdList .std-item')].find(card => card.dataset.favoriteKey === favKey);
+      if(matchedCard) matchedCard.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    return;
+  }
+
+  const stdFavoriteToggle = e.target.closest('[data-toggle-std-favorite]');
+  if(stdFavoriteToggle){
+    toggleFavorite('standard', stdFavoriteToggle.dataset.toggleStdFavorite);
+    renderStdFavoriteTitles();
     renderStdList();
     return;
   }
 
-  const stdAuto = e.target.closest('[data-std-auto]');
-  if(stdAuto){
-    stdSearch.value = stdAuto.dataset.stdAuto;
-    updateStdSearchClearButton();
-    hideStdAutocomplete();
-    renderStdTree();
-    renderStdList();
-    addRecentSearch('standard', stdSearch.value);
+  const stdCollapseToggle = e.target.closest('[data-toggle-collapse="standard"]');
+  if(stdCollapseToggle){
+    const card = stdCollapseToggle.closest('.std-item');
+    if(card){
+      card.classList.toggle('collapsed');
+      stdCollapseToggle.textContent = card.classList.contains('collapsed') ? '펼치기' : '접기';
+    }
     return;
   }
-
-  if(!e.target.closest('.search-input-wrap')) hideCriteriaAutocomplete();
-  if(!e.target.closest('.std-toolbar')) hideStdAutocomplete();
 });
 
 document.getElementById('clearRecentSearchesBtn').addEventListener('click', ()=>{
@@ -2020,6 +1988,7 @@ function fetchStandardData(){
       stdLoaded = true;
       renderStdRecentSearches();
       renderStdFavoriteTitles();
+      updateStdCollapseButton();
     })
     .catch(()=>{
       STD_DATA = [];
@@ -2173,7 +2142,7 @@ function renderStdList(){
   }else if(stdSelectedTitle){
     list = STD_DATA.filter(item => item.title === stdSelectedTitle);
   }else if(state.favoriteStandard.length){
-    list = STD_DATA.filter(item => state.favoriteStandard.includes(item.title));
+    list = state.favoriteStandard.map(favKey => STD_DATA.find(item => getStandardFavoriteKey(item) === favKey)).filter(Boolean);
   }else{
     list = [];
   }
@@ -2186,27 +2155,34 @@ function renderStdList(){
   }
 
   listEl.innerHTML = list.map(item=>{
-    const isFavorite = state.favoriteStandard.includes(item.title);
+    const favKey = getStandardFavoriteKey(item);
+    const isFavorite = state.favoriteStandard.includes(favKey);
     const titleHtml = stdSelectedTitle === item.title
       ? `<span class="selected-title">${highlight(stdEscapeHtml(item.title), qRaw)}</span>`
       : `${highlight(stdEscapeHtml(item.title), qRaw)}`;
 
     return `
-      <div class="std-item">
+      <div class="std-item ${stdCollapseAll ? 'collapsed' : ''}" data-favorite-key="${escapeHtml(favKey)}">
         <div class="std-item-top">
           <h3 class="std-title">${titleHtml}</h3>
           <div class="std-badge">${highlight(stdEscapeHtml(item.keyword || ''), qRaw)}</div>
         </div>
+        <div class="std-preview">${highlight(previewText(item.text), qRaw)}</div>
         <div class="std-content">${highlight(stdEscapeHtml(item.text || ''), qRaw)}</div>
         <div class="std-apply">적용시점 : ${stdEscapeHtml(item.from || '—')}</div>
-        ${renderImage(item.image)}
-        <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+        <div class="std-image-wrap">${renderImage(item.image)}</div>
+        <div class="std-card-toolbar">
           <button
             type="button"
-            class="chip ${isFavorite ? 'starred' : ''}"
-            style="cursor:pointer"
-            data-toggle-std-favorite="${stdEscapeHtml(item.title)}">
+            class="small-action-btn ${isFavorite ? 'starred' : ''}"
+            data-toggle-std-favorite="${escapeHtml(favKey)}">
             ${isFavorite ? '⭐ 즐겨찾기 해제' : '☆ 즐겨찾기 추가'}
+          </button>
+          <button
+            type="button"
+            class="small-action-btn"
+            data-toggle-collapse="standard">
+            ${stdCollapseAll ? '펼치기' : '접기'}
           </button>
         </div>
       </div>
@@ -2221,24 +2197,9 @@ function bindStdEvents(){
   if(stdSearch){
     stdSearch.addEventListener("input", ()=>{
       const q = stdSearch.value;
-      updateStdSearchClearButton();
-      renderStdAutocomplete();
       renderStdTree();
       renderStdList();
       if(q.trim()) addRecentSearch('standard', q);
-    });
-
-    stdSearch.addEventListener("blur", ()=>setTimeout(hideStdAutocomplete, 120));
-  }
-
-  if(stdSearchClearBtn){
-    stdSearchClearBtn.addEventListener("click", ()=>{
-      stdSearch.value = "";
-      updateStdSearchClearButton();
-      hideStdAutocomplete();
-      renderStdTree();
-      renderStdList();
-      stdSearch.focus();
     });
   }
 
@@ -2247,12 +2208,19 @@ function bindStdEvents(){
       if(stdSearch) stdSearch.value = "";
       stdSelectedTitle = null;
       stdOpenKeyword = null;
-      updateStdSearchClearButton();
-      hideStdAutocomplete();
       renderStdTree();
       renderStdList();
     });
   }
+
+  if(stdCollapseAllBtn){
+    stdCollapseAllBtn.addEventListener('click', ()=>{
+      stdCollapseAll = !stdCollapseAll;
+      updateStdCollapseButton();
+      renderStdList();
+    });
+  }
+  updateStdCollapseButton();
 
   if(stdChapters){
     stdChapters.addEventListener("click", (e)=>{
@@ -2333,8 +2301,6 @@ initStandardTab();
     }
     const text = (finalText || interim || "").trim();
     stdSearch.value = text;
-    updateStdSearchClearButton();
-    renderStdAutocomplete();
     renderStdTree();
     renderStdList();
     if (finalText) {
