@@ -54,20 +54,6 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 #gaDot{width:10px;height:10px;border-radius:99px;background:#9fb0d0;box-shadow:0 0 0 2px rgba(159,176,208,.15);} .ga-ok #gaDot{background:var(--green);box-shadow:0 0 0 2px rgba(25,195,125,.18)} .ga-bad #gaDot{background:var(--red);box-shadow:0 0 0 2px rgba(255,77,79,.18)}
 #gaPanel{position:fixed;top:72px;right:18px;width:min(420px, 92vw);max-height:62vh;overflow:auto;background:var(--fb-box-bg);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);z-index:13000;display:none;} .gaPanelHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--title-list-border);} .gaPanelTitle{font-weight:900} .gaPanelBody{padding:10px 12px} .gaLine{font-size:12px;line-height:1.45;color:var(--muted);white-space:pre-wrap} .gaLine strong{color:var(--text)} .gaHint{margin-top:10px;padding:10px;border-radius:12px;border:1px dashed var(--line);color:var(--muted);font-size:12px;line-height:1.45;background:var(--card);} .gaBtnRow{display:flex;gap:6px;margin-top:10px} .gaBtnRow button{width:auto;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--button-bg-soft);color:var(--text);font-weight:900;}
 #gaBadge, #gaPanel, #gaSendPing{display:none !important;}
-
-/* 팝업 버튼을 위한 둥근 스타일 (모바일 친화적) */
-.preset-popup-btn {
-  padding:12px 4px;
-  font-size:11.5px;
-  letter-spacing:-0.5px;
-  border-radius:8px;
-  border:1px solid var(--line);
-  background:var(--button-bg);
-  color:var(--text);
-  font-weight:bold;
-  cursor:pointer;
-}
-.preset-popup-btn:hover { background:var(--button-hover); }
 </style>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YR8SYEVY0J"></script>
@@ -143,21 +129,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 
         <div>
           <label>건축허가일</label>
-          
-          <div style="position:relative;">
-            <div id="presetPopup" style="display:none; position:absolute; bottom:100%; left:0; right:0; background:var(--card); padding:10px; border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); z-index:20; margin-bottom:8px;">
-              <div style="font-size:11px; color:var(--muted); margin-bottom:8px; text-align:center; font-weight:800;">⚡ 빠른 날짜 선택</div>
-              <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
-                <button class="preset-popup-btn" type="button" data-d="2013-09-15">'13.09.15 이후</button>
-                <button class="preset-popup-btn" type="button" data-d="2015-05-13">'15.05.13 이후</button>
-                <button class="preset-popup-btn" type="button" data-d="2017-01-28">'17.01.28 이후</button>
-                <button class="preset-popup-btn" type="button" data-d="2019-03-28">'19.03.28 이후</button>
-              </div>
-            </div>
-            
-            <input type="date" id="date">
-          </div>
-          
+          <input type="date" id="date">
           <div class="help-text" style="margin-top:6px;">※ 건축허가일 날짜를 입력하세요</div>
         </div>
       </div>
@@ -418,29 +390,6 @@ dateEl.addEventListener('input',renderResults); dateEl.addEventListener('change'
 const updAppBtn=()=>{ if(appliedOnlyBtn){ appliedOnlyBtn.classList.toggle('active',appliedOnly); appliedOnlyBtn.textContent=appliedOnly?'적용기준만 보기 ON':'적용기준만 보기 OFF'; } };
 if(appliedOnlyBtn) appliedOnlyBtn.onclick=()=>{appliedOnly=!appliedOnly; updAppBtn(); renderResults();}; updAppBtn();
 if(criteriaCollapseAllBtn) criteriaCollapseAllBtn.onclick=()=>{criteriaCollapseAll=!criteriaCollapseAll; criteriaCollapseAllBtn.classList.toggle('active',criteriaCollapseAll); criteriaCollapseAllBtn.textContent=criteriaCollapseAll?'내용 접기 ON':'내용 접기 OFF'; renderResults();};
-
-// --- 빠른 날짜 팝업 로직 ---
-const presetPopup = document.getElementById('presetPopup');
-dateEl.addEventListener('click', (e) => {
-  presetPopup.style.display = 'block';
-  e.stopPropagation(); // 이벤트 버블링 방지
-});
-
-document.querySelectorAll('.preset-popup-btn').forEach(b => {
-  b.onclick = (e) => {
-    dateEl.value = b.dataset.d;
-    presetPopup.style.display = 'none'; // 날짜 선택 후 팝업 닫기
-    renderResults();
-    e.stopPropagation();
-  };
-});
-
-document.addEventListener('click', (e) => {
-  if(dateEl && presetPopup && !dateEl.contains(e.target) && !presetPopup.contains(e.target)) {
-    presetPopup.style.display = 'none'; // 바깥 영역 클릭 시 팝업 닫기
-  }
-});
-
 
 // --- [탭 2] 표준화자료 로직 ---
 function initStandardTab(){
