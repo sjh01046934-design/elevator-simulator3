@@ -43,7 +43,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 .card-toolbar,.std-card-toolbar{display:flex;justify-content:flex-end;gap:6px;margin-top:10px;flex-wrap:wrap;} .text-preview,.std-preview{display:none;margin-top:8px;color:var(--muted);font-size:12px;line-height:1.45;}
 .card.collapsed .row, .card.collapsed .card-image-wrap, .std-item.collapsed .std-content, .std-item.collapsed .std-apply, .std-item.collapsed .std-image-wrap{display:none;} .card.collapsed .text-preview, .std-item.collapsed .std-preview{display:block;}
 .small-action-btn{width:auto;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--button-bg-soft);color:var(--text);font-weight:800;} .small-action-btn.starred{border-color:rgba(255,213,74,.55);color:var(--fav);}
-@media(max-width:900px){#search,#date,#stdSearch{font-size:16px;padding:14px;height:48px} #backToTopBtn{right:12px;bottom:12px;padding:11px 12px;border-radius:12px} .preset-row{display:grid !important;grid-template-columns:repeat(4, 1fr) !important;gap:4px !important;margin-bottom:6px !important;} .preset-row .preset{width:100%;padding:14px 2px;font-size:8.5px;letter-spacing:-0.2px;white-space:nowrap;text-align:center;} #voiceBtn, #stdVoiceBtn{padding:14px 12px;height:48px} .action-row{flex-wrap:wrap;} .action-row .toggle-btn, .action-row #reset{flex:1 1 auto;width:auto;}}
+@media(max-width:900px){#search,#date,#stdSearch{font-size:16px;padding:14px;height:48px} #backToTopBtn{right:12px;bottom:12px;padding:11px 12px;border-radius:12px} #voiceBtn, #stdVoiceBtn{padding:14px 12px;height:48px} .action-row{flex-wrap:wrap;} .action-row .toggle-btn, .action-row #reset{flex:1 1 auto;width:auto;}}
 .standard-wrap{margin-top:10px} .std-toolbar{display:flex;gap:8px;align-items:center;} #stdSearch{flex:1;} #stdClear{width:auto;} #stdVoiceStatus{margin-top:6px;font-size:12px;color:var(--muted);min-height:18px;}
 .std-chapters{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--card-soft);max-height:290px;overflow-y:auto;} .std-chapters-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;color:var(--muted);font-size:12px;} .std-chapters-grid{display:grid;grid-template-columns:1fr;gap:6px;} .std-keyword-block{border:1px solid var(--keyword-border);border-radius:10px;background:var(--keyword-bg);overflow:hidden;}
 .std-keyword-btn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:none;border-radius:0;background:transparent;color:var(--text);font-weight:800;font-size:12px;text-align:left;} .std-keyword-btn:hover{background:var(--keyword-hover);} .std-keyword-btn.active{background:rgba(25,195,125,.12);} .std-keyword-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;} .std-arrow{font-size:11px;color:var(--muted);flex:0 0 auto;}
@@ -54,6 +54,20 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 #gaDot{width:10px;height:10px;border-radius:99px;background:#9fb0d0;box-shadow:0 0 0 2px rgba(159,176,208,.15);} .ga-ok #gaDot{background:var(--green);box-shadow:0 0 0 2px rgba(25,195,125,.18)} .ga-bad #gaDot{background:var(--red);box-shadow:0 0 0 2px rgba(255,77,79,.18)}
 #gaPanel{position:fixed;top:72px;right:18px;width:min(420px, 92vw);max-height:62vh;overflow:auto;background:var(--fb-box-bg);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);z-index:13000;display:none;} .gaPanelHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--title-list-border);} .gaPanelTitle{font-weight:900} .gaPanelBody{padding:10px 12px} .gaLine{font-size:12px;line-height:1.45;color:var(--muted);white-space:pre-wrap} .gaLine strong{color:var(--text)} .gaHint{margin-top:10px;padding:10px;border-radius:12px;border:1px dashed var(--line);color:var(--muted);font-size:12px;line-height:1.45;background:var(--card);} .gaBtnRow{display:flex;gap:6px;margin-top:10px} .gaBtnRow button{width:auto;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--button-bg-soft);color:var(--text);font-weight:900;}
 #gaBadge, #gaPanel, #gaSendPing{display:none !important;}
+
+/* 팝업 버튼을 위한 둥근 스타일 (모바일 친화적) */
+.preset-popup-btn {
+  padding:12px 4px;
+  font-size:11.5px;
+  letter-spacing:-0.5px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:var(--button-bg);
+  color:var(--text);
+  font-weight:bold;
+  cursor:pointer;
+}
+.preset-popup-btn:hover { background:var(--button-hover); }
 </style>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YR8SYEVY0J"></script>
@@ -91,7 +105,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 <div class="wrap">
   <section id="criteria" class="tab-content active">
     <div class="panel">
-      <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 검사기준 업데이트: 승강기 안전기준 연혁집(2025년 12월)</div>
+      <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 검사기준 업데이트: 2026.04.07</div>
       <div class="controls">
         <div>
           <div style="display:flex; gap:6px; align-items:center;">
@@ -129,14 +143,22 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 
         <div>
           <label>건축허가일</label>
-          <div class="preset-row" style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
-            <button class="preset" type="button" data-d="2013-09-15">2013.09.15 이후</button>
-            <button class="preset" type="button" data-d="2015-05-13">2015.05.13 이후</button>
-            <button class="preset" type="button" data-d="2017-01-28">2017.01.28 이후</button>
-            <button class="preset" type="button" data-d="2019-03-28">2019.03.28 이후</button>
+          
+          <div style="position:relative;">
+            <div id="presetPopup" style="display:none; position:absolute; bottom:100%; left:0; right:0; background:var(--card); padding:10px; border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); z-index:20; margin-bottom:8px;">
+              <div style="font-size:11px; color:var(--muted); margin-bottom:8px; text-align:center; font-weight:800;">⚡ 빠른 날짜 선택</div>
+              <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:6px;">
+                <button class="preset-popup-btn" type="button" data-d="2013-09-15">'13.09.15 이후</button>
+                <button class="preset-popup-btn" type="button" data-d="2015-05-13">'15.05.13 이후</button>
+                <button class="preset-popup-btn" type="button" data-d="2017-01-28">'17.01.28 이후</button>
+                <button class="preset-popup-btn" type="button" data-d="2019-03-28">'19.03.28 이후</button>
+              </div>
+            </div>
+            
+            <input type="date" id="date">
           </div>
-          <input type="date" id="date">
-          <div class="help-text">※ 건축허가일 날짜를 입력하세요</div>
+          
+          <div class="help-text" style="margin-top:6px;">※ 건축허가일 날짜를 입력하세요</div>
         </div>
       </div>
     </div>
@@ -147,7 +169,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
   <section id="standard" class="tab-content">
     <div class="standard-wrap">
       <div class="std-panel">
-        <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 표준화자료 업데이트: 2026년 제1차 표준화자료</div>
+        <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 표준화자료 업데이트: 2026.04.07</div>
         <div class="std-toolbar">
           <input id="stdSearch" placeholder="표준화자료 검색 (키워드/제목/내용)" />
           <button id="stdVoiceBtn" type="button" title="표준화자료 음성검색">🎤</button>
@@ -392,11 +414,33 @@ const isApplied=(d,f,t)=>{ if(!d)return false; const b=new Date(d); return (!f||
 let criteriaTimer;
 search.oninput=()=>{ renderTopics(); renderResults(); clearTimeout(criteriaTimer); criteriaTimer=setTimeout(()=>addRecentSearch('criteria',search.value),1000); };
 document.getElementById('reset').onclick=()=>{ search.value=''; dateEl.value=''; appliedOnly=false; updAppBtn(); document.querySelectorAll('#topics input').forEach(c=>c.checked=false); renderTopics(); renderResults(); };
-document.querySelectorAll('.preset').forEach(b=>b.onclick=()=>{dateEl.value=b.dataset.d;renderResults();});
 dateEl.addEventListener('input',renderResults); dateEl.addEventListener('change',renderResults);
 const updAppBtn=()=>{ if(appliedOnlyBtn){ appliedOnlyBtn.classList.toggle('active',appliedOnly); appliedOnlyBtn.textContent=appliedOnly?'적용기준만 보기 ON':'적용기준만 보기 OFF'; } };
 if(appliedOnlyBtn) appliedOnlyBtn.onclick=()=>{appliedOnly=!appliedOnly; updAppBtn(); renderResults();}; updAppBtn();
 if(criteriaCollapseAllBtn) criteriaCollapseAllBtn.onclick=()=>{criteriaCollapseAll=!criteriaCollapseAll; criteriaCollapseAllBtn.classList.toggle('active',criteriaCollapseAll); criteriaCollapseAllBtn.textContent=criteriaCollapseAll?'내용 접기 ON':'내용 접기 OFF'; renderResults();};
+
+// --- 빠른 날짜 팝업 로직 ---
+const presetPopup = document.getElementById('presetPopup');
+dateEl.addEventListener('click', (e) => {
+  presetPopup.style.display = 'block';
+  e.stopPropagation(); // 이벤트 버블링 방지
+});
+
+document.querySelectorAll('.preset-popup-btn').forEach(b => {
+  b.onclick = (e) => {
+    dateEl.value = b.dataset.d;
+    presetPopup.style.display = 'none'; // 날짜 선택 후 팝업 닫기
+    renderResults();
+    e.stopPropagation();
+  };
+});
+
+document.addEventListener('click', (e) => {
+  if(dateEl && presetPopup && !dateEl.contains(e.target) && !presetPopup.contains(e.target)) {
+    presetPopup.style.display = 'none'; // 바깥 영역 클릭 시 팝업 닫기
+  }
+});
+
 
 // --- [탭 2] 표준화자료 로직 ---
 function initStandardTab(){
