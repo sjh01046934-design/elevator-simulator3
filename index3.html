@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>승강기 검사기준 시뮬레이터</title>
+<title>AI TL - 안전기준 적용 판단 프로그램</title>
 <style>
 /* CSS 최적화 (공백/줄바꿈 압축) */
 :root{--bg:#0b1220;--bg-grad-1:#14234a;--bg-grad-2:#0b1220;--card:#111b2e;--card-soft:rgba(17,27,46,.72);--panel-top:rgba(255,255,255,.04);--panel-bottom:rgba(255,255,255,.02);--muted:#9fb0d0;--text:#e7eefc;--green:#19c37d;--red:#ff4d4f;--line:#22314f;--shadow:0 10px 30px rgba(0,0,0,.35);--input-bg:rgba(10,16,30,.55);--button-bg:rgba(22,37,69,.85);--button-bg-soft:rgba(22,37,69,.65);--button-hover:rgba(35,60,105,.95);--header-bg-1:rgba(11,18,32,.98);--header-bg-2:rgba(11,18,32,.92);--tab-bg:rgba(22,37,69,.55);--tab-active-bg:rgba(25,195,125,.95);--tab-active-text:#00120a;--topic-border:rgba(255,255,255,.08);--keyword-border:rgba(255,255,255,.08);--keyword-bg:rgba(10,16,30,.25);--keyword-hover:rgba(255,255,255,.04);--title-list-border:rgba(255,255,255,.06);--title-list-bg:rgba(255,255,255,.02);--title-btn-bg:rgba(255,255,255,.02);--title-btn-hover:rgba(255,255,255,.06);--title-btn-active:rgba(25,195,125,.14);--title-btn-active-border:rgba(25,195,125,.65);--modal-bg:rgba(0,0,0,.85);--fb-overlay:rgba(0,0,0,.72);--fb-box-bg:rgba(17,27,46,.98);--selected-bg:#b6ff5c;--selected-text:#000;--img-caption:#9fb0d0;--img-border:#22314f;--mark-bg:yellow;--mark-text:black;--chip-bg:rgba(255,255,255,.05);--chip-border:rgba(255,255,255,.08);--chip-hover:rgba(255,255,255,.10);--fav:#ffd54a;}
@@ -70,8 +70,8 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
   <div class="header-inner">
     <div class="header-left">
       <div class="brand">
-        <h1>승강기 검사기준 시뮬레이터</h1>
-        <div class="sub">건축허가일 기반 검사기준 자동 판별</div>
+        <h1>AI TL</h1>
+        <div class="sub">안전기준 적용 판단 프로그램</div>
       </div>
       <div class="tab-buttons" aria-label="화면 전환 탭">
         <button class="tab-btn active" type="button" data-tab="criteria">검사기준</button>
@@ -91,7 +91,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 <div class="wrap">
   <section id="criteria" class="tab-content active">
     <div class="panel">
-      <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 검사기준 업데이트: 2026.04.07</div>
+      <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 최종 업데이트 날짜: 2026.04.07</div>
       <div class="controls">
         <div>
           <div style="display:flex; gap:6px; align-items:center;">
@@ -141,7 +141,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
   <section id="standard" class="tab-content">
     <div class="standard-wrap">
       <div class="std-panel">
-        <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 표준화자료 업데이트: 2026.04.07</div>
+        <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 최종 업데이트 날짜: 2026.04.07</div>
         <div class="std-toolbar">
           <input id="stdSearch" placeholder="표준화자료 검색 (키워드/제목/내용)" />
           <button id="stdVoiceBtn" type="button" title="표준화자료 음성검색">🎤</button>
