@@ -108,7 +108,6 @@ body.light-mode{
   --modal-bg:rgba(20,28,40,.72);
   --fb-overlay:rgba(20,28,40,.48);
   --fb-box-bg:#ffffff;
-
   --selected-bg:#d8ff85;
   --selected-text:#111;
 
@@ -233,7 +232,7 @@ h1{margin:0;font-size:18px}
     font-size:12px;
     border-radius:10px;
     flex:1;
-  }
+}
   .font-controls{justify-content:flex-end}
 }
 
@@ -534,7 +533,6 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
   color:var(--fav);
 }
 
-
 @media(max-width:900px){
   #search,#date,#stdSearch{font-size:16px;padding:14px;height:48px}
   #backToTopBtn{right:12px;bottom:12px;padding:11px 12px;border-radius:12px}
@@ -780,7 +778,8 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
   background:#9fb0d0;
   box-shadow:0 0 0 2px rgba(159,176,208,.15);
 }
-.ga-ok #gaDot{background:var(--green); box-shadow:0 0 0 2px rgba(25,195,125,.18)}
+.ga-ok #gaDot{background:var(--green);
+  box-shadow:0 0 0 2px rgba(25,195,125,.18)}
 .ga-bad #gaDot{background:var(--red);   box-shadow:0 0 0 2px rgba(255,77,79,.18)}
 
 #gaPanel{
@@ -899,8 +898,9 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
   <section id="criteria" class="tab-content active">
 
     <div class="panel">
+      <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 검사기준 업데이트: 2026.04.07</div>
+      
       <div class="controls">
-
         <div>
           <div style="display:flex; gap:6px; align-items:center;">
             <input id="search" placeholder="검사항목 or 기준내용 검색">
@@ -916,7 +916,7 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
 
           <div class="utility-section">
             <div class="utility-box">
-              <div class="utility-head">
+               <div class="utility-head">
                 <div class="utility-title">최근 검색어</div>
                 <button id="clearRecentSearchesBtn" type="button">지우기</button>
               </div>
@@ -932,7 +932,7 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
             </div>
           </div>
 
-          <label>검사항목 선택</label>
+          <label style="margin-top: 10px;">검사항목 선택</label>
           <div class="topics" id="topics"></div>
         </div>
 
@@ -960,6 +960,8 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
     <div class="standard-wrap">
 
       <div class="std-panel">
+        <div style="text-align:right; font-size:12px; color:var(--muted); margin-bottom:10px; font-weight: 700;">📅 표준화자료 업데이트: 2026.04.07</div>
+        
         <div class="std-toolbar">
           <input id="stdSearch" placeholder="표준화자료 검색 (키워드/제목/내용)" />
           <button id="stdVoiceBtn" type="button" aria-label="표준화자료 음성검색" title="표준화자료 음성검색">🎤</button>
@@ -1105,6 +1107,7 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
     const ss = String(d.getSeconds()).padStart(2,'0');
     return `${hh}:${mm}:${ss}`;
   }
+  
   function pushLog(msg){
     logs.unshift(`[${fmtTime(new Date())}] ${msg}`);
     if (logs.length > maxLogs) logs.pop();
@@ -1164,7 +1167,6 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
     logs.length = 0;
     logsEl.textContent = "";
   });
-
   setTimeout(sendTestPing, 800);
 
 })();
@@ -1175,7 +1177,6 @@ let DATA=[], TITLE_MAP={}, currentFontSize=14;
 let appliedOnly = false;
 let criteriaCollapseAll = false;
 let stdCollapseAll = false;
-
 let STD_DATA = [];
 let STD_KEYWORD_MAP = {};
 let stdInitialized = false;
@@ -1189,7 +1190,6 @@ const STORAGE_KEYS = {
   recentStandard: 'aitl_recent_standard_searches',
   favoriteStandard: 'aitl_favorite_standard_titles'
 };
-
 const state = {
   recentCriteria: loadArray(STORAGE_KEYS.recentCriteria),
   favoriteCriteria: loadArray(STORAGE_KEYS.favoriteCriteria),
@@ -1205,7 +1205,6 @@ const appliedOnlyBtn=document.getElementById('appliedOnlyBtn');
 const criteriaCollapseAllBtn = document.getElementById('criteriaCollapseAllBtn');
 const stdSearch = document.getElementById('stdSearch');
 const stdCollapseAllBtn = document.getElementById('stdCollapseAllBtn');
-
 const fontTargets='body, input, button, .topic span, .title, .text, .badge, .range, .std-title, .std-content, .std-keyword-btn, .std-title-btn';
 
 const tabButtons = document.querySelectorAll(".tab-btn");
@@ -1317,7 +1316,6 @@ function scoreMatch(hayRaw, qRaw){
 function addRecentSearch(type, value){
   const clean = (value || '').trim();
   if(!clean) return;
-
   if(type === 'criteria'){
     state.recentCriteria = uniqPush(state.recentCriteria, clean, 8);
     saveArray(STORAGE_KEYS.recentCriteria, state.recentCriteria);
@@ -1495,7 +1493,6 @@ function renderTopics(){
   const q = norm(qRaw);
 
   const titles = Object.keys(TITLE_MAP);
-
   let show = titles;
   if(q){
     show = titles
@@ -1557,7 +1554,6 @@ function isApplied(d,f,t){
 
 function highlight(text, keyword){
   if(!text || !keyword) return text;
-
   const rawKeywords = [...new Set(
     keyword
       .split(/[\s,]+/)
@@ -1634,7 +1630,6 @@ function renderResults(){
 
   const keywordRaw = search.value || "";
   const keyword = norm(keywordRaw);
-
   let matches = [];
 
   if (keyword) {
@@ -1659,7 +1654,6 @@ function renderResults(){
     const msg = appliedOnly
       ? '적용기준만 보기 조건에 맞는 결과가 없습니다. 건축허가일을 입력했는지 확인하거나 토글을 꺼보세요.'
       : '검색어를 더 구체적으로 입력하거나, 검사항목 또는 즐겨찾기 기준을 선택해보세요.';
-
     resultsEl.innerHTML = `
       <div class="card">
         <div class="title">검색 결과가 없습니다.</div>
@@ -1751,11 +1745,17 @@ if(criteriaCollapseAllBtn){
 }
 updateCriteriaCollapseButton();
 
+// 수정: 검색어 입력 지연(Debounce) 적용 (최근 검색어에 중간 타이핑 기록 방지)
+let criteriaSearchTimeout;
 search.oninput=()=>{
   const q = search.value;
   renderTopics();
   renderResults();
-  if(q.trim()) addRecentSearch('criteria', q);
+  
+  clearTimeout(criteriaSearchTimeout);
+  criteriaSearchTimeout = setTimeout(() => {
+    if(q.trim()) addRecentSearch('criteria', q);
+  }, 1000); // 1초간 추가 입력이 없으면 저장
 };
 
 document.querySelectorAll('.preset').forEach(b=>{
@@ -1774,6 +1774,7 @@ window.addEventListener('scroll', ()=>{
   }
   backToTopBtn.style.display = (window.scrollY > 250) ? 'block' : 'none';
 });
+
 backToTopBtn.addEventListener('click', ()=>{
   const activeTab = document.querySelector('.tab-content.active');
   if(activeTab && activeTab.id === 'standard'){
@@ -1920,6 +1921,7 @@ document.getElementById('clearStdFavoritesBtn').addEventListener('click', ()=>{
 
   voiceBtn.addEventListener('click', () => {
     if (listening) { recognition.stop(); return; }
+    
     try {
       listening = true;
       voiceBtn.classList.add('listening');
@@ -1942,8 +1944,8 @@ document.getElementById('clearStdFavoritesBtn').addEventListener('click', ()=>{
     }
     const text = (finalText || interim || "").trim();
     search.value = text;
-    updateSearchClearButton();
-    renderCriteriaAutocomplete();
+    // updateSearchClearButton();
+    // renderCriteriaAutocomplete();
     renderTopics();
     renderResults();
     if (finalText) {
@@ -1953,10 +1955,12 @@ document.getElementById('clearStdFavoritesBtn').addEventListener('click', ()=>{
   };
 
   recognition.onerror = (event) => { setStatus(`음성인식 오류: ${event.error}`); };
-
+  
+  // 수정: 음성 인식 종료 시 문구 삭제
   recognition.onend = () => {
     listening = false;
     voiceBtn.classList.remove('listening');
+    setStatus(""); 
   };
 })();
 
@@ -2092,7 +2096,7 @@ function renderStdTree(){
               .sort((a,b)=> (b.score - a.score) || a.item.title.localeCompare(b.item.title, 'ko'))
               .map(x => x.item)
           : titles;
-
+        
         const isOpen = stdOpenKeyword === keyword;
         return `
           <div class="std-keyword-block">
@@ -2194,12 +2198,18 @@ function bindStdEvents(){
   const stdClear = document.getElementById("stdClear");
   const stdChapters = document.getElementById("stdChapters");
 
+  // 수정: 표준화자료 검색어 입력 지연(Debounce) 적용
+  let stdSearchTimeout;
   if(stdSearch){
     stdSearch.addEventListener("input", ()=>{
       const q = stdSearch.value;
       renderStdTree();
       renderStdList();
-      if(q.trim()) addRecentSearch('standard', q);
+      
+      clearTimeout(stdSearchTimeout);
+      stdSearchTimeout = setTimeout(() => {
+        if(q.trim()) addRecentSearch('standard', q);
+      }, 1000); // 1초간 추가 입력 없으면 저장
     });
   }
 
@@ -2252,7 +2262,7 @@ function initStandardTab(){
     renderStdTree();
     bindStdEvents();
     renderStdList();
-    updateStdSearchClearButton();
+    // updateStdSearchClearButton();
   });
 }
 
@@ -2279,6 +2289,7 @@ initStandardTab();
 
   stdVoiceBtn.addEventListener('click', () => {
     if (listening) { recognition.stop(); return; }
+   
     try {
       listening = true;
       stdVoiceBtn.classList.add('listening');
@@ -2303,6 +2314,7 @@ initStandardTab();
     stdSearch.value = text;
     renderStdTree();
     renderStdList();
+   
     if (finalText) {
       setStatus(`인식됨: ${finalText.trim()}`);
       addRecentSearch('standard', finalText.trim());
@@ -2311,9 +2323,11 @@ initStandardTab();
 
   recognition.onerror = (event) => { setStatus(`음성인식 오류: ${event.error}`); };
 
+  // 수정: 표준화자료 음성 인식 종료 시 문구 삭제
   recognition.onend = () => {
     listening = false;
     stdVoiceBtn.classList.remove('listening');
+    setStatus(""); 
   };
 })();
 
@@ -2328,13 +2342,13 @@ initStandardTab();
   if(!btn || !modal || !closeBtn || !frame) return;
 
   frame.src = FB_FORM_URL;
-
+  
   const open = () => {
     modal.style.display = 'flex';
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   };
-
+  
   const close = () => {
     modal.style.display = 'none';
     modal.setAttribute('aria-hidden', 'true');
@@ -2345,11 +2359,43 @@ initStandardTab();
   closeBtn.addEventListener('click', close);
 
   modal.addEventListener('click', (e) => { if(e.target === modal) close(); });
-
+  
   window.addEventListener('keydown', (e) => {
     if(e.key === 'Escape' && modal.style.display === 'flex') close();
   });
 })();
+
+// 수정: 최근검색어 / 즐겨찾기 패널 접기(아코디언) 기능 추가
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.utility-head').forEach(head => {
+    const title = head.querySelector('.utility-title');
+    if(title) {
+      // 제목 옆에 아래 화살표 추가
+      title.innerHTML += ' <span class="toggle-icon" style="font-size:10px; margin-left:4px;">▼</span>';
+    }
+    
+    // 마우스 오버 시 클릭 가능한 형태(손가락)로 표시
+    head.style.cursor = 'pointer';
+    
+    head.addEventListener('click', (e) => {
+      // '지우기' 등 내부 버튼을 눌렀을 때는 접히지 않도록 예외 처리
+      if(e.target.tagName === 'BUTTON') return;
+      
+      const content = head.nextElementSibling;
+      const icon = head.querySelector('.toggle-icon');
+      
+      if(content && content.classList.contains('chip-row')) {
+        if(content.style.display === 'none') {
+          content.style.display = 'flex';
+          if(icon) icon.textContent = '▼';
+        } else {
+          content.style.display = 'none';
+          if(icon) icon.textContent = '▲';
+        }
+      }
+    });
+  });
+});
 </script>
 
 </body>
