@@ -66,6 +66,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 .ai-bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.5;max-width:90%;word-break:break-word;}
 .ai-bubble.user{background:var(--button-bg);color:var(--text);align-self:flex-end;border-bottom-right-radius:4px;}
 .ai-bubble.bot{background:var(--button-bg-soft);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;border:1px solid var(--line);}
+.ai-bubble.error{background:rgba(255,77,79,0.1);color:var(--red);align-self:center;text-align:center;font-size:12px;}
 .ai-controls{display:flex;flex-direction:column;align-items:center;gap:10px;}
 .ai-mic-btn{width:70px;height:70px;border-radius:50%;background:var(--button-bg);border:2px solid var(--line);color:var(--text);font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
 .ai-mic-btn.recording{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 0 0 8px rgba(25,195,125,0.2);animation:pulse 1.5s infinite;}
@@ -199,11 +200,11 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
       <button id="aiCloseBtn" class="fb-close" type="button">닫기 ✕</button>
     </div>
     <div id="aiChatArea" class="ai-chat-area">
-      <div class="ai-bubble bot">안녕하세요! 궁금한 승강기 검사기준이나 표준화자료가 있다면 아래 마이크를 누르고 말씀해 주세요.</div>
+      <div class="ai-bubble bot">안녕하세요! 궁금한 승강기 검사기준이나 표준화자료가 있다면 아래 마이크를 누르고 길게 말씀해 주세요. (다 말한 뒤에 마이크를 한 번 더 누르면 전송됩니다.)</div>
     </div>
     <div class="ai-controls">
       <button id="aiMicBtn" class="ai-mic-btn" type="button">🎤</button>
-      <div id="aiStatus" class="ai-status">마이크를 눌러 질문하기</div>
+      <div id="aiStatus" class="ai-status">마이크를 눌러 질문 시작하기</div>
     </div>
   </div>
 </div>
@@ -215,22 +216,9 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
   </div>
 </div>
 
-<div id="gaPanel" aria-hidden="true">
-  <div class="gaPanelHead"><div class="gaPanelTitle">GA4 전송 확인</div><button id="gaClose" class="gaPanelClose" type="button">닫기 ✕</button></div>
-  <div class="gaPanelBody">
-    <div class="gaLine"><strong>현재 페이지:</strong> <span id="gaLoc"></span></div>
-    <div class="gaLine"><strong>측정 ID:</strong> <span id="gaIdTxt"></span></div>
-    <div class="gaLine"><strong>상태:</strong> <span id="gaStatus"></span></div>
-    <div class="gaLine" style="margin-top:8px"><strong>최근 전송 로그</strong></div>
-    <div id="gaLogs" class="gaLine" style="margin-top:6px"></div>
-    <div class="gaBtnRow"><button id="gaSendPing" type="button">테스트 전송</button><button id="gaClearLogs" type="button">로그 지우기</button></div>
-    <div class="gaHint">네트워크 확인용 디버그 패널입니다.</div>
-  </div>
-</div>
-
 <script>
 // ==========================================
-// 💡 [완료] 발급받으신 구글 API 키가 적용되었습니다!
+// 💡 구글 제미나이 API 키 적용 완료
 // ==========================================
 const GEMINI_API_KEY = "AIzaSyBmlQTUsnZIznMnVlGC2r75ve4gQZtV4LA";
 // ==========================================
@@ -272,7 +260,7 @@ function scoreMatch(hayRaw, qRaw){
   return ch+(bh*3);
 }
 
-// --- 공통 음성 인식 함수 ---
+// --- 기본 탭 음성 검색 (단발성) ---
 function initVoiceSearch(btnId, statusId, inputEl, type, renderFn1, renderFn2) {
   const btn = document.getElementById(btnId), status = document.getElementById(statusId);
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -530,7 +518,7 @@ bTop.onclick=()=>{ const t=document.querySelector('.tab-content.active')?.id==='
 })();
 
 // ==========================================
-// 💡 AI 비서 기능 (RAG + 음성인식 + TTS)
+// 💡 AI 비서 기능 (RAG + 토글형 음성인식 + 상세 에러표시)
 // ==========================================
 (() => {
   const aiModal = document.getElementById('aiModal');
@@ -543,12 +531,15 @@ bTop.onclick=()=>{ const t=document.querySelector('.tab-content.active')?.id==='
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   let recognition = null;
   let aiListening = false;
+  let finalQueryText = ""; // 말한 문장을 계속 누적할 변수
 
   if (SR) {
     recognition = new SR();
     recognition.lang = "ko-KR";
-    recognition.interimResults = false;
-    recognition.continuous = false;
+    // true로 설정해야 말하는 도중에 텍스트가 보입니다.
+    recognition.interimResults = true; 
+    // true로 설정해야 중간에 쉬어도 인식이 안 끊깁니다! (해결 1)
+    recognition.continuous = true; 
   }
 
   // AI 모달창 열고 닫기
@@ -560,48 +551,44 @@ bTop.onclick=()=>{ const t=document.querySelector('.tab-content.active')?.id==='
     aiModal.style.display = 'none';
     aiModal.setAttribute('aria-hidden', 'true');
     if(aiListening && recognition) recognition.stop();
-    window.speechSynthesis.cancel(); // 말하던 것도 중지
+    window.speechSynthesis.cancel();
   };
   aiCloseBtn.onclick = closeAiModal;
   aiModal.onclick = (e) => { if(e.target === aiModal) closeAiModal(); };
 
-  // 채팅 메시지 추가 함수
-  function addMessage(text, isUser) {
+  function addMessage(text, isUser, isError = false) {
     const div = document.createElement('div');
-    div.className = `ai-bubble ${isUser ? 'user' : 'bot'}`;
-    div.textContent = text;
+    if (isError) {
+      div.className = 'ai-bubble error';
+    } else {
+      div.className = `ai-bubble ${isUser ? 'user' : 'bot'}`;
+    }
+    div.innerText = text; // innerText를 써서 줄바꿈 적용
     aiChatArea.appendChild(div);
     aiChatArea.scrollTop = aiChatArea.scrollHeight;
   }
 
-  // 1단계: RAG 검색 (내부 데이터에서 텍스트 뽑기)
+  // 데이터에서 문맥 찾기
   function getContextFromData(query) {
     let pool = [];
     const qRaw = query || "";
     
-    // 검사기준 검색
     DATA.forEach(i => {
       const score = scoreMatch(i.title, qRaw)*2 + scoreMatch(i.text, qRaw);
       if(score > 0) pool.push({text: `[검사기준] ${i.title}: ${i.text}`, score});
     });
-    // 표준화자료 검색
     STD_DATA.forEach(i => {
       const score = scoreMatch(i.title, qRaw)*2 + scoreMatch(i.text, qRaw);
       if(score > 0) pool.push({text: `[표준화자료] ${i.title}: ${i.text}`, score});
     });
 
     pool.sort((a,b) => b.score - a.score);
-    // 가장 연관도 높은 5개만 추려서 텍스트로 합침
     const topResults = pool.slice(0, 5).map(x => x.text).join("\n\n");
     return topResults || "관련 데이터가 없습니다.";
   }
 
-  // 2단계: 구글 API에 질문하기
+  // 제미나이 API 호출 및 에러 추적 (해결 2)
   async function askGemini(userQuery, contextText) {
-    if(!GEMINI_API_KEY || GEMINI_API_KEY.includes("여기에_발급받은_API키를_붙여넣으세요")) {
-      return "API 키가 입력되지 않았습니다. HTML 파일 내 GEMINI_API_KEY를 확인해주세요.";
-    }
-
     const prompt = `
 너는 승강기 안전기준을 안내하는 친절한 전문 AI 비서야.
 아래에 제공된 [참고 자료] 내용만을 바탕으로 검사원의 [질문]에 답변해줘.
@@ -627,74 +614,95 @@ ${userQuery}
       
       const data = await response.json();
       if(data.error) throw new Error(data.error.message);
-      return data.candidates[0].content.parts[0].text;
+      return { success: true, text: data.candidates[0].content.parts[0].text };
+      
     } catch (error) {
       console.error(error);
-      return "AI 서버와 통신 중 오류가 발생했습니다.";
+      return { 
+        success: false, 
+        text: `통신 오류가 발생했습니다.\n\n[상세 원인: ${error.message}]\n\n※ 로컬 환경(file://)이거나, 사내 보안망에서 접속을 차단했을 수 있습니다.` 
+      };
     }
   }
 
-  // 3단계: TTS (텍스트 읽어주기)
   function speakText(text) {
-    window.speechSynthesis.cancel(); // 이전 말 초기화
+    window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ko-KR';
-    utterance.rate = 1.1; // 약간 빠르게
+    utterance.rate = 1.1;
     window.speechSynthesis.speak(utterance);
   }
 
-  // 마이크 버튼 클릭 로직
+  // 마이크 토글(스위치) 로직
   aiMicBtn.onclick = () => {
     if (!recognition) {
       aiStatus.textContent = "음성 인식을 지원하지 않는 브라우저입니다.";
       return;
     }
 
+    // 이미 듣고 있는 상태에서 한 번 더 누르면 인식 종료 및 전송!
     if (aiListening) {
-      recognition.stop();
+      recognition.stop(); 
       return;
     }
 
-    window.speechSynthesis.cancel(); // 마이크 켤 때 말 멈추기
+    finalQueryText = ""; // 말하기 시작할 때 초기화
+    window.speechSynthesis.cancel();
     aiListening = true;
     aiMicBtn.classList.add('recording');
-    aiStatus.textContent = "말씀해 주세요... (듣는 중)";
+    aiStatus.textContent = "말씀을 다 하신 후 마이크를 한 번 더 눌러주세요.";
     recognition.start();
   };
 
-  recognition.onresult = async (event) => {
-    const query = event.results[0][0].transcript.trim();
-    addMessage(query, true); // 유저 메시지 표시
+  recognition.onresult = (event) => {
+    let interim = "";
+    let final = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) final += event.results[i][0].transcript;
+      else interim += event.results[i][0].transcript;
+    }
+    finalQueryText += final;
     
-    aiMicBtn.classList.remove('recording');
+    // 화면에 현재 어떤 말을 듣고 있는지 실시간 표시
+    aiStatus.textContent = `듣는 중: ${finalQueryText + interim}`;
+  };
+
+  // 사용자가 마이크를 꺼서 종료되었을 때 (또는 오래 쉬어서 자동 종료될 때)
+  recognition.onend = async () => {
     aiListening = false;
+    aiMicBtn.classList.remove('recording');
+
+    const query = finalQueryText.trim();
+    
+    if (!query) {
+      aiStatus.textContent = "인식된 음성이 없습니다. 마이크를 눌러 다시 질문하세요.";
+      return;
+    }
+
     aiStatus.textContent = "AI가 생각 중입니다... 🤔";
+    addMessage(query, true);
 
-    // 1. RAG 기반 문맥 찾기
     const context = getContextFromData(query);
+    const aiResponse = await askGemini(query, context);
 
-    // 2. 제미나이 AI 호출
-    const aiAnswer = await askGemini(query, context);
-
-    // 3. 답변 출력 및 음성 재생
     aiStatus.textContent = "마이크를 눌러 다시 질문하기";
-    addMessage(aiAnswer, false);
-    speakText(aiAnswer);
+    
+    if (aiResponse.success) {
+      addMessage(aiResponse.text, false);
+      speakText(aiResponse.text);
+    } else {
+      addMessage(aiResponse.text, false, true); // 에러 스타일로 표시
+    }
+    
+    finalQueryText = ""; // 질문 끝났으니 텍스트 비우기
   };
 
   recognition.onerror = (event) => {
     aiListening = false;
     aiMicBtn.classList.remove('recording');
-    aiStatus.textContent = `오류 발생: ${event.error} (다시 눌러주세요)`;
+    aiStatus.textContent = `마이크 오류: ${event.error} (다시 눌러주세요)`;
   };
 
-  recognition.onend = () => {
-    if(aiListening) {
-      aiListening = false;
-      aiMicBtn.classList.remove('recording');
-      aiStatus.textContent = "음성 인식이 종료되었습니다.";
-    }
-  };
 })();
 </script>
 </body>
