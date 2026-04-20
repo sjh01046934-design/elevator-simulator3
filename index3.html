@@ -67,10 +67,13 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 .ai-bubble.user{background:var(--button-bg);color:var(--text);align-self:flex-end;border-bottom-right-radius:4px;}
 .ai-bubble.bot{background:var(--button-bg-soft);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;border:1px solid var(--line);}
 .ai-bubble.error{background:rgba(255,77,79,0.1);color:var(--red);align-self:center;text-align:center;font-size:12px;}
-.ai-controls{display:flex;flex-direction:column;align-items:center;gap:10px;}
-.ai-mic-btn{width:70px;height:70px;border-radius:50%;background:var(--button-bg);border:2px solid var(--line);color:var(--text);font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
-.ai-mic-btn.recording{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 0 0 8px rgba(25,195,125,0.2);animation:pulse 1.5s infinite;}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(25,195,125,0.4);} 70%{box-shadow:0 0 0 15px rgba(25,195,125,0);} 100%{box-shadow:0 0 0 0 rgba(25,195,125,0);}}
+.ai-controls{width:100%;display:flex;flex-direction:column;align-items:stretch;gap:8px;}
+.ai-input-row{display:flex;width:100%;gap:8px;align-items:center;}
+#aiTextInput{flex:1;padding:12px 16px;border-radius:24px;border:1px solid var(--line);background:var(--input-bg);color:var(--text);font-size:14px;}
+#aiSendBtn, .ai-mic-btn{width:46px;height:46px;border-radius:50%;border:none;background:var(--button-bg);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+#aiSendBtn{background:var(--green);color:#fff;}
+.ai-mic-btn.recording{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 0 0 6px rgba(25,195,125,0.2);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(25,195,125,0.4);} 70%{box-shadow:0 0 0 10px rgba(25,195,125,0);} 100%{box-shadow:0 0 0 0 rgba(25,195,125,0);}}
 .ai-status{font-size:13px;color:var(--muted);font-weight:700;text-align:center;line-height:1.4;}
 </style>
 </head>
@@ -200,11 +203,15 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
       <button id="aiCloseBtn" class="fb-close" type="button">닫기 ✕</button>
     </div>
     <div id="aiChatArea" class="ai-chat-area">
-      <div class="ai-bubble bot">안녕하세요! 궁금한 기준이나 자료가 있다면 마이크를 켜고 편하게 말씀해 주세요.</div>
+      <div class="ai-bubble bot">안녕하세요! 궁금한 기준이나 자료가 있다면 아래 창에 입력하거나 마이크를 눌러 말씀해 주세요.</div>
     </div>
     <div class="ai-controls">
-      <button id="aiMicBtn" class="ai-mic-btn" type="button">🎤</button>
-      <div id="aiStatus" class="ai-status">마이크를 눌러 질문 시작하기<br>(전송하려면 마이크를 한 번 더 누르세요)</div>
+      <div id="aiStatus" class="ai-status">텍스트를 입력하거나 마이크를 클릭하세요.</div>
+      <div class="ai-input-row">
+        <input type="text" id="aiTextInput" placeholder="질문을 입력하세요..." autocomplete="off">
+        <button id="aiSendBtn" type="button" title="보내기">➤</button>
+        <button id="aiMicBtn" class="ai-mic-btn" type="button" title="음성 입력">🎤</button>
+      </div>
     </div>
   </div>
 </div>
@@ -518,13 +525,15 @@ bTop.onclick=()=>{ const t=document.querySelector('.tab-content.active')?.id==='
 })();
 
 // ==========================================
-// 💡 AI 비서 기능 (토글 방식 + 오타 문맥 교정)
+// 💡 AI 비서 기능 (마이크 + 텍스트 채팅 공통 처리)
 // ==========================================
 (() => {
   const aiModal = document.getElementById('aiModal');
   const aiFabBtn = document.getElementById('aiFabBtn');
   const aiCloseBtn = document.getElementById('aiCloseBtn');
   const aiMicBtn = document.getElementById('aiMicBtn');
+  const aiSendBtn = document.getElementById('aiSendBtn');
+  const aiTextInput = document.getElementById('aiTextInput');
   const aiStatus = document.getElementById('aiStatus');
   const aiChatArea = document.getElementById('aiChatArea');
 
@@ -532,25 +541,29 @@ bTop.onclick=()=>{ const t=document.querySelector('.tab-content.active')?.id==='
   let recognition = null;
   let aiListening = false;
   let finalQueryText = ""; 
-  let currentInterim = ""; // 진행 중인 문장
+  let currentInterim = "";
 
   if (SR) {
     recognition = new SR();
     recognition.lang = "ko-KR";
     recognition.interimResults = true; 
-    recognition.continuous = true; // 💡 길게 말해도 안 끊기게 설정
+    recognition.continuous = true; 
   }
 
   aiFabBtn.onclick = () => {
     aiModal.style.display = 'flex';
     aiModal.setAttribute('aria-hidden', 'false');
+    setTimeout(() => aiTextInput.focus(), 100);
   };
+  
   const closeAiModal = () => {
+    if (document.activeElement) document.activeElement.blur(); // 접근성 경고 해결
     aiModal.style.display = 'none';
     aiModal.setAttribute('aria-hidden', 'true');
     if(aiListening && recognition) recognition.stop();
     window.speechSynthesis.cancel();
   };
+  
   aiCloseBtn.onclick = closeAiModal;
   aiModal.onclick = (e) => { if(e.target === aiModal) closeAiModal(); };
 
@@ -585,7 +598,6 @@ bTop.onclick=()=>{ const t=document.querySelector('.tab-content.active')?.id==='
   }
 
   async function askGemini(userQuery, contextText) {
-    // 💡 [개선] 승강기 용어 오타 문맥 교정을 위한 강력한 프롬프트 적용
     const prompt = `
 너는 승강기 안전기준을 안내하는 전문 AI 비서야.
 아래에 제공된 [참고 자료] 내용만을 바탕으로 검사원의 [질문]에 답변해줘.
@@ -603,14 +615,7 @@ ${userQuery}
 4. 중요: 음성 인식 오류로 인한 오타(예: '비트' -> '피트', '차' -> '카', '도어' -> '문' 등)가 의심될 경우, 승강기 검사기준 문맥에 맞게 스스로 교정하여 이해하고 답변할 것.
 `;
 
-    const modelsToTry = [
-      'gemini-1.5-flash',
-      'gemini-1.5-flash-latest',
-      'gemini-1.5-pro',
-      'gemini-1.0-pro',
-      'gemini-pro'
-    ];
-
+    const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-pro', 'gemini-1.0-pro', 'gemini-pro'];
     let lastErrorMsg = "";
 
     for (const modelName of modelsToTry) {
@@ -620,25 +625,13 @@ ${userQuery}
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
-        
         const data = await response.json();
-        
-        if (data.error) {
-          lastErrorMsg = data.error.message;
-          continue; 
-        }
-        
+        if (data.error) { lastErrorMsg = data.error.message; continue; }
         return { success: true, text: data.candidates[0].content.parts[0].text };
-        
-      } catch (error) {
-        lastErrorMsg = error.message;
-      }
+      } catch (error) { lastErrorMsg = error.message; }
     }
 
-    return { 
-      success: false, 
-      text: `통신 오류가 발생했습니다.\n\n[마지막 원인: ${lastErrorMsg}]\n\n※ 로컬 환경이거나 사내망 접속 차단 문제일 수 있습니다.` 
-    };
+    return { success: false, text: `통신 오류가 발생했습니다.\n\n[원인: ${lastErrorMsg}]\n\n※ 사내망 차단 또는 API 키 활성화 지연 문제일 수 있습니다.` };
   }
 
   function speakText(text) {
@@ -649,7 +642,50 @@ ${userQuery}
     window.speechSynthesis.speak(utterance);
   }
 
-  // 💡 [개선] 마이크 토글 로직: 켰다 끄기
+  // 💡 공통 질문 처리 함수 (마이크/텍스트 모두 사용)
+  async function processQuery(query) {
+    if (!query) return;
+    
+    // UI 비활성화 (전송 중 중복 입력 방지)
+    aiTextInput.disabled = true;
+    aiSendBtn.disabled = true;
+    aiMicBtn.disabled = true;
+    
+    aiStatus.textContent = "AI가 생각 중입니다... 🤔";
+    addMessage(query, true);
+
+    const context = getContextFromData(query);
+    const aiResponse = await askGemini(query, context);
+
+    // UI 활성화
+    aiTextInput.disabled = false;
+    aiSendBtn.disabled = false;
+    aiMicBtn.disabled = false;
+    aiTextInput.value = "";
+    aiTextInput.focus();
+
+    aiStatus.textContent = "텍스트를 입력하거나 마이크를 누르세요.";
+    
+    if (aiResponse.success) {
+      addMessage(aiResponse.text, false);
+      speakText(aiResponse.text);
+    } else {
+      addMessage(aiResponse.text, false, true); 
+    }
+  }
+
+  // --- 텍스트 전송 로직 ---
+  aiSendBtn.onclick = () => {
+    processQuery(aiTextInput.value.trim());
+  };
+
+  aiTextInput.onkeypress = (e) => {
+    if (e.key === 'Enter') {
+      processQuery(aiTextInput.value.trim());
+    }
+  };
+
+  // --- 마이크 전송 로직 ---
   aiMicBtn.onclick = () => {
     if (!recognition) {
       aiStatus.textContent = "음성 인식을 지원하지 않는 브라우저입니다.";
@@ -657,18 +693,16 @@ ${userQuery}
     }
 
     if (aiListening) {
-      // 2. 이미 듣고 있을 때 버튼을 누르면 강제 종료 -> onend 함수가 실행됨
       recognition.stop(); 
       return;
     }
 
-    // 1. 처음 듣기 시작할 때
     finalQueryText = ""; 
     currentInterim = "";
     window.speechSynthesis.cancel();
     aiListening = true;
     aiMicBtn.classList.add('recording');
-    aiStatus.textContent = "자유롭게 말씀하신 후 마이크를 한 번 더 누르세요.";
+    aiStatus.innerHTML = "자유롭게 말씀하신 후 <strong>마이크를 한 번 더 누르세요.</strong>";
     recognition.start();
   };
 
@@ -677,52 +711,28 @@ ${userQuery}
     let newlyFinal = "";
     
     for (let i = event.resultIndex; i < event.results.length; i++) {
-      if (event.results[i].isFinal) {
-        newlyFinal += event.results[i][0].transcript;
-      } else {
-        currentInterim += event.results[i][0].transcript;
-      }
+      if (event.results[i].isFinal) newlyFinal += event.results[i][0].transcript;
+      else currentInterim += event.results[i][0].transcript;
     }
     
-    if (newlyFinal) {
-      finalQueryText += newlyFinal + " "; // 띄어쓰기로 이어붙이기
-    }
-
-    // 중간 결과 숨기지 않고 화면에 표시해서 사용자가 잘 듣고 있는지 확인하게 함
+    if (newlyFinal) finalQueryText += newlyFinal + " "; 
     aiStatus.innerHTML = `듣는 중: <span style="color:#19c37d">${finalQueryText + currentInterim}</span>`;
   };
 
-  recognition.onend = async () => {
-    // 💡 마이크가 꺼졌을 때 최종적으로 한 번만 실행됨
+  recognition.onend = () => {
     aiListening = false;
     aiMicBtn.classList.remove('recording');
 
-    // 최종 확정된 텍스트 + 혹시 확정 안 된 마지막 문장까지 싹 긁어모음
     const query = (finalQueryText + currentInterim).trim();
-    
-    // 다음 질문을 위해 초기화
     finalQueryText = ""; 
     currentInterim = "";
 
     if (!query) {
-      aiStatus.innerHTML = "마이크를 눌러 질문 시작하기<br>(전송하려면 마이크를 한 번 더 누르세요)";
+      aiStatus.textContent = "텍스트를 입력하거나 마이크를 누르세요.";
       return;
     }
 
-    aiStatus.textContent = "AI가 생각 중입니다... 🤔";
-    addMessage(query, true);
-
-    const context = getContextFromData(query);
-    const aiResponse = await askGemini(query, context);
-
-    aiStatus.innerHTML = "마이크를 눌러 다시 질문하기<br>(전송하려면 마이크를 한 번 더 누르세요)";
-    
-    if (aiResponse.success) {
-      addMessage(aiResponse.text, false);
-      speakText(aiResponse.text);
-    } else {
-      addMessage(aiResponse.text, false, true); 
-    }
+    processQuery(query);
   };
 
   recognition.onerror = (event) => {
