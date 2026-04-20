@@ -9,7 +9,7 @@
 :root{--bg:#0b1220;--bg-grad-1:#14234a;--bg-grad-2:#0b1220;--card:#111b2e;--card-soft:rgba(17,27,46,.72);--panel-top:rgba(255,255,255,.04);--panel-bottom:rgba(255,255,255,.02);--muted:#9fb0d0;--text:#e7eefc;--green:#19c37d;--red:#ff4d4f;--line:#22314f;--shadow:0 10px 30px rgba(0,0,0,.35);--input-bg:rgba(10,16,30,.55);--button-bg:rgba(22,37,69,.85);--button-bg-soft:rgba(22,37,69,.65);--button-hover:rgba(35,60,105,.95);--header-bg-1:rgba(11,18,32,.98);--header-bg-2:rgba(11,18,32,.92);--tab-bg:rgba(22,37,69,.55);--tab-active-bg:rgba(25,195,125,.95);--tab-active-text:#00120a;--topic-border:rgba(255,255,255,.08);--keyword-border:rgba(255,255,255,.08);--keyword-bg:rgba(10,16,30,.25);--keyword-hover:rgba(255,255,255,.04);--title-list-border:rgba(255,255,255,.06);--title-list-bg:rgba(255,255,255,.02);--title-btn-bg:rgba(255,255,255,.02);--title-btn-hover:rgba(255,255,255,.06);--title-btn-active:rgba(25,195,125,.14);--title-btn-active-border:rgba(25,195,125,.65);--modal-bg:rgba(0,0,0,.85);--fb-overlay:rgba(0,0,0,.72);--fb-box-bg:rgba(17,27,46,.98);--selected-bg:#b6ff5c;--selected-text:#000;--img-caption:#9fb0d0;--img-border:#22314f;--mark-bg:yellow;--mark-text:black;--chip-bg:rgba(255,255,255,.05);--chip-border:rgba(255,255,255,.08);--chip-hover:rgba(255,255,255,.10);--fav:#ffd54a;}
 body.light-mode{--bg:#f5f7fb;--bg-grad-1:#ffffff;--bg-grad-2:#eef3fb;--card:#ffffff;--card-soft:#ffffff;--panel-top:rgba(255,255,255,.96);--panel-bottom:rgba(245,248,252,.96);--muted:#5f6f86;--text:#1a2433;--green:#0f9f61;--red:#d83a3a;--line:#d8e0ec;--shadow:0 8px 24px rgba(17,24,39,.08);--input-bg:#ffffff;--button-bg:#edf2fa;--button-bg-soft:#f4f7fb;--button-hover:#dfe8f5;--header-bg-1:rgba(255,255,255,.96);--header-bg-2:rgba(248,250,253,.92);--tab-bg:#f1f5fb;--tab-active-bg:#19c37d;--tab-active-text:#ffffff;--topic-border:rgba(26,36,51,.08);--keyword-border:rgba(26,36,51,.08);--keyword-bg:#f8fafc;--keyword-hover:#eef3f9;--title-list-border:rgba(26,36,51,.08);--title-list-bg:#fcfdff;--title-btn-bg:#ffffff;--title-btn-hover:#f3f7fc;--title-btn-active:rgba(25,195,125,.10);--title-btn-active-border:rgba(25,195,125,.45);--modal-bg:rgba(20,28,40,.72);--fb-overlay:rgba(20,28,40,.48);--fb-box-bg:#ffffff;--selected-bg:#d8ff85;--selected-text:#111;--img-caption:#5f6f86;--img-border:#d8e0ec;--mark-bg:#fff29a;--mark-text:#111;--chip-bg:#f7f9fc;--chip-border:#dde6f1;--chip-hover:#eef4fb;--fav:#e0a800;}
 *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,var(--bg-grad-1) 0%,var(--bg-grad-2) 60%);color:var(--text);font-size:14px;transition:background .25s,color .25s;}
-.wrap{max-width:1200px;margin:0 auto;padding:22px 16px 70px}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 16px 140px}
 header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, var(--header-bg-1), var(--header-bg-2));border-bottom:1px solid var(--line);backdrop-filter:blur(6px);}
 .header-inner{max-width:1200px;margin:0 auto;padding:10px 16px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
 h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
@@ -37,13 +37,14 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 .toggle-btn{width:auto;min-width:112px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;} .toggle-btn.active{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
 .image-modal{position:fixed;inset:0;background:var(--modal-bg);display:none;align-items:center;justify-content:center;z-index:9999;cursor:zoom-out;} .image-modal img{max-width:95%;max-height:95%;border-radius:8px;box-shadow:0 0 30px rgba(0,0,0,0.6);}
 #backToTopBtn{position:fixed;right:18px;bottom:18px;width:auto;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:800;cursor:pointer;box-shadow:var(--shadow);display:none;z-index:999;user-select:none;} #backToTopBtn:hover{background:var(--button-hover)}
+#aiFabBtn{position:fixed;right:18px;bottom:70px;width:auto;padding:14px 18px;border-radius:999px;border:none;background:linear-gradient(135deg, #19c37d, #0f9f61);color:#fff;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 8px 24px rgba(25,195,125,0.4);z-index:999;display:flex;align-items:center;gap:8px;transition:transform 0.2s;} #aiFabBtn:hover{transform:scale(1.05);}
 #voiceBtn, #stdVoiceBtn{width:auto;padding:15px 20px;border-radius:12px;flex:0 0 auto;} #voiceBtn.listening, #stdVoiceBtn.listening{border-color:var(--green);box-shadow:0 0 0 2px rgba(25,195,125,.15);}
 .utility-section{margin-top:10px;display:grid;gap:10px;} .utility-box{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:10px;} .utility-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;} .utility-title{font-size:12px;color:var(--muted);font-weight:800;} .utility-head button{width:auto;padding:6px 10px;font-size:12px;border-radius:10px;}
 .chip-row{display:flex;flex-wrap:wrap;gap:6px} .chip{width:auto;padding:7px 10px;border-radius:999px;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text);font-size:12px;font-weight:700;} .chip:hover{background:var(--chip-hover)} .chip.starred{border-color:rgba(255,213,74,.55)} .empty-chip{font-size:12px;color:var(--muted)}
 .card-toolbar,.std-card-toolbar{display:flex;justify-content:flex-end;gap:6px;margin-top:10px;flex-wrap:wrap;} .text-preview,.std-preview{display:none;margin-top:8px;color:var(--muted);font-size:12px;line-height:1.45;}
 .card.collapsed .row, .card.collapsed .card-image-wrap, .std-item.collapsed .std-content, .std-item.collapsed .std-apply, .std-item.collapsed .std-image-wrap{display:none;} .card.collapsed .text-preview, .std-item.collapsed .std-preview{display:block;}
 .small-action-btn{width:auto;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--button-bg-soft);color:var(--text);font-weight:800;} .small-action-btn.starred{border-color:rgba(255,213,74,.55);color:var(--fav);}
-@media(max-width:900px){#search,#date,#stdSearch{font-size:16px;padding:14px;height:48px} #backToTopBtn{right:12px;bottom:12px;padding:11px 12px;border-radius:12px} #voiceBtn, #stdVoiceBtn{padding:14px 12px;height:48px} .action-row{flex-wrap:wrap;} .action-row .toggle-btn, .action-row #reset{flex:1 1 auto;width:auto;}}
+@media(max-width:900px){#search,#date,#stdSearch{font-size:16px;padding:14px;height:48px} #backToTopBtn{right:12px;bottom:12px;padding:11px 12px;border-radius:12px} #aiFabBtn{right:12px;bottom:64px;padding:12px 16px;font-size:14px;} #voiceBtn, #stdVoiceBtn{padding:14px 12px;height:48px} .action-row{flex-wrap:wrap;} .action-row .toggle-btn, .action-row #reset{flex:1 1 auto;width:auto;}}
 .standard-wrap{margin-top:10px} .std-toolbar{display:flex;gap:8px;align-items:center;} #stdSearch{flex:1;} #stdClear{width:auto;} #stdVoiceStatus{margin-top:6px;font-size:12px;color:var(--muted);min-height:18px;}
 .std-chapters{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--card-soft);max-height:290px;overflow-y:auto;} .std-chapters-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;color:var(--muted);font-size:12px;} .std-chapters-grid{display:grid;grid-template-columns:1fr;gap:6px;} .std-keyword-block{border:1px solid var(--keyword-border);border-radius:10px;background:var(--keyword-bg);overflow:hidden;}
 .std-keyword-btn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border:none;border-radius:0;background:transparent;color:var(--text);font-weight:800;font-size:12px;text-align:left;} .std-keyword-btn:hover{background:var(--keyword-hover);} .std-keyword-btn.active{background:rgba(25,195,125,.12);} .std-keyword-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;} .std-arrow{font-size:11px;color:var(--muted);flex:0 0 auto;}
@@ -54,15 +55,24 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 #gaDot{width:10px;height:10px;border-radius:99px;background:#9fb0d0;box-shadow:0 0 0 2px rgba(159,176,208,.15);} .ga-ok #gaDot{background:var(--green);box-shadow:0 0 0 2px rgba(25,195,125,.18)} .ga-bad #gaDot{background:var(--red);box-shadow:0 0 0 2px rgba(255,77,79,.18)}
 #gaPanel{position:fixed;top:72px;right:18px;width:min(420px, 92vw);max-height:62vh;overflow:auto;background:var(--fb-box-bg);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);z-index:13000;display:none;} .gaPanelHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--title-list-border);} .gaPanelTitle{font-weight:900} .gaPanelBody{padding:10px 12px} .gaLine{font-size:12px;line-height:1.45;color:var(--muted);white-space:pre-wrap} .gaLine strong{color:var(--text)} .gaHint{margin-top:10px;padding:10px;border-radius:12px;border:1px dashed var(--line);color:var(--muted);font-size:12px;line-height:1.45;background:var(--card);} .gaBtnRow{display:flex;gap:6px;margin-top:10px} .gaBtnRow button{width:auto;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--button-bg-soft);color:var(--text);font-weight:900;}
 #gaBadge, #gaPanel, #gaSendPing{display:none !important;}
-</style>
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YR8SYEVY0J"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-YR8SYEVY0J', { send_page_view: true });
-</script>
+/* AI 비서 모달 CSS */
+.ai-modal{position:fixed;inset:0;background:var(--fb-overlay);display:none;align-items:flex-end;justify-content:center;z-index:15000;}
+.ai-box{width:100%;max-width:600px;background:var(--fb-box-bg);border-top-left-radius:24px;border-top-right-radius:24px;box-shadow:0 -10px 40px rgba(0,0,0,0.5);display:flex;flex-direction:column;padding:20px;animation:slideUp 0.3s ease-out;}
+@keyframes slideUp{from{transform:translateY(100%);} to{transform:translateY(0);}}
+.ai-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.ai-title{font-size:18px;font-weight:900;color:var(--green);display:flex;align-items:center;gap:6px;}
+.ai-chat-area{background:var(--card);border-radius:16px;padding:16px;min-height:150px;max-height:40vh;overflow-y:auto;border:1px solid var(--line);margin-bottom:16px;display:flex;flex-direction:column;gap:12px;}
+.ai-bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.5;max-width:90%;word-break:break-word;}
+.ai-bubble.user{background:var(--button-bg);color:var(--text);align-self:flex-end;border-bottom-right-radius:4px;}
+.ai-bubble.bot{background:var(--button-bg-soft);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;border:1px solid var(--line);}
+.ai-bubble.error{background:rgba(255,77,79,0.1);color:var(--red);align-self:center;text-align:center;font-size:12px;}
+.ai-controls{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.ai-mic-btn{width:70px;height:70px;border-radius:50%;background:var(--button-bg);border:2px solid var(--line);color:var(--text);font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
+.ai-mic-btn.recording{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 0 0 8px rgba(25,195,125,0.2);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(25,195,125,0.4);} 70%{box-shadow:0 0 0 15px rgba(25,195,125,0);} 100%{box-shadow:0 0 0 0 rgba(25,195,125,0);}}
+.ai-status{font-size:13px;color:var(--muted);font-weight:700;text-align:center;line-height:1.4;}
+</style>
 </head>
 <body>
 
@@ -179,7 +189,25 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 </div>
 
 <div id="imageModal" class="image-modal" onclick="closeImageModal()"><img id="modalImage" alt=""></div>
+
+<button id="aiFabBtn" type="button">🤖 AI 질문 (BETA)</button>
 <button id="backToTopBtn" type="button">🔍 검색 돌아가기</button>
+
+<div id="aiModal" class="ai-modal" aria-hidden="true">
+  <div class="ai-box">
+    <div class="ai-head">
+      <div class="ai-title">🤖 AI 규정 비서</div>
+      <button id="aiCloseBtn" class="fb-close" type="button">닫기 ✕</button>
+    </div>
+    <div id="aiChatArea" class="ai-chat-area">
+      <div class="ai-bubble bot">안녕하세요! 궁금한 기준이나 자료가 있다면 마이크를 켜고 편하게 말씀해 주세요.</div>
+    </div>
+    <div class="ai-controls">
+      <button id="aiMicBtn" class="ai-mic-btn" type="button">🎤</button>
+      <div id="aiStatus" class="ai-status">마이크를 눌러 질문 시작하기<br>(전송하려면 마이크를 한 번 더 누르세요)</div>
+    </div>
+  </div>
+</div>
 
 <div id="fbModal" class="fb-modal" aria-hidden="true">
   <div class="fb-box" role="dialog" aria-modal="true">
@@ -188,20 +216,13 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
   </div>
 </div>
 
-<div id="gaPanel" aria-hidden="true">
-  <div class="gaPanelHead"><div class="gaPanelTitle">GA4 전송 확인</div><button id="gaClose" class="gaPanelClose" type="button">닫기 ✕</button></div>
-  <div class="gaPanelBody">
-    <div class="gaLine"><strong>현재 페이지:</strong> <span id="gaLoc"></span></div>
-    <div class="gaLine"><strong>측정 ID:</strong> <span id="gaIdTxt"></span></div>
-    <div class="gaLine"><strong>상태:</strong> <span id="gaStatus"></span></div>
-    <div class="gaLine" style="margin-top:8px"><strong>최근 전송 로그</strong></div>
-    <div id="gaLogs" class="gaLine" style="margin-top:6px"></div>
-    <div class="gaBtnRow"><button id="gaSendPing" type="button">테스트 전송</button><button id="gaClearLogs" type="button">로그 지우기</button></div>
-    <div class="gaHint">네트워크 확인용 디버그 패널입니다.</div>
-  </div>
-</div>
-
 <script>
+// ==========================================
+// 💡 API 키 적용 완료
+// ==========================================
+const GEMINI_API_KEY = "AIzaSyBmlQTUsnZIznMnVlGC2r75ve4gQZtV4LA";
+// ==========================================
+
 // --- 공통 상태 및 초기화 ---
 let DATA=[], TITLE_MAP={}, currentFontSize=14;
 let appliedOnly=false, criteriaCollapseAll=false, stdCollapseAll=false;
@@ -239,7 +260,7 @@ function scoreMatch(hayRaw, qRaw){
   return ch+(bh*3);
 }
 
-// --- 공통 음성 인식 함수 ---
+// --- 기본 탭 음성 검색 (단발성) ---
 function initVoiceSearch(btnId, statusId, inputEl, type, renderFn1, renderFn2) {
   const btn = document.getElementById(btnId), status = document.getElementById(statusId);
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -494,6 +515,220 @@ bTop.onclick=()=>{ const t=document.querySelector('.tab-content.active')?.id==='
   const m=document.getElementById('fbModal'), c=document.getElementById('fbClose');
   document.getElementById('feedbackBtn').onclick=()=>{m.style.display='flex'; document.getElementById('fbFrame').src="https://naver.me/5xgAWwSb";};
   c.onclick=()=>m.style.display='none'; m.onclick=e=>{if(e.target===m)m.style.display='none';}; window.addEventListener('keydown',e=>{if(e.key==='Escape')m.style.display='none';});
+})();
+
+// ==========================================
+// 💡 AI 비서 기능 (토글 방식 + 오타 문맥 교정)
+// ==========================================
+(() => {
+  const aiModal = document.getElementById('aiModal');
+  const aiFabBtn = document.getElementById('aiFabBtn');
+  const aiCloseBtn = document.getElementById('aiCloseBtn');
+  const aiMicBtn = document.getElementById('aiMicBtn');
+  const aiStatus = document.getElementById('aiStatus');
+  const aiChatArea = document.getElementById('aiChatArea');
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  let aiListening = false;
+  let finalQueryText = ""; 
+  let currentInterim = ""; // 진행 중인 문장
+
+  if (SR) {
+    recognition = new SR();
+    recognition.lang = "ko-KR";
+    recognition.interimResults = true; 
+    recognition.continuous = true; // 💡 길게 말해도 안 끊기게 설정
+  }
+
+  aiFabBtn.onclick = () => {
+    aiModal.style.display = 'flex';
+    aiModal.setAttribute('aria-hidden', 'false');
+  };
+  const closeAiModal = () => {
+    aiModal.style.display = 'none';
+    aiModal.setAttribute('aria-hidden', 'true');
+    if(aiListening && recognition) recognition.stop();
+    window.speechSynthesis.cancel();
+  };
+  aiCloseBtn.onclick = closeAiModal;
+  aiModal.onclick = (e) => { if(e.target === aiModal) closeAiModal(); };
+
+  function addMessage(text, isUser, isError = false) {
+    const div = document.createElement('div');
+    if (isError) {
+      div.className = 'ai-bubble error';
+    } else {
+      div.className = `ai-bubble ${isUser ? 'user' : 'bot'}`;
+    }
+    div.innerText = text; 
+    aiChatArea.appendChild(div);
+    aiChatArea.scrollTop = aiChatArea.scrollHeight;
+  }
+
+  function getContextFromData(query) {
+    let pool = [];
+    const qRaw = query || "";
+    
+    DATA.forEach(i => {
+      const score = scoreMatch(i.title, qRaw)*2 + scoreMatch(i.text, qRaw);
+      if(score > 0) pool.push({text: `[검사기준] ${i.title}: ${i.text}`, score});
+    });
+    STD_DATA.forEach(i => {
+      const score = scoreMatch(i.title, qRaw)*2 + scoreMatch(i.text, qRaw);
+      if(score > 0) pool.push({text: `[표준화자료] ${i.title}: ${i.text}`, score});
+    });
+
+    pool.sort((a,b) => b.score - a.score);
+    const topResults = pool.slice(0, 5).map(x => x.text).join("\n\n");
+    return topResults || "관련 데이터가 없습니다.";
+  }
+
+  async function askGemini(userQuery, contextText) {
+    // 💡 [개선] 승강기 용어 오타 문맥 교정을 위한 강력한 프롬프트 적용
+    const prompt = `
+너는 승강기 안전기준을 안내하는 전문 AI 비서야.
+아래에 제공된 [참고 자료] 내용만을 바탕으로 검사원의 [질문]에 답변해줘.
+
+[참고 자료]
+${contextText}
+
+[질문]
+${userQuery}
+
+규칙:
+1. 반드시 [참고 자료] 내용만 사용할 것 (배경지식 사용 금지).
+2. [참고 자료]에 답이 없다면 "해당 내용을 찾을 수 없습니다."라고만 말할 것.
+3. 2~3문장으로 간결하고 명확하게 존댓말로 답변할 것.
+4. 중요: 음성 인식 오류로 인한 오타(예: '비트' -> '피트', '차' -> '카', '도어' -> '문' 등)가 의심될 경우, 승강기 검사기준 문맥에 맞게 스스로 교정하여 이해하고 답변할 것.
+`;
+
+    const modelsToTry = [
+      'gemini-1.5-flash',
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-pro',
+      'gemini-1.0-pro',
+      'gemini-pro'
+    ];
+
+    let lastErrorMsg = "";
+
+    for (const modelName of modelsToTry) {
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          lastErrorMsg = data.error.message;
+          continue; 
+        }
+        
+        return { success: true, text: data.candidates[0].content.parts[0].text };
+        
+      } catch (error) {
+        lastErrorMsg = error.message;
+      }
+    }
+
+    return { 
+      success: false, 
+      text: `통신 오류가 발생했습니다.\n\n[마지막 원인: ${lastErrorMsg}]\n\n※ 로컬 환경이거나 사내망 접속 차단 문제일 수 있습니다.` 
+    };
+  }
+
+  function speakText(text) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1.1;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // 💡 [개선] 마이크 토글 로직: 켰다 끄기
+  aiMicBtn.onclick = () => {
+    if (!recognition) {
+      aiStatus.textContent = "음성 인식을 지원하지 않는 브라우저입니다.";
+      return;
+    }
+
+    if (aiListening) {
+      // 2. 이미 듣고 있을 때 버튼을 누르면 강제 종료 -> onend 함수가 실행됨
+      recognition.stop(); 
+      return;
+    }
+
+    // 1. 처음 듣기 시작할 때
+    finalQueryText = ""; 
+    currentInterim = "";
+    window.speechSynthesis.cancel();
+    aiListening = true;
+    aiMicBtn.classList.add('recording');
+    aiStatus.textContent = "자유롭게 말씀하신 후 마이크를 한 번 더 누르세요.";
+    recognition.start();
+  };
+
+  recognition.onresult = (event) => {
+    currentInterim = "";
+    let newlyFinal = "";
+    
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) {
+        newlyFinal += event.results[i][0].transcript;
+      } else {
+        currentInterim += event.results[i][0].transcript;
+      }
+    }
+    
+    if (newlyFinal) {
+      finalQueryText += newlyFinal + " "; // 띄어쓰기로 이어붙이기
+    }
+
+    // 중간 결과 숨기지 않고 화면에 표시해서 사용자가 잘 듣고 있는지 확인하게 함
+    aiStatus.innerHTML = `듣는 중: <span style="color:#19c37d">${finalQueryText + currentInterim}</span>`;
+  };
+
+  recognition.onend = async () => {
+    // 💡 마이크가 꺼졌을 때 최종적으로 한 번만 실행됨
+    aiListening = false;
+    aiMicBtn.classList.remove('recording');
+
+    // 최종 확정된 텍스트 + 혹시 확정 안 된 마지막 문장까지 싹 긁어모음
+    const query = (finalQueryText + currentInterim).trim();
+    
+    // 다음 질문을 위해 초기화
+    finalQueryText = ""; 
+    currentInterim = "";
+
+    if (!query) {
+      aiStatus.innerHTML = "마이크를 눌러 질문 시작하기<br>(전송하려면 마이크를 한 번 더 누르세요)";
+      return;
+    }
+
+    aiStatus.textContent = "AI가 생각 중입니다... 🤔";
+    addMessage(query, true);
+
+    const context = getContextFromData(query);
+    const aiResponse = await askGemini(query, context);
+
+    aiStatus.innerHTML = "마이크를 눌러 다시 질문하기<br>(전송하려면 마이크를 한 번 더 누르세요)";
+    
+    if (aiResponse.success) {
+      addMessage(aiResponse.text, false);
+      speakText(aiResponse.text);
+    } else {
+      addMessage(aiResponse.text, false, true); 
+    }
+  };
+
+  recognition.onerror = (event) => {
+    aiStatus.textContent = `마이크 오류: ${event.error} (다시 눌러주세요)`;
+  };
+
 })();
 </script>
 </body>
