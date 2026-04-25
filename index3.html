@@ -103,10 +103,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
   <div class="header-inner">
     <div class="header-left">
       <div class="brand">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <h1>AI TL</h1>
-          <span style="font-size:11px; color:var(--muted); font-weight:800; letter-spacing:-0.5px;">📅 26.04.07</span>
-        </div>
+        <h1>AI TL</h1>
         <div class="sub">안전기준 적용 판단 프로그램</div>
       </div>
       <div class="tab-buttons" aria-label="화면 전환 탭">
@@ -114,14 +111,18 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
         <button class="tab-btn" type="button" data-tab="standard">표준화자료</button>
       </div>
     </div>
-    <div class="font-controls">
-      <button id="headerRecentBtn" type="button" title="최근 검색어">🕒 최근</button>
-      <button id="headerFavBtn" type="button" title="즐겨찾기">⭐ 목록</button>
-      <button id="headerAppliedBtn" type="button" title="적용기준">✅ 적용</button>
-      <button id="headerCollapseBtn" type="button" title="내용접기">🔽 접기</button>
-      <button id="themeToggle" type="button" title="화면 모드 전환">☀️</button>
-      <button id="increase-font" type="button" title="글자 크게">A+</button>
-      <button id="decrease-font" type="button" title="글자 작게">A−</button>
+    
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; min-width:0;">
+      <div style="font-size:11px; color:var(--muted); font-weight:800; padding-right:2px; letter-spacing:-0.5px;">최근 업데이트날짜 : 26.04.07</div>
+      <div class="font-controls">
+        <button id="headerRecentBtn" type="button" title="최근 검색어">🕒 최근</button>
+        <button id="headerFavBtn" type="button" title="즐겨찾기">⭐ 목록</button>
+        <button id="headerAppliedBtn" type="button" title="적용기준">✅ 적용</button>
+        <button id="headerCollapseBtn" type="button" title="내용접기">🔽 접기</button>
+        <button id="themeToggle" type="button" title="화면 모드 전환">☀️</button>
+        <button id="increase-font" type="button" title="글자 크게">A+</button>
+        <button id="decrease-font" type="button" title="글자 작게">A−</button>
+      </div>
     </div>
   </div>
 </header>
@@ -230,7 +231,7 @@ function scoreMatch(hayRaw, qRaw){
   return ch+(bh*3);
 }
 
-// --- 💡 헤더 버튼 렌더링 로직 (ON/OFF 텍스트 제거) ---
+// --- 헤더 버튼 렌더링 로직 ---
 function updateHeaderBtns() {
   const isCriteria = document.getElementById('criteria').classList.contains('active');
   headerAppliedBtn.style.display = isCriteria ? 'inline-flex' : 'none';
@@ -398,7 +399,7 @@ function highlight(t,k){
 function renderImage(img){ return img?`<div style="margin-top:10px"><img src="${img}" style="width:100%;max-width:400px;cursor:zoom-in;border:1px solid var(--img-border);border-radius:8px;" onclick="document.getElementById('modalImage').src='${img}';document.getElementById('imageModal').style.display='flex';" alt=""><div style="margin-top:4px;font-size:12px;color:var(--img-caption);text-align:center">※ 클릭하여 확대</div></div>`:''; }
 function closeImageModal(){ document.getElementById('imageModal').style.display='none'; }
 
-// --- [탭 1] 검사기준 로직 (💡 상대 경로 적용) ---
+// --- [탭 1] 검사기준 로직 ---
 fetch('./data/criteria.json').then(r=>r.json()).then(j=>{
   DATA=j.criteria||[]; DATA.forEach(i=>{if(!TITLE_MAP[i.title])TITLE_MAP[i.title]=[]; TITLE_MAP[i.title].push(i);});
   renderTopics(); renderResults(); updateHeaderBtns();
@@ -448,7 +449,7 @@ search.oninput=()=>{ renderTopics(); renderResults(); clearTimeout(criteriaTimer
 document.getElementById('reset').onclick=()=>{ search.value=''; dateEl.value=''; appliedOnly=false; updateHeaderBtns(); document.querySelectorAll('#topics input').forEach(c=>c.checked=false); renderTopics(); renderResults(); };
 dateEl.addEventListener('input',renderResults); dateEl.addEventListener('change',renderResults);
 
-// --- [탭 2] 표준화자료 로직 (💡 상대 경로 적용) ---
+// --- [탭 2] 표준화자료 로직 ---
 function initStandardTab(){
   if(stdInitialized) return; stdInitialized=true;
   fetch('./data/standardization.json').then(r=>r.json()).then(j=>{
