@@ -27,7 +27,7 @@ h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
 .font-controls button.active-toggle{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
 .font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle{width:28px !important; padding:0; font-size:12px;}
 
-/* 💡 모바일 1열 가로 스와이프 UI 완벽 적용 */
+/* 💡 모바일 1열 가로 스와이프 UI 및 극한 여백/자간 압축 */
 @media(max-width:900px){
   .header-inner{flex-direction:column;align-items:stretch; padding:3px 10px;} 
   .header-left{flex-direction:column;align-items:flex-start;gap:6px;} 
@@ -43,7 +43,7 @@ h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
     padding-bottom: 2px;
     -ms-overflow-style: none; scrollbar-width: none; justify-content:flex-start;
   }
-  .font-controls::-webkit-scrollbar { display: none; } 
+  .font-controls::-webkit-scrollbar { display: none; }
   
   .font-controls button { 
     width: auto !important;
@@ -126,7 +126,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 <div class="wrap">
   <section id="criteria" class="tab-content active">
     <div class="panel">
-      <div style="text-align:right; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight: 700;">📅 업데이트: 2026.04.25</div>
+      <div style="text-align:right; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight: 700;">📅 업데이트: 2026.04.07</div>
       <div class="controls">
         <div>
           <div style="display:flex; gap:4px; align-items:center;">
@@ -154,7 +154,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
   <section id="standard" class="tab-content">
     <div class="standard-wrap">
       <div class="std-panel">
-        <div style="text-align:right; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight: 700;">📅 업데이트: 2026.04.25</div>
+        <div style="text-align:right; font-size:11px; color:var(--muted); margin-bottom:8px; font-weight: 700;">📅 업데이트: 2026.04.07</div>
         <div class="std-toolbar" style="display:flex; gap:4px; align-items:center;">
           <input id="stdSearch" placeholder="표준화자료 검색 (키워드/제목/내용)" />
           <button id="stdClear" type="button" title="검색어 지우기" style="width:auto !important; padding:0 12px; font-size:14px; height:38px;">✕</button>
@@ -397,8 +397,8 @@ function highlight(t,k){
 function renderImage(img){ return img?`<div style="margin-top:10px"><img src="${img}" style="width:100%;max-width:400px;cursor:zoom-in;border:1px solid var(--img-border);border-radius:8px;" onclick="document.getElementById('modalImage').src='${img}';document.getElementById('imageModal').style.display='flex';" alt=""><div style="margin-top:4px;font-size:12px;color:var(--img-caption);text-align:center">※ 클릭하여 확대</div></div>`:''; }
 function closeImageModal(){ document.getElementById('imageModal').style.display='none'; }
 
-// --- [탭 1] 검사기준 로직 (💡 절대경로) ---
-fetch('https://sjh01046934-design.github.io/elevator-simulator2/data/criteria.json').then(r=>r.json()).then(j=>{
+// --- [탭 1] 검사기준 로직 (💡 상대 경로 적용) ---
+fetch('./data/criteria.json').then(r=>r.json()).then(j=>{
   DATA=j.criteria||[]; DATA.forEach(i=>{if(!TITLE_MAP[i.title])TITLE_MAP[i.title]=[]; TITLE_MAP[i.title].push(i);});
   renderTopics(); renderResults(); updateHeaderBtns();
 }).catch(()=>resultsEl.innerHTML='<div class="card"><div class="title">데이터 로드 실패</div></div>');
@@ -447,10 +447,10 @@ search.oninput=()=>{ renderTopics(); renderResults(); clearTimeout(criteriaTimer
 document.getElementById('reset').onclick=()=>{ search.value=''; dateEl.value=''; appliedOnly=false; updateHeaderBtns(); document.querySelectorAll('#topics input').forEach(c=>c.checked=false); renderTopics(); renderResults(); };
 dateEl.addEventListener('input',renderResults); dateEl.addEventListener('change',renderResults);
 
-// --- [탭 2] 표준화자료 로직 (💡 절대경로) ---
+// --- [탭 2] 표준화자료 로직 (💡 상대 경로 적용) ---
 function initStandardTab(){
   if(stdInitialized) return; stdInitialized=true;
-  fetch('https://sjh01046934-design.github.io/elevator-simulator2/data/standardization.json').then(r=>r.json()).then(j=>{
+  fetch('./data/standardization.json').then(r=>r.json()).then(j=>{
     STD_DATA=Array.isArray(j)?j:(j.standardization||[]); STD_KEYWORD_MAP={};
     STD_DATA.forEach(i=>{ const k=i.keyword||"기타"; if(!STD_KEYWORD_MAP[k])STD_KEYWORD_MAP[k]=[]; STD_KEYWORD_MAP[k].push(i); });
     stdLoaded=true; renderStdTree(); renderStdList();
