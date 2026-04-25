@@ -6,47 +6,49 @@
 <title>AI TL - 안전기준 적용 판단 프로그램</title>
 <link rel="icon" href="data:,">
 <style>
-/* 1. 디자인 시스템 (CSS 변수) */
+/* [1] 디자인 시스템 & 테마 */
 :root{--bg:#0b1220;--bg-grad-1:#14234a;--bg-grad-2:#0b1220;--card:#111b2e;--card-soft:rgba(17,27,46,.72);--panel-top:rgba(255,255,255,.04);--panel-bottom:rgba(255,255,255,.02);--muted:#9fb0d0;--text:#e7eefc;--green:#19c37d;--red:#ff4d4f;--line:#22314f;--shadow:0 10px 30px rgba(0,0,0,.35);--input-bg:rgba(10,16,30,.55);--button-bg:rgba(22,37,69,.85);--button-bg-soft:rgba(22,37,69,.65);--button-hover:rgba(35,60,105,.95);--header-bg-1:rgba(11,18,32,.98);--header-bg-2:rgba(11,18,32,.92);--tab-bg:rgba(22,37,69,.55);--tab-active-bg:rgba(25,195,125,.95);--tab-active-text:#00120a;--topic-border:rgba(255,255,255,.08);--keyword-border:rgba(255,255,255,.08);--keyword-bg:rgba(10,16,30,.25);--keyword-hover:rgba(255,255,255,.04);--title-list-border:rgba(255,255,255,.06);--title-list-bg:rgba(255,255,255,.02);--title-btn-bg:rgba(255,255,255,.02);--title-btn-hover:rgba(255,255,255,.06);--title-btn-active:rgba(25,195,125,.14);--title-btn-active-border:rgba(25,195,125,.65);--modal-bg:rgba(0,0,0,.85);--fb-overlay:rgba(0,0,0,.72);--fb-box-bg:rgba(17,27,46,.98);--selected-bg:#b6ff5c;--selected-text:#000;--img-caption:#9fb0d0;--img-border:#22314f;--mark-bg:yellow;--mark-text:black;--chip-bg:rgba(255,255,255,.05);--chip-border:rgba(255,255,255,.08);--chip-hover:rgba(255,255,255,.10);--fav:#ffd54a;}
 body.light-mode{--bg:#f5f7fb;--bg-grad-1:#ffffff;--bg-grad-2:#eef3fb;--card:#ffffff;--card-soft:#ffffff;--panel-top:rgba(255,255,255,.96);--panel-bottom:rgba(245,248,252,.96);--muted:#5f6f86;--text:#1a2433;--green:#0f9f61;--red:#d83a3a;--line:#d8e0ec;--shadow:0 8px 24px rgba(17,24,39,.08);--input-bg:#ffffff;--button-bg:#edf2fa;--button-bg-soft:#f4f7fb;--button-hover:#dfe8f5;--header-bg-1:rgba(255,255,255,.96);--header-bg-2:rgba(248,250,253,.92);--tab-bg:#f1f5fb;--tab-active-bg:#19c37d;--tab-active-text:#ffffff;--topic-border:rgba(26,36,51,.08);--keyword-border:rgba(26,36,51,.08);--keyword-bg:#f8fafc;--keyword-hover:#eef3f9;--title-list-border:rgba(26,36,51,.08);--title-list-bg:#fcfdff;--title-btn-bg:#ffffff;--title-btn-hover:#f3f7fc;--title-btn-active:rgba(25,195,125,.10);--title-btn-active-border:rgba(25,195,125,.45);--modal-bg:rgba(20,28,40,.72);--fb-overlay:rgba(20,28,40,.48);--fb-box-bg:#ffffff;--selected-bg:#d8ff85;--selected-text:#111;--img-caption:#5f6f86;--img-border:#d8e0ec;--mark-bg:#fff29a;--mark-text:#111;--chip-bg:#f7f9fc;--chip-border:#dde6f1;--chip-hover:#eef4fb;--fav:#e0a800;}
 
-/* 2. 레이아웃 및 헤더 (날짜 높이 정렬 수정) */
+/* [2] 레이아웃 & 헤더 (높이 정렬 핵심 수정) */
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,var(--bg-grad-1) 0%,var(--bg-grad-2) 60%);color:var(--text);font-size:14px;transition:background .25s,color .25s;}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,var(--bg-grad-1) 0%,var(--bg-grad-2) 60%);color:var(--text);font-size:14px;transition:background .25s,color .25s; overflow-x:hidden;}
 .wrap{max-width:1200px;margin:0 auto;padding:14px 16px 140px}
 header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, var(--header-bg-1), var(--header-bg-2));border-bottom:1px solid var(--line);backdrop-filter:blur(6px);}
-.header-inner{max-width:1200px;margin:0 auto;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.header-inner{max-width:1200px;margin:0 auto;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:nowrap;}
 
-/* 왼쪽: 제목+날짜 같은 라인 */
-.header-left{display:flex;flex-direction:column;gap:4px;min-width:0;}
-.brand-row{display:flex;align-items:baseline;gap:10px;} /* 핵심: 제목과 날짜 한 줄 배치 */
+.header-left{display:flex;flex-direction:column;gap:2px;min-width:0;flex-shrink:1;}
+.brand-row{display:flex;align-items:baseline;gap:8px;} /* 제목과 날짜 높이 정렬 */
 h1{margin:0;font-size:19px;font-weight:900;letter-spacing:-0.5px;}
 .update-date{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:-0.5px;white-space:nowrap;}
-.sub{font-size:12px;color:var(--muted);}
+.sub{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-/* 오른쪽: 탭+컨트롤 */
-.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
-.tab-buttons{display:inline-flex;gap:4px;}
-.tab-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;cursor:pointer;font-size:12px;}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;}
+.tab-buttons{display:inline-flex;gap:4px;align-items:center;}
+.tab-btn{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;cursor:pointer;white-space:nowrap;font-size:12px;}
 .tab-btn.active{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
 
 .font-controls{display:flex;gap:4px;align-items:center;}
-.font-controls button{height:28px; padding:0 5px; border-radius:6px; border:1px solid var(--line); background:var(--button-bg); color:var(--text); font-weight:800; cursor:pointer; font-size:11px; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center;}
+.font-controls button{height:28px; padding:0 5px; border-radius:6px; border:1px solid var(--line); background:var(--button-bg); color:var(--text); font-weight:800; cursor:pointer; white-space:nowrap; font-size:11px; display:inline-flex; align-items:center; justify-content:center;}
 .font-controls button.active-toggle{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
-.font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle{width:28px; padding:0;}
+.font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle{width:28px !important; padding:0; font-size:12px;}
 
-/* 3. 모바일 대응 */
 @media(max-width:900px){
-  .header-inner{flex-direction:column;align-items:stretch; padding:8px 10px;}
-  .header-left{align-items:flex-start;}
-  .brand-row{width:100%; justify-content:space-between;}
-  .header-right{align-items:stretch; margin-top:2px;}
-  .font-controls{overflow-x:auto; padding-bottom:2px; -ms-overflow-style:none; scrollbar-width:none;}
-  .font-controls::-webkit-scrollbar{display:none;}
-  .font-controls button{flex-shrink:0;}
+  .header-inner{flex-direction:column;align-items:stretch; padding:6px 10px; gap:8px;} 
+  .brand-row{justify-content:space-between;}
+  .header-right{align-items:stretch;}
+  .font-controls {
+    flex-wrap: nowrap; 
+    overflow-x: auto;  
+    width: 100%; 
+    gap: 4px;          
+    padding-bottom: 2px;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  .font-controls::-webkit-scrollbar { display: none; }
 }
 
-/* 4. 공통 UI 요소 */
+/* [3] 주요 패널 및 컨트롤 */
 .tab-content{display:none} .tab-content.active{display:block}
 .panel, .std-panel{background:linear-gradient(180deg, var(--panel-top), var(--panel-bottom));border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:var(--shadow);margin-top:8px;}
 .controls{display:grid;grid-template-columns:2.5fr 1fr;gap:8px;} @media(max-width:900px){.controls{display:flex;flex-direction:column}}
@@ -57,30 +59,29 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 .topics{border:1px solid var(--line);border-radius:10px;padding:6px;max-height:160px;overflow-y:auto;background:var(--card);}
 .topic{display:flex;gap:8px;align-items:flex-start;padding:4px 2px;border-bottom:1px dashed var(--topic-border)} .topic:last-child{border-bottom:none} .topic input{width:auto;margin-top:2px} .topic span{font-size:12px}
 .grid, .std-list{display:grid;gap:10px;margin-top:12px}
+
+/* [4] 결과 카드 스타일 */
 .card, .std-item{background:var(--card-soft);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow);}
 .card-header, .std-item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
-.title, .std-title{font-weight:800; font-size:14px; margin:0;}
+.title, .std-title{font-weight:800; font-size:14.5px; margin:0;} 
 .badge{font-size:11px;font-weight:800;text-align:right} .ok{color:var(--green)} .no{color:var(--red)}
-.row, .std-content{margin-top:6px; font-size:13px; line-height:1.5; white-space:pre-line;}
+.row, .std-content{margin-top:6px; white-space:pre-line; line-height:1.5; font-size:13px; color:var(--text); opacity:0.95;}
 mark{background:var(--mark-bg);color:var(--mark-text)}
-.selected-title{background:var(--selected-bg);color:var(--selected-text);padding:1px 4px;border-radius:4px;}
+.selected-title{display:inline-block;background:var(--selected-bg);color:var(--selected-text);padding:1px 6px;border-radius:6px;}
 
-/* 모달 및 기타 기능 */
 .image-modal{position:fixed;inset:0;background:var(--modal-bg);display:none;align-items:center;justify-content:center;z-index:9999;cursor:zoom-out;} .image-modal img{max-width:95%;max-height:95%;border-radius:8px;}
 #backToTopBtn{position:fixed;right:18px;bottom:18px;width:auto;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:800;cursor:pointer;display:none;z-index:999;font-size:12px;}
-.ai-modal{position:fixed;inset:0;background:var(--fb-overlay);display:none;align-items:flex-end;justify-content:center;z-index:15000;}
-.ai-box{width:100%;max-width:600px;background:var(--fb-box-bg);border-top-left-radius:20px;border-top-right-radius:20px;padding:16px;animation:slideUp 0.3s;}
-@keyframes slideUp{from{transform:translateY(100%);} to{transform:translateY(0);}}
-.chip-row{display:flex;flex-wrap:wrap;gap:4px} .chip{width:auto !important;padding:6px 8px;border-radius:999px;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text);font-size:11px;}
-.card-toolbar, .std-card-toolbar{display:flex;justify-content:flex-end;gap:4px;margin-top:8px;}
-.small-action-btn{width:auto !important;padding:5px 8px;border-radius:6px;font-size:11px;border:1px solid var(--line);} .small-action-btn.starred{color:var(--fav);border-color:var(--fav);}
 
-/* 표준화자료 전용 */
-.std-chapters{margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:8px;max-height:200px;overflow-y:auto;}
-.std-keyword-btn{width:100%;display:flex;justify-content:space-between;padding:6px;background:transparent;border:none;color:var(--text);font-weight:800;text-align:left;}
-.std-title-list{display:none;padding:4px 8px;gap:2px;} .std-title-list.open{display:grid;}
-.std-title-btn{width:100%;text-align:left;padding:5px 8px;background:var(--title-btn-bg);border:none;border-radius:4px;font-size:11px;color:var(--text);}
-.std-title-btn.active{background:var(--tab-active-bg);color:var(--tab-active-text);}
+/* 유틸리티 모달 (최근/목록) */
+.ai-modal{position:fixed;inset:0;background:var(--fb-overlay);display:none;align-items:flex-end;justify-content:center;z-index:15000;}
+.ai-box{width:100%;max-width:600px;background:var(--fb-box-bg);border-top-left-radius:20px;border-top-right-radius:20px;padding:16px;animation:slideUp 0.3s ease-out;}
+@keyframes slideUp{from{transform:translateY(100%);} to{transform:translateY(0);}}
+.chip-row{display:flex;flex-wrap:wrap;gap:5px} .chip{width:auto !important;padding:7px 10px;border-radius:999px;background:var(--chip-bg);border:1px solid var(--chip-border);color:var(--text);font-size:11.5px;font-weight:700;}
+.card-toolbar, .std-card-toolbar{display:flex;justify-content:flex-end;gap:4px;margin-top:8px;}
+.small-action-btn{width:auto !important;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg-soft);color:var(--text);font-weight:800;font-size:11px;} 
+.small-action-btn.starred{border-color:rgba(255,213,74,.55);color:var(--fav);}
+.text-preview, .std-preview{display:none;margin-top:6px;color:var(--muted);font-size:12px;}
+.collapsed .row, .collapsed .std-content, .collapsed .image-wrap{display:none;} .collapsed .text-preview, .collapsed .std-preview{display:block;}
 </style>
 </head>
 <body>
@@ -96,7 +97,7 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
     </div>
     
     <div class="header-right">
-      <div class="tab-buttons">
+      <div class="tab-buttons" aria-label="화면 전환 탭">
         <button class="tab-btn active" type="button" data-tab="criteria">검사기준</button>
         <button class="tab-btn" type="button" data-tab="standard">표준화자료</button>
       </div>
@@ -118,18 +119,19 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
     <div class="panel">
       <div class="controls">
         <div>
-          <div style="display:flex; gap:4px;">
-            <input id="search" placeholder="검색어 입력">
-            <button id="reset" style="width:auto; padding:0 12px;">✕</button>
-            <button id="voiceBtn" style="width:auto; padding:0 12px;">🎤</button>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <input id="search" placeholder="검사항목 or 기준내용 검색">
+            <button id="reset" type="button" style="width:auto; padding:0 12px; height:38px;">✕</button>
+            <button id="voiceBtn" type="button" style="width:auto; padding:0 12px; height:38px;">🎤</button>
           </div>
-          <div id="voiceStatus" style="font-size:10px; color:var(--muted); margin-top:2px;"></div>
-          <label style="margin-top:8px;">검사항목 선택</label>
+          <div id="voiceStatus" style="font-size:10px; margin-top:2px; color:var(--muted);"></div>
+          <label style="margin-top: 10px;">검사항목 선택</label>
           <div class="topics" id="topics"></div>
         </div>
         <div>
           <label>건축허가일</label>
           <input type="date" id="date">
+          <div style="margin-top:6px; font-size:10px; color:var(--muted);">※ 날짜 입력 시 적용 여부 자동 판단</div>
         </div>
       </div>
     </div>
@@ -138,63 +140,52 @@ mark{background:var(--mark-bg);color:var(--mark-text)}
 
   <section id="standard" class="tab-content">
     <div class="std-panel">
-      <div style="display:flex; gap:4px;">
-        <input id="stdSearch" placeholder="표준화자료 검색">
-        <button id="stdClear" style="width:auto; padding:0 12px;">✕</button>
-        <button id="stdVoiceBtn" style="width:auto; padding:0 12px;">🎤</button>
+      <div style="display:flex; gap:4px; align-items:center;">
+        <input id="stdSearch" placeholder="표준화자료 키워드/내용 검색">
+        <button id="stdClear" type="button" style="width:auto; padding:0 12px; height:38px;">✕</button>
+        <button id="stdVoiceBtn" type="button" style="width:auto; padding:0 12px; height:38px;">🎤</button>
       </div>
-      <div class="std-chapters" id="stdChapters"></div>
+      <div id="stdVoiceStatus" style="font-size:10px; margin-top:2px; color:var(--muted);"></div>
+      <div class="std-chapters" id="stdChapters" style="margin-top:8px;"></div>
     </div>
     <div class="std-list" id="stdList"></div>
   </section>
 </div>
 
-<div id="imageModal" class="image-modal" onclick="this.style.display='none'"><img id="modalImage"></div>
-<button id="backToTopBtn" type="button">🔍 위로</button>
+<div id="imageModal" class="image-modal" onclick="this.style.display='none'"><img id="modalImage" alt=""></div>
+<button id="backToTopBtn" type="button">🔍 검색창 이동</button>
 
 <div id="utilModal" class="ai-modal">
   <div class="ai-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <div id="utilModalTitle" style="font-weight:900;color:var(--green)">메뉴</div>
-      <button onclick="document.getElementById('utilModal').style.display='none'" style="width:auto;padding:4px 8px;font-size:11px;">닫기 ✕</button>
+      <div id="utilModalTitle" style="font-weight:900; color:var(--text);">메뉴</div>
+      <button onclick="document.getElementById('utilModal').style.display='none'" style="width:auto; padding:4px 10px;">닫기 ✕</button>
     </div>
-    <div id="utilModalBody"></div>
+    <div id="utilModalBody" style="max-height:40vh; overflow-y:auto;"></div>
     <div style="text-align:right; margin-top:10px; border-top:1px solid var(--line); padding-top:8px;">
-      <button id="utilClearBtn" style="width:auto; font-size:11px; padding:4px 8px;">전체 지우기</button>
+      <button id="utilClearBtn" style="width:auto; padding:6px 12px; font-size:11px;">전체 삭제</button>
     </div>
   </div>
 </div>
 
 <script>
-// --- 전역 변수 및 상태 ---
+// --- [1] 전역 상태 및 데이터 관리 ---
 let DATA=[], TITLE_MAP={}, currentFontSize=14;
 let STD_DATA=[], STD_KEYWORD_MAP={}, stdInitialized=false;
 let appliedOnly=false, criteriaCollapseAll=false, stdCollapseAll=false;
 let stdOpenKeyword=null, stdSelectedTitle=null;
 
 const storage = {
-  recentC: JSON.parse(localStorage.getItem('rc_c')||'[]'),
-  favC: JSON.parse(localStorage.getItem('fc_c')||'[]'),
-  recentS: JSON.parse(localStorage.getItem('rc_s')||'[]'),
-  favS: JSON.parse(localStorage.getItem('fc_s')||'[]')
+  get: (k)=>JSON.parse(localStorage.getItem(k)||'[]'),
+  set: (k,v)=>localStorage.setItem(k,JSON.stringify(v)),
+  addRecent: (k,v)=>{ let a=storage.get(k); if(!v.trim())return; a=[v.trim(),...a.filter(x=>x!==v.trim())].slice(0,10); storage.set(k,a); }
 };
 
-// --- 초기 로드 ---
+// --- [2] 데이터 로드 ---
 fetch('./data/criteria.json').then(r=>r.json()).then(j=>{
   DATA=j.criteria||[]; DATA.forEach(i=>{if(!TITLE_MAP[i.title])TITLE_MAP[i.title]=[]; TITLE_MAP[i.title].push(i);});
   renderTopics(); renderResults();
-});
-
-// --- 탭 전환 ---
-document.querySelectorAll(".tab-btn").forEach(btn=>btn.onclick=()=>{
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".tab-content").forEach(s=>s.classList.remove("active"));
-  btn.classList.add("active");
-  const targetId = btn.dataset.tab;
-  document.getElementById(targetId).classList.add("active");
-  if(targetId==='standard') initStandard();
-  updateHeaderUI();
-});
+}).catch(()=>console.error("검사기준 로드 실패"));
 
 function initStandard(){
   if(stdInitialized) return;
@@ -202,15 +193,15 @@ function initStandard(){
     STD_DATA=Array.isArray(j)?j:(j.standardization||[]);
     STD_DATA.forEach(i=>{ const k=i.keyword||"기타"; if(!STD_KEYWORD_MAP[k])STD_KEYWORD_MAP[k]=[]; STD_KEYWORD_MAP[k].push(i); });
     stdInitialized=true; renderStdTree(); renderStdList();
-  });
+  }).catch(()=>console.error("표준화자료 로드 실패"));
 }
 
-// --- 검색 및 렌더링 (검사기준) ---
+// --- [3] 렌더링 코어 로직 ---
 const search=document.getElementById('search'), resultsEl=document.getElementById('results'), topicsEl=document.getElementById('topics');
 
 function renderTopics(){
-  const q=(search.value||'').toLowerCase(); topicsEl.innerHTML='';
-  Object.keys(TITLE_MAP).filter(t=>t.toLowerCase().includes(q)).slice(0,100).forEach(t=>{
+  const q=(search.value||'').toLowerCase().replace(/\s/g,''); topicsEl.innerHTML='';
+  Object.keys(TITLE_MAP).filter(t=>t.toLowerCase().replace(/\s/g,'').includes(q)).forEach(t=>{
     const l=document.createElement('label'); l.className='topic';
     l.innerHTML=`<input type="checkbox" value="${t}" onchange="renderResults()"><span>${t}</span>`;
     topicsEl.appendChild(l);
@@ -219,96 +210,141 @@ function renderTopics(){
 
 function renderResults(){
   const sel=new Set([...document.querySelectorAll('#topics input:checked')].map(c=>c.value));
-  const q=search.value.toLowerCase(); resultsEl.innerHTML='';
-  let list = DATA.filter(i=> (sel.size===0 || sel.has(i.title)) && (i.title+i.text).toLowerCase().includes(q));
+  const qRaw=search.value.trim(), q=qRaw.toLowerCase().replace(/\s/g,'');
+  resultsEl.innerHTML='';
+  
+  let list = DATA.filter(i=> (sel.size===0 || sel.has(i.title)) && (i.title+i.text).toLowerCase().replace(/\s/g,'').includes(q));
   if(appliedOnly) list=list.filter(i=>isApplied(document.getElementById('date').value, i.from, i.to));
+
+  if(!list.length){ resultsEl.innerHTML='<div class="card">결과가 없습니다.</div>'; return; }
 
   list.forEach(i=>{
     const app=isApplied(document.getElementById('date').value, i.from, i.to);
-    const fav=storage.favC.includes(i.title);
+    const fav=storage.get('fav_c').includes(i.title);
     resultsEl.innerHTML += `
-      <div class="card ${criteriaCollapseAll?'collapsed':''}">
+      <div class="card ${criteriaCollapseAll?'collapsed':''}" data-title="${i.title}">
         <div class="card-header">
-          <div class="title ${sel.has(i.title)?'selected-title':''}">${i.title}</div>
-          <div class="badge ${app?'ok':'no'}">${app?'🟩 적용':'🟥 미적용'}<br><span style="font-size:9px;color:var(--muted)">${i.from||'—'}~</span></div>
+          <div class="title ${sel.has(i.title)?'selected-title':''}">${highlight(i.title, qRaw)}</div>
+          <div class="badge ${app?'ok':'no'}">${app?'🟩 적용':'🟥 미적용'}<br><span style="font-size:9px;color:var(--muted)">${i.from||'—'}~${i.to||'현재'}</span></div>
         </div>
-        <div class="row">${i.text}</div>
+        <div class="text-preview">${i.text.slice(0,50)}...</div>
+        <div class="row">${highlight(i.text, qRaw)}</div>
+        <div class="image-wrap">${i.image?`<img src="${i.image}" style="width:100%; margin-top:10px; border-radius:8px; cursor:zoom-in;" onclick="openImg('${i.image}')">`:''}</div>
         <div class="card-toolbar">
-          <button class="small-action-btn ${fav?'starred':''}" onclick="toggleFav('C','${i.title}')">${fav?'⭐':'☆'}</button>
+          <button class="small-action-btn ${fav?'starred':''}" onclick="toggleFav('c','${i.title}')">${fav?'⭐ 목록':'☆ 추가'}</button>
+          <button class="small-action-btn" onclick="this.closest('.card').classList.toggle('collapsed')">접기/펴기</button>
         </div>
       </div>`;
   });
 }
 
-const isApplied=(d,f,t)=>{ if(!d)return false; const b=new Date(d); return (!f||b>=new Date(f))&&(!t||b<=new Date(t)); };
-
-search.oninput=()=>{ renderTopics(); renderResults(); };
-document.getElementById('date').oninput=renderResults;
-document.getElementById('reset').onclick=()=>{ search.value=''; renderTopics(); renderResults(); };
-
-// --- 표준화자료 렌더링 ---
+// 표준화자료 렌더링
 function renderStdTree(){
-  const w=document.getElementById("stdChapters"); if(!w) return;
+  const w=document.getElementById("stdChapters"), q=document.getElementById('stdSearch').value.toLowerCase(); 
   w.innerHTML = Object.keys(STD_KEYWORD_MAP).map(k=>{
     const isOpen = stdOpenKeyword===k;
-    return `<div>
-      <button class="std-keyword-btn" onclick="stdOpenKeyword='${isOpen?null:k}';renderStdTree()"><span>${k}</span><span>${isOpen?'▲':'▼'}</span></button>
-      <div class="std-title-list ${isOpen?'open':''}">
-        ${STD_KEYWORD_MAP[k].map(i=>`<button class="std-title-btn ${stdSelectedTitle===i.title?'active':''}" onclick="stdSelectedTitle='${i.title}';renderStdList();renderStdTree()">${i.title}</button>`).join('')}
+    const tList = STD_KEYWORD_MAP[k].filter(i=>(i.title+i.text).toLowerCase().includes(q));
+    if(!tList.length && q) return '';
+    return `<div style="border:1px solid var(--line); border-radius:8px; margin-bottom:4px; background:var(--card);">
+      <button style="display:flex; justify-content:space-between; padding:8px; background:transparent; border:none; text-align:left;" onclick="stdOpenKeyword='${isOpen?null:k}';renderStdTree()">
+        <span style="font-weight:800;">${k}</span><span>${isOpen?'▲':'▼'}</span>
+      </button>
+      <div style="display:${isOpen?'grid':'none'}; padding:4px 8px; gap:4px; border-top:1px solid var(--line);">
+        ${tList.map(i=>`<button class="small-action-btn ${stdSelectedTitle===i.title?'active-toggle':''}" style="text-align:left; width:100%;" onclick="stdSelectedTitle='${i.title}';renderStdList();renderStdTree()">${i.title}</button>`).join('')}
       </div>
     </div>`;
   }).join('');
 }
 
 function renderStdList(){
-  const l=document.getElementById("stdList"); if(!l) return;
-  const q=document.getElementById('stdSearch').value.toLowerCase();
-  let list = STD_DATA.filter(i=>(!stdSelectedTitle || i.title===stdSelectedTitle) && (i.title+i.text).toLowerCase().includes(q));
+  const l=document.getElementById("stdList"), qRaw=document.getElementById('stdSearch').value;
+  const q=qRaw.toLowerCase().replace(/\s/g,'');
+  let list = STD_DATA.filter(i=>(!stdSelectedTitle || i.title===stdSelectedTitle) && (i.title+i.text+i.keyword).toLowerCase().replace(/\s/g,'').includes(q));
   l.innerHTML = list.map(i=>`
-    <div class="std-item">
-      <div class="std-item-top"><div class="std-title">${i.title}</div><div class="badge">${i.keyword}</div></div>
-      <div class="std-content">${i.text}</div>
+    <div class="std-item ${stdCollapseAll?'collapsed':''}">
+      <div class="std-item-top"><div class="std-title">${highlight(i.title, qRaw)}</div><div class="badge">${i.keyword}</div></div>
+      <div class="std-preview">${i.text.slice(0,50)}...</div>
+      <div class="std-content">${highlight(i.text, qRaw)}</div>
+      <div class="image-wrap">${i.image?`<img src="${i.image}" style="width:100%; margin-top:10px; border-radius:8px; cursor:zoom-in;" onclick="openImg('${i.image}')">`:''}</div>
     </div>`).join('');
 }
-document.getElementById('stdSearch').oninput=renderStdList;
 
-// --- 유틸리티 및 버튼 기능 ---
-function updateHeaderUI(){
-  const isC = document.getElementById('criteria').classList.contains('active');
-  document.getElementById('headerAppliedBtn').style.display = isC ? 'inline-flex' : 'none';
-}
-
-document.getElementById('headerAppliedBtn').onclick = function(){
-  appliedOnly = !appliedOnly;
-  this.classList.toggle('active-toggle', appliedOnly);
-  renderResults();
-};
-
-document.getElementById('headerCollapseBtn').onclick = function(){
-  const isC = document.getElementById('criteria').classList.contains('active');
-  if(isC) { criteriaCollapseAll=!criteriaCollapseAll; renderResults(); }
-  else { stdCollapseAll=!stdCollapseAll; renderStdList(); }
-};
-
+// --- [4] 공통 기능 함수 ---
+function highlight(t,k){ if(!k.trim()) return t; const re=new RegExp(`(${k.trim()})`,'gi'); return t.replace(re,'<mark>$1</mark>'); }
+function isApplied(d,f,t){ if(!d)return false; const b=new Date(d); return (!f||b>=new Date(f))&&(!t||b<=new Date(t)); }
+function openImg(s){ const m=document.getElementById('imageModal'); document.getElementById('modalImage').src=s; m.style.display='flex'; }
 function toggleFav(type, title){
-  const key = type==='C' ? 'favC' : 'favS';
-  if(storage[key].includes(title)) storage[key] = storage[key].filter(t=>t!==title);
-  else storage[key].push(title);
-  localStorage.setItem(type==='C'?'fc_c':'fc_s', JSON.stringify(storage[key]));
-  renderResults(); renderStdList();
+  const k = type==='c'?'fav_c':'fav_s'; let a=storage.get(k);
+  if(a.includes(title)) a=a.filter(x=>x!==title); else a.push(title);
+  storage.set(k,a); renderResults(); renderStdList();
 }
 
-// 테마 및 폰트
+// --- [5] 이벤트 리스너 ---
+search.oninput=()=>{ renderTopics(); renderResults(); };
+document.getElementById('stdSearch').oninput=()=>{ renderStdTree(); renderStdList(); };
+document.getElementById('date').onchange=renderResults;
+document.getElementById('reset').onclick=()=>{ search.value=''; renderTopics(); renderResults(); };
+document.getElementById('stdClear').onclick=()=>{ document.getElementById('stdSearch').value=''; renderStdTree(); renderStdList(); };
+
+// 탭 전환
+document.querySelectorAll(".tab-btn").forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll(".tab-btn, .tab-content").forEach(el=>el.classList.remove("active"));
+  btn.classList.add("active"); document.getElementById(btn.dataset.tab).classList.add("active");
+  if(btn.dataset.tab==='standard') initStandard();
+});
+
+// 상단 컨트롤
+document.getElementById('headerAppliedBtn').onclick=function(){ appliedOnly=!appliedOnly; this.classList.toggle('active-toggle'); renderResults(); };
+document.getElementById('headerCollapseBtn').onclick=function(){ 
+  const isC=document.getElementById('criteria').classList.contains('active');
+  if(isC){ criteriaCollapseAll=!criteriaCollapseAll; renderResults(); } else { stdCollapseAll=!stdCollapseAll; renderStdList(); }
+  this.textContent = (isC?criteriaCollapseAll:stdCollapseAll)?'🔽 펼치기':'🔽 접기';
+};
+
+// 유틸 모달 열기
+document.getElementById('headerRecentBtn').onclick=()=>openUtil('recent');
+document.getElementById('headerFavBtn').onclick=()=>openUtil('fav');
+
+function openUtil(type){
+  const isC=document.getElementById('criteria').classList.contains('active'), body=document.getElementById('utilModalBody');
+  const key = type==='recent' ? (isC?'rc_c':'rc_s') : (isC?'fav_c':'fav_s');
+  const data = storage.get(key);
+  document.getElementById('utilModalTitle').textContent = type==='recent'?'🕒 최근 검색어':'⭐ 즐겨찾기 목록';
+  body.innerHTML = data.length ? `<div class="chip-row">${data.map(v=>`<button class="chip" onclick="applyUtil('${type}','${v}')">${v}</button>`).join('')}</div>` : '데이터가 없습니다.';
+  document.getElementById('utilModal').style.display='flex';
+  document.getElementById('utilClearBtn').onclick=()=>{ storage.set(key,[]); openUtil(type); renderResults(); };
+}
+
+function applyUtil(type, val){
+  const isC=document.getElementById('criteria').classList.contains('active');
+  if(isC){ search.value=val; renderTopics(); renderResults(); } else { document.getElementById('stdSearch').value=val; renderStdTree(); renderStdList(); }
+  document.getElementById('utilModal').style.display='none';
+  if(type==='recent') storage.addRecent(isC?'rc_c':'rc_s', val);
+}
+
+// 음성 인식 (기능 복구)
+function startVoice(btnId, inputId, statusId, callback){
+  const btn=document.getElementById(btnId), input=document.getElementById(inputId), status=document.getElementById(statusId);
+  const Recog = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!Recog){ alert("이 브라우저는 음성 인식을 지원하지 않습니다."); return; }
+  const r = new Recog(); r.lang='ko-KR';
+  r.onstart=()=>{ status.textContent="🎙️ 듣고 있어요..."; btn.style.boxShadow="0 0 10px var(--green)"; };
+  r.onresult=(e)=>{ const t=e.results[0][0].transcript; input.value=t; status.textContent="인식 완료!"; callback(); storage.addRecent(inputId==='search'?'rc_c':'rc_s', t); };
+  r.onend=()=>{ status.textContent=""; btn.style.boxShadow="none"; };
+  r.start();
+}
+document.getElementById('voiceBtn').onclick=()=>startVoice('voiceBtn','search','voiceStatus',()=>{renderTopics();renderResults();});
+document.getElementById('stdVoiceBtn').onclick=()=>startVoice('stdVoiceBtn','stdSearch','stdVoiceStatus',()=>{renderStdTree();renderStdList();});
+
+// 기타 유틸
 const tBtn=document.getElementById('themeToggle');
 tBtn.onclick=()=>{ document.body.classList.toggle('light-mode'); tBtn.textContent=document.body.classList.contains('light-mode')?'🌙':'☀️'; };
-document.getElementById('increase-font').onclick=()=>{currentFontSize++; document.body.style.fontSize=currentFontSize+'px';};
-document.getElementById('decrease-font').onclick=()=>{currentFontSize--; document.body.style.fontSize=currentFontSize+'px';};
+document.getElementById('increase-font').onclick=()=>{ currentFontSize++; document.querySelectorAll('.title, .text, .row, .std-content, .sub').forEach(e=>e.style.fontSize=currentFontSize+'px'); };
+document.getElementById('decrease-font').onclick=()=>{ currentFontSize--; document.querySelectorAll('.title, .text, .row, .std-content, .sub').forEach(e=>e.style.fontSize=currentFontSize+'px'); };
 
-// 스크롤 탑
 const bTop=document.getElementById('backToTopBtn');
-window.onscroll=()=>bTop.style.display=window.scrollY>300?'block':'none';
-bTop.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
-
+window.onscroll=()=>bTop.style.display=window.scrollY>400?'block':'none';
+bTop.onclick=()=>window.scrollTo({top:0, behavior:'smooth'});
 </script>
 </body>
 </html>
