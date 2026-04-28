@@ -13,39 +13,41 @@ body.light-mode{--bg:#f5f7fb;--bg-grad-1:#ffffff;--bg-grad-2:#eef3fb;--card:#fff
 .wrap{max-width:1200px;margin:0 auto;padding:14px 16px 140px}
 header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, var(--header-bg-1), var(--header-bg-2));border-bottom:1px solid var(--line);backdrop-filter:blur(6px);}
 
-/* 💡 헤더 패딩 및 이미지와 동일한 세로 정렬 구조 */
+/* 💡 헤더 패딩 및 구조 */
 .header-inner{max-width:1200px;margin:0 auto;padding:10px 12px;display:flex;flex-direction:column;align-items:stretch;gap:8px;}
 h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
 .tab-buttons{display:inline-flex;gap:6px;align-items:center;}
 .tab-btn{padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;cursor:pointer;white-space:nowrap;font-size:13px;}
 .tab-btn.active{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
 
-/* 💡 메뉴얼 버튼 스타일 */
+/* 💡 메뉴얼 버튼 스타일 (여백 대폭 축소) */
 .manual-btn {
   background: transparent;
   border: 1px solid var(--green);
   color: var(--green);
-  padding: 4px 6px;
-  border-radius: 8px;
+  padding: 0 8px; /* 좌우 여백을 아주 작게 설정 */
+  border-radius: 6px;
   font-weight: 900;
-  font-size: 13px;
+  font-size: 12px; /* 글씨도 주변과 어울리게 살짝 작게 */
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
+  height: 28px; /* 높이도 슬림하게 조절 */
+  text-decoration: none;
+  box-sizing: border-box;
 }
 .manual-btn:hover { background: var(--green); color: #fff; }
 
-/* 💡 PC버전: 컨트롤 버튼 크기 및 패딩 대폭 확대 */
+/* 💡 PC버전: 컨트롤 버튼 크기 */
 .font-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .font-controls button {
   width: auto !important; 
-  min-width: 55px; /* 버튼이 너무 쪼그라들지 않게 최소 너비 보장 */
-  height: 32px;    /* 클릭하기 쉽게 높이 확대 */
-  padding: 0 12px; /* 좌우 여백 확대 */
+  min-width: 55px; 
+  height: 32px;    
+  padding: 0 12px; 
   border-radius: 6px; 
   border: 1px solid var(--line); 
   background: var(--button-bg); 
@@ -67,7 +69,7 @@ h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
   font-size: 13px;
 }
 
-/* 💡 모바일 가로 스와이프 UI 및 버튼 크기 조정 */
+/* 💡 모바일 가로 스와이프 UI */
 @media(max-width:900px){
   .header-inner{padding:8px 10px;} 
   h1,.sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;} 
@@ -86,9 +88,9 @@ h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
   
   .font-controls button { 
     width: auto !important;
-    min-width: 15px; /* 모바일에서도 터치하기 쉽게 너비 보장 */
-    padding: 0 7px; 
-    height: 34px;    /* 모바일 터치 최적화 높이 */
+    min-width: 60px; 
+    padding: 0 12px; 
+    height: 34px;    
     font-size: 11.5px; 
     flex-shrink: 0; 
     letter-spacing: -0.5px;
@@ -152,7 +154,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
         <h1>AI TL</h1>
         <div class="sub">안전기준 적용 판단 프로그램</div>
       </div>
-      <button class="manual-btn" type="button" onclick="window.open('./제목을-입력해주세요_.pdf', '_blank')" title="사용 설명서 열기">메뉴얼</button>
+      <a href="./manual.pdf" target="_blank" class="manual-btn" title="사용 설명서 열기">메뉴얼</a>
     </div>
     
     <div class="tab-buttons" aria-label="화면 전환 탭" style="width:100%; margin-top:2px;">
@@ -561,12 +563,12 @@ document.addEventListener('click',e=>{
   
   if(rc){ search.value=rc.dataset.recentCriteria; renderTopics(); renderResults(); utilModal.style.display='none'; }
   if(fc){ search.value=''; renderTopics(); document.querySelectorAll('#topics input').forEach(c=>c.checked=false); renderResults(); utilModal.style.display='none'; [...resultsEl.querySelectorAll('.card')].find(c=>c.dataset.favoriteKey===fc.dataset.favoriteCriteria)?.scrollIntoView({behavior:'smooth',block:'center'}); }
-  if(ft){ toggleFavorite('criteria',ft.dataset.toggleFavorite); renderResults(); if(utilModal.style.display==='flex') openUtilModal('fav'); }
+  if(ft){ toggleFavorite('criteria',ft.dataset.toggleFavorite); renderResults(); if(utilModal.style.display==flex') openUtilModal('fav'); }
   if(cc){ const c=cc.closest('.card'); if(c){ c.classList.toggle('collapsed'); cc.textContent=c.classList.contains('collapsed')?'펼치기':'접기'; } }
   
   if(rs){ stdSearch.value=rs.dataset.recentStandard; renderStdTree(); renderStdList(); utilModal.style.display='none'; }
   if(fs){ const i=STD_DATA.find(x=>getStandardFavoriteKey(x)===fs.dataset.favoriteStandard); if(i){stdSearch.value=''; stdSelectedTitle=i.title; stdOpenKeyword=i.keyword||stdOpenKeyword; renderStdTree(); renderStdList(); utilModal.style.display='none'; [...document.querySelectorAll('#stdList .std-item')].find(c=>c.dataset.favoriteKey===fs.dataset.favoriteStandard)?.scrollIntoView({behavior:'smooth',block:'center'});} }
-  if(fst){ toggleFavorite('standard',fst.dataset.toggleStdFavorite); renderStdList(); if(utilModal.style.display==='flex') openUtilModal('fav'); }
+  if(fst){ toggleFavorite('standard',fst.dataset.toggleStdFavorite); renderStdList(); if(utilModal.style.display==flex') openUtilModal('fav'); }
   if(sc){ const c=sc.closest('.std-item'); if(c){ c.classList.toggle('collapsed'); sc.textContent=c.classList.contains('collapsed')?'펼치기':'접기'; } }
 });
 
