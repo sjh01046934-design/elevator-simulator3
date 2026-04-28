@@ -6,48 +6,49 @@
 <title>AI TL - 안전기준 적용 판단 프로그램</title>
 <link rel="icon" href="data:,">
 <style>
-/* CSS 최적화 */
+/* CSS 최적화 및 테마 변수 */
 :root{--bg:#0b1220;--bg-grad-1:#14234a;--bg-grad-2:#0b1220;--card:#111b2e;--card-soft:rgba(17,27,46,.72);--panel-top:rgba(255,255,255,.04);--panel-bottom:rgba(255,255,255,.02);--muted:#9fb0d0;--text:#e7eefc;--green:#19c37d;--red:#ff4d4f;--line:#22314f;--shadow:0 10px 30px rgba(0,0,0,.35);--input-bg:rgba(10,16,30,.55);--button-bg:rgba(22,37,69,.85);--button-bg-soft:rgba(22,37,69,.65);--button-hover:rgba(35,60,105,.95);--header-bg-1:rgba(11,18,32,.98);--header-bg-2:rgba(11,18,32,.92);--tab-bg:rgba(22,37,69,.55);--tab-active-bg:rgba(25,195,125,.95);--tab-active-text:#00120a;--topic-border:rgba(255,255,255,.08);--keyword-border:rgba(255,255,255,.08);--keyword-bg:rgba(10,16,30,.25);--keyword-hover:rgba(255,255,255,.04);--title-list-border:rgba(255,255,255,.06);--title-list-bg:rgba(255,255,255,.02);--title-btn-bg:rgba(255,255,255,.02);--title-btn-hover:rgba(255,255,255,.06);--title-btn-active:rgba(25,195,125,.14);--title-btn-active-border:rgba(25,195,125,.65);--modal-bg:rgba(0,0,0,.85);--fb-overlay:rgba(0,0,0,.72);--fb-box-bg:rgba(17,27,46,.98);--selected-bg:#b6ff5c;--selected-text:#000;--img-caption:#9fb0d0;--img-border:#22314f;--mark-bg:yellow;--mark-text:black;--chip-bg:rgba(255,255,255,.05);--chip-border:rgba(255,255,255,.08);--chip-hover:rgba(255,255,255,.10);--fav:#ffd54a;}
 body.light-mode{--bg:#f5f7fb;--bg-grad-1:#ffffff;--bg-grad-2:#eef3fb;--card:#ffffff;--card-soft:#ffffff;--panel-top:rgba(255,255,255,.96);--panel-bottom:rgba(245,248,252,.96);--muted:#5f6f86;--text:#1a2433;--green:#0f9f61;--red:#d83a3a;--line:#d8e0ec;--shadow:0 8px 24px rgba(17,24,39,.08);--input-bg:#ffffff;--button-bg:#edf2fa;--button-bg-soft:#f4f7fb;--button-hover:#dfe8f5;--header-bg-1:rgba(255,255,255,.96);--header-bg-2:rgba(248,250,253,.92);--tab-bg:#f1f5fb;--tab-active-bg:#19c37d;--tab-active-text:#ffffff;--topic-border:rgba(26,36,51,.08);--keyword-border:rgba(26,36,51,.08);--keyword-bg:#f8fafc;--keyword-hover:#eef3f9;--title-list-border:rgba(26,36,51,.08);--title-list-bg:#fcfdff;--title-btn-bg:#ffffff;--title-btn-hover:#f3f7fc;--title-btn-active:rgba(25,195,125,.10);--title-btn-active-border:rgba(25,195,125,.45);--modal-bg:rgba(20,28,40,.72);--fb-overlay:rgba(20,28,40,.48);--fb-box-bg:#ffffff;--selected-bg:#d8ff85;--selected-text:#111;--img-caption:#5f6f86;--img-border:#d8e0ec;--mark-bg:#fff29a;--mark-text:#111;--chip-bg:#f7f9fc;--chip-border:#dde6f1;--chip-hover:#eef4fb;--fav:#e0a800;}
 *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;background:radial-gradient(1200px 600px at 20% 0%,var(--bg-grad-1) 0%,var(--bg-grad-2) 60%);color:var(--text);font-size:14px;transition:background .25s,color .25s;}
 .wrap{max-width:1200px;margin:0 auto;padding:14px 16px 140px}
 header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, var(--header-bg-1), var(--header-bg-2));border-bottom:1px solid var(--line);backdrop-filter:blur(6px);}
 
-/* 💡 헤더 패딩 및 구조 */
+/* 💡 헤더 패딩 및 이미지와 동일한 수직 배치 구조 */
 .header-inner{max-width:1200px;margin:0 auto;padding:10px 12px;display:flex;flex-direction:column;align-items:stretch;gap:8px;}
 h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
-.tab-buttons{display:inline-flex;gap:6px;align-items:center;}
-.tab-btn{padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;cursor:pointer;white-space:nowrap;font-size:13px;}
+.tab-buttons{display:inline-flex;gap:6px;align-items:center; width:100%; margin-top:2px;}
+.tab-btn{flex:1; text-align:center; padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;cursor:pointer;white-space:nowrap;font-size:13px;}
 .tab-btn.active{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
 
-/* 💡 메뉴얼 버튼 스타일 (여백 대폭 축소) */
+/* 💡 메뉴얼 버튼 스타일 (a태그 활용) */
 .manual-btn {
   background: transparent;
   border: 1px solid var(--green);
   color: var(--green);
-  padding: 0 8px; /* 좌우 여백을 아주 작게 설정 */
+  padding: 0 10px; 
   border-radius: 6px;
   font-weight: 900;
-  font-size: 12px; /* 글씨도 주변과 어울리게 살짝 작게 */
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 28px; /* 높이도 슬림하게 조절 */
+  height: 30px;
   text-decoration: none;
   box-sizing: border-box;
 }
 .manual-btn:hover { background: var(--green); color: #fff; }
 
-/* 💡 PC버전: 컨트롤 버튼 크기 */
-.font-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+/* 💡 PC버전: 컨트롤 버튼 크기 및 여백 확대 */
+.font-controls{display:flex;gap:6px;align-items:center;flex-wrap:nowrap; overflow-x:auto; width:100%; justify-content:flex-end;}
+.font-controls::-webkit-scrollbar { display: none; }
 .font-controls button {
   width: auto !important; 
-  min-width: 55px; 
+  min-width: 58px; /* 버튼 좌우 크기 확대 */
   height: 32px;    
-  padding: 0 12px; 
+  padding: 0 10px; 
   border-radius: 6px; 
   border: 1px solid var(--line); 
   background: var(--button-bg); 
@@ -55,11 +56,12 @@ h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
   font-weight: 800; 
   cursor: pointer; 
   white-space: nowrap; 
-  font-size: 11.5px; 
+  font-size: 12px; 
   display: inline-flex; 
   align-items: center; 
   justify-content: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 .font-controls button.active-toggle{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
 .font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle {
@@ -69,36 +71,25 @@ h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
   font-size: 13px;
 }
 
-/* 💡 모바일 가로 스와이프 UI */
+/* 💡 모바일: 컨트롤 버튼 크기 조정 */
 @media(max-width:900px){
   .header-inner{padding:8px 10px;} 
   h1,.sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;} 
   h1{font-size:16px;} .sub{font-size:10px;} 
-  .tab-buttons{width:100%;gap:5px} .tab-btn{flex:1;text-align:center;}
   
   .font-controls {
-    flex-wrap: nowrap; 
-    overflow-x: auto;  
-    width: 100%; 
-    gap: 5px;          
+    justify-content:flex-start;
     padding-bottom: 2px;
-    -ms-overflow-style: none; scrollbar-width: none; justify-content:flex-start;
   }
-  .font-controls::-webkit-scrollbar { display: none; }
-  
   .font-controls button { 
-    width: auto !important;
-    min-width: 60px; 
+    min-width: 62px; /* 모바일에서 더 터치하기 쉽게 확장 */
     padding: 0 6px; 
     height: 34px;    
-    font-size: 11.5px; 
-    flex-shrink: 0; 
-    letter-spacing: -0.5px;
+    font-size: 12px; 
   }
   .font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle { 
     width: 34px !important; 
     min-width: 34px;
-    padding: 0;
   }
 }
 
@@ -157,14 +148,14 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
       <a href="./manual.pdf" target="_blank" class="manual-btn" title="사용 설명서 열기">메뉴얼</a>
     </div>
     
-    <div class="tab-buttons" aria-label="화면 전환 탭" style="width:100%; margin-top:2px;">
-      <button class="tab-btn active" type="button" data-tab="criteria" style="flex:1;">검사기준</button>
-      <button class="tab-btn" type="button" data-tab="standard" style="flex:1;">표준화자료</button>
+    <div class="tab-buttons" aria-label="화면 전환 탭">
+      <button class="tab-btn active" type="button" data-tab="criteria">검사기준</button>
+      <button class="tab-btn" type="button" data-tab="standard">표준화자료</button>
     </div>
     
     <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; min-width:0; width:100%; margin-top:4px;">
       <div style="font-size:11px; color:var(--muted); font-weight:800; padding-right:2px; letter-spacing:-0.5px;">최근 업데이트날짜 : 26.04.07</div>
-      <div class="font-controls" style="width:100%; justify-content:flex-end;">
+      <div class="font-controls">
         <button id="headerRecentBtn" type="button" title="최근 검색어">🕒 최근</button>
         <button id="headerFavBtn" type="button" title="즐겨찾기">⭐ 목록</button>
         <button id="headerAppliedBtn" type="button" title="적용기준">✅ 적용</button>
@@ -313,7 +304,7 @@ headerCollapseBtn.onclick = () => {
   updateHeaderBtns();
 };
 
-// --- 스마트 팝업 모달 로직 (최근검색어/즐겨찾기) ---
+// --- 스마트 팝업 모달 로직 ---
 const utilModal = document.getElementById('utilModal');
 const utilTitle = document.getElementById('utilModalTitle');
 const utilBody = document.getElementById('utilModalBody');
@@ -388,7 +379,7 @@ document.querySelectorAll(".tab-btn").forEach(btn=>btn.onclick=()=>{
   updateHeaderBtns(); 
 });
 
-// --- 기본 탭 음성 검색 ---
+// --- 음성 검색 ---
 function initVoiceSearch(btnId, statusId, inputEl, type, renderFn1, renderFn2) {
   const btn = document.getElementById(btnId), status = document.getElementById(statusId);
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -450,22 +441,26 @@ function highlight(t,k){
 function renderImage(img){ return img?`<div style="margin-top:10px"><img src="${img}" style="width:100%;max-width:400px;cursor:zoom-in;border:1px solid var(--img-border);border-radius:8px;" onclick="document.getElementById('modalImage').src='${img}';document.getElementById('imageModal').style.display='flex';" alt=""><div style="margin-top:4px;font-size:12px;color:var(--img-caption);text-align:center">※ 클릭하여 확대</div></div>`:''; }
 function closeImageModal(){ document.getElementById('imageModal').style.display='none'; }
 
-// --- [탭 1] 검사기준 로직 (상대 경로 적용) ---
+// --- [탭 1] 검사기준 로직 (💡 성능 최적화: innerHTML 누적) ---
 fetch('./data/criteria.json').then(r=>r.json()).then(j=>{
   DATA=j.criteria||[]; DATA.forEach(i=>{if(!TITLE_MAP[i.title])TITLE_MAP[i.title]=[]; TITLE_MAP[i.title].push(i);});
   renderTopics(); renderResults(); updateHeaderBtns();
 }).catch(()=>resultsEl.innerHTML='<div class="card"><div class="title">데이터 로드 실패</div></div>');
 
 function renderTopics(){
-  if(!topicsEl) return; topicsEl.innerHTML='';
+  if(!topicsEl) return; 
   const q=norm(search.value), ts=Object.keys(TITLE_MAP);
   let show = q ? ts.map(t=>({t,s:scoreMatch(t,search.value),p:passFilter(t,search.value)})).filter(x=>x.p||x.s>0).sort((a,b)=>b.s-a.s||a.t.localeCompare(b.t,'ko')).slice(0,200).map(x=>x.t) : ts;
-  show.forEach(t=>{ const l=document.createElement('label'); l.className='topic'; l.innerHTML=`<input type="checkbox" value="${t}" onchange="renderResults()"><span>${highlight(t,search.value)}</span>`; topicsEl.appendChild(l); });
+  
+  // DOM 최적화
+  topicsEl.innerHTML = show.map(t => 
+    `<label class="topic"><input type="checkbox" value="${t}" onchange="renderResults()"><span>${highlight(t,search.value)}</span></label>`
+  ).join('');
 }
 
 function renderResults(){
-  if(!resultsEl) return; resultsEl.innerHTML='';
-  const sel=new Set([...document.querySelectorAll('#topics input:checked')].map(c=>c.value)), qRaw=search.value, q=norm(qRaw);
+  if(!resultsEl) return; 
+  const sel=new Set([...document.querySelectorAll('#topics input:checked')].map(c=>c.value)), qRaw=search.value.trim(), q=norm(qRaw);
   let mat=[];
   if(q){
     let pool=[]; DATA.forEach((i,idx)=>{ if(passFilter(i.title+" "+i.label+" "+i.text,qRaw)) pool.push({i,idx}); });
@@ -478,9 +473,11 @@ function renderResults(){
   if(appliedOnly) mat=mat.filter(({i})=>isApplied(dateEl.value,i.from,i.to));
   if(!mat.length){ resultsEl.innerHTML=`<div class="card"><div class="title">결과 없음</div></div>`; return; }
 
+  // DOM 최적화: 한 번에 렌더링
+  let htmlString = "";
   mat.forEach(({i})=>{
     const app=isApplied(dateEl.value,i.from,i.to), fk=getCriteriaFavoriteKey(i), fav=state.favoriteCriteria.includes(fk), selTitle=sel.has(i.title);
-    resultsEl.innerHTML+=`
+    htmlString += `
       <div class="card ${criteriaCollapseAll?'collapsed':''}" data-favorite-key="${fk}">
         <div class="card-header"><div class="title">${selTitle?`<span class="selected-title">${highlight(i.title,qRaw)}</span>`:highlight(i.title,qRaw)}</div><div class="badge ${app?'ok':'no'}">${app?'🟩 적용':'🟥 미적용'}<div class="range">${i.from||'—'} ~ ${i.to||'현재'}</div></div></div>
         <div class="text-preview">${highlight(i.text.slice(0,100)+'…',qRaw)}</div>
@@ -492,15 +489,26 @@ function renderResults(){
         </div>
       </div>`;
   });
+  resultsEl.innerHTML = htmlString;
 }
 const isApplied=(d,f,t)=>{ if(!d)return false; const b=new Date(d); return (!f||b>=new Date(f))&&(!t||b<=new Date(t)); };
 
-let criteriaTimer;
-search.oninput=()=>{ renderTopics(); renderResults(); clearTimeout(criteriaTimer); criteriaTimer=setTimeout(()=>addRecentSearch('criteria',search.value),1000); };
+// 💡 렉 방지 최적화: 디바운싱(Debouncing) 적용
+let searchTimer, recentTimer;
+search.oninput=()=>{ 
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    renderTopics(); 
+    renderResults(); 
+  }, 200); // 사용자가 입력을 멈추면 0.2초 후 렌더링
+  
+  clearTimeout(recentTimer); 
+  recentTimer = setTimeout(()=>addRecentSearch('criteria',search.value), 1000); 
+};
 document.getElementById('reset').onclick=()=>{ search.value=''; dateEl.value=''; appliedOnly=false; updateHeaderBtns(); document.querySelectorAll('#topics input').forEach(c=>c.checked=false); renderTopics(); renderResults(); };
 dateEl.addEventListener('input',renderResults); dateEl.addEventListener('change',renderResults);
 
-// --- [탭 2] 표준화자료 로직 (상대 경로 적용) ---
+// --- [탭 2] 표준화자료 로직 ---
 function initStandardTab(){
   if(stdInitialized) return; stdInitialized=true;
   fetch('./data/standardization.json').then(r=>r.json()).then(j=>{
@@ -547,8 +555,15 @@ function renderStdList(){
   }).join("");
 }
 
-let stdTimer;
-if(stdSearch) stdSearch.oninput=()=>{ renderStdTree(); renderStdList(); clearTimeout(stdTimer); stdTimer=setTimeout(()=>addRecentSearch('standard',stdSearch.value),1000); };
+let stdTimer1, stdTimer2;
+if(stdSearch) stdSearch.oninput=()=>{ 
+  clearTimeout(stdTimer1);
+  stdTimer1 = setTimeout(() => {
+    renderStdTree(); renderStdList();
+  }, 200);
+  clearTimeout(stdTimer2); 
+  stdTimer2 = setTimeout(()=>addRecentSearch('standard',stdSearch.value),1000); 
+};
 if(document.getElementById("stdClear")) document.getElementById("stdClear").onclick=()=>{ if(stdSearch)stdSearch.value=""; stdSelectedTitle=null; stdOpenKeyword=null; renderStdTree(); renderStdList(); };
 document.getElementById("stdChapters")?.addEventListener("click",e=>{
   const kb=e.target.closest(".std-keyword-btn"), tb=e.target.closest(".std-title-btn");
@@ -563,12 +578,12 @@ document.addEventListener('click',e=>{
   
   if(rc){ search.value=rc.dataset.recentCriteria; renderTopics(); renderResults(); utilModal.style.display='none'; }
   if(fc){ search.value=''; renderTopics(); document.querySelectorAll('#topics input').forEach(c=>c.checked=false); renderResults(); utilModal.style.display='none'; [...resultsEl.querySelectorAll('.card')].find(c=>c.dataset.favoriteKey===fc.dataset.favoriteCriteria)?.scrollIntoView({behavior:'smooth',block:'center'}); }
-  if(ft){ toggleFavorite('criteria',ft.dataset.toggleFavorite); renderResults(); if(utilModal.style.display==flex') openUtilModal('fav'); }
+  if(ft){ toggleFavorite('criteria',ft.dataset.toggleFavorite); renderResults(); if(utilModal.style.display==='flex') openUtilModal('fav'); }
   if(cc){ const c=cc.closest('.card'); if(c){ c.classList.toggle('collapsed'); cc.textContent=c.classList.contains('collapsed')?'펼치기':'접기'; } }
   
   if(rs){ stdSearch.value=rs.dataset.recentStandard; renderStdTree(); renderStdList(); utilModal.style.display='none'; }
   if(fs){ const i=STD_DATA.find(x=>getStandardFavoriteKey(x)===fs.dataset.favoriteStandard); if(i){stdSearch.value=''; stdSelectedTitle=i.title; stdOpenKeyword=i.keyword||stdOpenKeyword; renderStdTree(); renderStdList(); utilModal.style.display='none'; [...document.querySelectorAll('#stdList .std-item')].find(c=>c.dataset.favoriteKey===fs.dataset.favoriteStandard)?.scrollIntoView({behavior:'smooth',block:'center'});} }
-  if(fst){ toggleFavorite('standard',fst.dataset.toggleStdFavorite); renderStdList(); if(utilModal.style.display==flex') openUtilModal('fav'); }
+  if(fst){ toggleFavorite('standard',fst.dataset.toggleStdFavorite); renderStdList(); if(utilModal.style.display==='flex') openUtilModal('fav'); }
   if(sc){ const c=sc.closest('.std-item'); if(c){ c.classList.toggle('collapsed'); sc.textContent=c.classList.contains('collapsed')?'펼치기':'접기'; } }
 });
 
