@@ -13,33 +13,72 @@ body.light-mode{--bg:#f5f7fb;--bg-grad-1:#ffffff;--bg-grad-2:#eef3fb;--card:#fff
 .wrap{max-width:1200px;margin:0 auto;padding:14px 16px 140px}
 header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, var(--header-bg-1), var(--header-bg-2));border-bottom:1px solid var(--line);backdrop-filter:blur(6px);}
 
-/* 헤더 패딩 및 구조 압축 */
-.header-inner{max-width:1200px;margin:0 auto;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+/* 💡 헤더 패딩 및 이미지와 동일한 세로 정렬 구조 */
+.header-inner{max-width:1200px;margin:0 auto;padding:10px 12px;display:flex;flex-direction:column;align-items:stretch;gap:8px;}
 h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
-.header-left{display:flex;align-items:center;gap:12px;min-width:0;flex-wrap:wrap;} 
-.tab-buttons{display:inline-flex;gap:4px;align-items:center;}
-.tab-btn{padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;cursor:pointer;white-space:nowrap;font-size:12px;}
+.tab-buttons{display:inline-flex;gap:6px;align-items:center;}
+.tab-btn{padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;cursor:pointer;white-space:nowrap;font-size:13px;}
 .tab-btn.active{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
 
-/* PC버전 버튼 크기 축소 */
-.font-controls{display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
-.font-controls button{width:auto !important; height:28px; padding:0 3px; border-radius:6px; border:1px solid var(--line); background:var(--button-bg); color:var(--text); font-weight:800; cursor:pointer; white-space:nowrap; font-size:11px; display:inline-flex; align-items:center; justify-content:center;}
-.font-controls button.active-toggle{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
-.font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle{width:28px !important; padding:0; font-size:12px;}
+/* 💡 메뉴얼 버튼 스타일 */
+.manual-btn {
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  padding: 4px 14px;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+}
+.manual-btn:hover { background: var(--green); color: #fff; }
 
-/* 모바일 1열 가로 스와이프 UI 및 극한 여백/자간 압축 */
+/* 💡 PC버전: 컨트롤 버튼 크기 및 패딩 대폭 확대 */
+.font-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.font-controls button {
+  width: auto !important; 
+  min-width: 55px; /* 버튼이 너무 쪼그라들지 않게 최소 너비 보장 */
+  height: 32px;    /* 클릭하기 쉽게 높이 확대 */
+  padding: 0 12px; /* 좌우 여백 확대 */
+  border-radius: 6px; 
+  border: 1px solid var(--line); 
+  background: var(--button-bg); 
+  color: var(--text); 
+  font-weight: 800; 
+  cursor: pointer; 
+  white-space: nowrap; 
+  font-size: 11.5px; 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.font-controls button.active-toggle{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
+.font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle {
+  width: 32px !important; 
+  min-width: 32px; 
+  padding: 0; 
+  font-size: 13px;
+}
+
+/* 💡 모바일 가로 스와이프 UI 및 버튼 크기 조정 */
 @media(max-width:900px){
-  .header-inner{flex-direction:column;align-items:stretch; padding:6px 10px;} 
-  .header-left{flex-direction:column;align-items:flex-start;gap:6px;} 
+  .header-inner{padding:8px 10px;} 
   h1,.sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;} 
-  h1{font-size:15px;} .sub{font-size:10px;} 
+  h1{font-size:16px;} .sub{font-size:10px;} 
   .tab-buttons{width:100%;gap:5px} .tab-btn{flex:1;text-align:center;}
   
   .font-controls {
     flex-wrap: nowrap; 
     overflow-x: auto;  
     width: 100%; 
-    gap: 4px;          
+    gap: 5px;          
     padding-bottom: 2px;
     -ms-overflow-style: none; scrollbar-width: none; justify-content:flex-start;
   }
@@ -47,12 +86,18 @@ h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
   
   .font-controls button { 
     width: auto !important;
-    padding: 0 10px; 
-    font-size: 11px; 
+    min-width: 60px; /* 모바일에서도 터치하기 쉽게 너비 보장 */
+    padding: 0 12px; 
+    height: 34px;    /* 모바일 터치 최적화 높이 */
+    font-size: 11.5px; 
     flex-shrink: 0; 
     letter-spacing: -0.5px;
   }
-  .font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle { width: 26px !important; }
+  .font-controls #increase-font, .font-controls #decrease-font, .font-controls #themeToggle { 
+    width: 34px !important; 
+    min-width: 34px;
+    padding: 0;
+  }
 }
 
 .tab-content{display:none} .tab-content.active{display:block}
@@ -101,20 +146,23 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 
 <header>
   <div class="header-inner">
-    <div class="header-left">
+    
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
       <div class="brand">
         <h1>AI TL</h1>
         <div class="sub">안전기준 적용 판단 프로그램</div>
       </div>
-      <div class="tab-buttons" aria-label="화면 전환 탭">
-        <button class="tab-btn active" type="button" data-tab="criteria">검사기준</button>
-        <button class="tab-btn" type="button" data-tab="standard">표준화자료</button>
-      </div>
+      <button class="manual-btn" type="button" onclick="window.open('./제목을-입력해주세요_.pdf', '_blank')" title="사용 설명서 열기">메뉴얼</button>
     </div>
     
-    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; min-width:0;">
+    <div class="tab-buttons" aria-label="화면 전환 탭" style="width:100%; margin-top:2px;">
+      <button class="tab-btn active" type="button" data-tab="criteria" style="flex:1;">검사기준</button>
+      <button class="tab-btn" type="button" data-tab="standard" style="flex:1;">표준화자료</button>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; min-width:0; width:100%; margin-top:4px;">
       <div style="font-size:11px; color:var(--muted); font-weight:800; padding-right:2px; letter-spacing:-0.5px;">최근 업데이트날짜 : 26.04.07</div>
-      <div class="font-controls">
+      <div class="font-controls" style="width:100%; justify-content:flex-end;">
         <button id="headerRecentBtn" type="button" title="최근 검색어">🕒 최근</button>
         <button id="headerFavBtn" type="button" title="즐겨찾기">⭐ 목록</button>
         <button id="headerAppliedBtn" type="button" title="적용기준">✅ 적용</button>
@@ -124,6 +172,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
         <button id="decrease-font" type="button" title="글자 작게">A−</button>
       </div>
     </div>
+
   </div>
 </header>
 
@@ -399,7 +448,7 @@ function highlight(t,k){
 function renderImage(img){ return img?`<div style="margin-top:10px"><img src="${img}" style="width:100%;max-width:400px;cursor:zoom-in;border:1px solid var(--img-border);border-radius:8px;" onclick="document.getElementById('modalImage').src='${img}';document.getElementById('imageModal').style.display='flex';" alt=""><div style="margin-top:4px;font-size:12px;color:var(--img-caption);text-align:center">※ 클릭하여 확대</div></div>`:''; }
 function closeImageModal(){ document.getElementById('imageModal').style.display='none'; }
 
-// --- [탭 1] 검사기준 로직 ---
+// --- [탭 1] 검사기준 로직 (상대 경로 적용) ---
 fetch('./data/criteria.json').then(r=>r.json()).then(j=>{
   DATA=j.criteria||[]; DATA.forEach(i=>{if(!TITLE_MAP[i.title])TITLE_MAP[i.title]=[]; TITLE_MAP[i.title].push(i);});
   renderTopics(); renderResults(); updateHeaderBtns();
@@ -449,7 +498,7 @@ search.oninput=()=>{ renderTopics(); renderResults(); clearTimeout(criteriaTimer
 document.getElementById('reset').onclick=()=>{ search.value=''; dateEl.value=''; appliedOnly=false; updateHeaderBtns(); document.querySelectorAll('#topics input').forEach(c=>c.checked=false); renderTopics(); renderResults(); };
 dateEl.addEventListener('input',renderResults); dateEl.addEventListener('change',renderResults);
 
-// --- [탭 2] 표준화자료 로직 ---
+// --- [탭 2] 표준화자료 로직 (상대 경로 적용) ---
 function initStandardTab(){
   if(stdInitialized) return; stdInitialized=true;
   fetch('./data/standardization.json').then(r=>r.json()).then(j=>{
