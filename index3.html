@@ -33,7 +33,7 @@ h1{margin:0;font-size:18px} .sub{font-size:12px;color:var(--muted)}
 .tab-btn{flex:1; text-align:center; padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg);color:var(--text);font-weight:900;cursor:pointer;white-space:nowrap;font-size:13px;}
 .tab-btn.active{background:var(--tab-active-bg);color:var(--tab-active-text);border-color:var(--tab-active-bg);}
 
-/* 💡 메뉴얼 버튼 스타일 (a태그 활용) */
+/* 💡 메뉴얼/피드백 버튼 스타일 (a태그 활용) */
 .manual-btn {
   background: transparent;
   border: 1px solid var(--green);
@@ -158,7 +158,11 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
         <h1>AI TL</h1>
         <div class="sub">안전기준 적용 판단 프로그램</div>
       </div>
-      <a href="./manual.pdf" target="_blank" class="manual-btn" title="사용 설명서 열기">메뉴얼</a>
+      <!-- 💡 피드백 버튼과 메뉴얼 버튼을 나란히 배치했습니다 -->
+      <div style="display:flex; gap:6px;">
+        <a href="https://naver.me/5xgAWwSb" target="_blank" class="manual-btn" title="프로그램 피드백 남기기">피드백</a>
+        <a href="./manual.pdf" target="_blank" class="manual-btn" title="사용 설명서 열기">메뉴얼</a>
+      </div>
     </div>
     
     <div class="tab-buttons" aria-label="화면 전환 탭">
