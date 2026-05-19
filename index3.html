@@ -455,7 +455,28 @@ function highlight(t,k){
   for(const [s,e] of merged){ res+=t.slice(last,s)+'<mark>'+t.slice(s,e)+'</mark>'; last=e; }
   return res+t.slice(last);
 }
-function renderImage(img){ return img?`<div style="margin-top:10px"><img src="${img}" style="width:100%;max-width:400px;cursor:zoom-in;border:1px solid var(--img-border);border-radius:8px;" onclick="document.getElementById('modalImage').src='${img}';document.getElementById('imageModal').style.display='flex';" alt=""><div style="margin-top:4px;font-size:12px;color:var(--img-caption);text-align:center">※ 클릭하여 확대</div></div>`:''; }
+function renderImage(img){ 
+  if(!img) return '';
+  
+  // 1. 이미지가 여러 개(배열)일 때: 세로(column)로 12px 간격을 두고 정렬하여 절대 겹치지 않음
+  if (Array.isArray(img)) {
+    return '<div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">' + 
+      img.map(src => `
+        <div style="width: 100%; max-width: 400px;">
+          <img src="${src}" style="width: 100%; height: auto; cursor: zoom-in; border: 1px solid var(--img-border); border-radius: 8px;" onclick="document.getElementById('modalImage').src='${src}';document.getElementById('imageModal').style.display='flex';" alt="">
+          <div style="margin-top: 4px; font-size: 12px; color: var(--img-caption); text-align: center;">※ 클릭하여 확대</div>
+        </div>
+      `).join('') + 
+    '</div>';
+  }
+  
+  // 2. 이미지가 1개일 때
+  return `<div style="margin-top: 12px; width: 100%; max-width: 400px;">
+    <img src="${img}" style="width: 100%; height: auto; cursor: zoom-in; border: 1px solid var(--img-border); border-radius: 8px;" onclick="document.getElementById('modalImage').src='${img}';document.getElementById('imageModal').style.display='flex';" alt="">
+    <div style="margin-top: 4px; font-size: 12px; color: var(--img-caption); text-align: center;">※ 클릭하여 확대</div>
+  </div>`;
+}
+
 function closeImageModal(){ document.getElementById('imageModal').style.display='none'; }
 
 // --- [탭 1] 검사기준 로직 (💡 성능 최적화: innerHTML 누적) ---
