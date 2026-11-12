@@ -147,6 +147,11 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 .fb-close{width:auto !important;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--button-bg-soft);color:var(--text);cursor:pointer;font-weight:900;font-size:12px;}
 #utilModalBody { max-height:40vh; overflow-y:auto; padding:8px 0; }
 </style>
+<style>
+.type-switch{display:flex;gap:6px;margin-bottom:8px}
+.type-switch button{flex:1;padding:8px 0;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--text);font-weight:800;cursor:pointer}
+.type-switch button.active{background:#2563eb;color:#fff;border-color:#2563eb}
+</style>
 </head>
 <body>
 
@@ -191,6 +196,10 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
     <div class="panel">
       <div class="controls">
         <div>
+          <div id="typeSwitch" class="type-switch">
+            <button type="button" data-type="elevator" class="active">엘리베이터</button>
+            <button type="button" data-type="escalator">에스컬레이터</button>
+          </div>
           <div style="display:flex; gap:4px; align-items:center;">
             <input id="search" placeholder="검사항목 or 기준내용 검색">
             <button id="reset" type="button" title="검색어 지우기" style="width:auto !important; padding:0 12px; font-size:14px; height:38px;">✕</button>
@@ -250,7 +259,7 @@ button{cursor:pointer;font-weight:700;background:var(--button-bg)}
 
 <script>
 // --- 공통 상태 및 초기화 ---
-let DATA=[], TITLE_MAP={}, currentFontSize=14;
+let DATA=[], ELEV_DATA=[], ESC_DATA=null, TITLE_MAP={}, currentFontSize=14, curType='elevator';
 let appliedOnly=false, criteriaCollapseAll=false, stdCollapseAll=false;
 let STD_DATA=[], STD_KEYWORD_MAP={}, stdInitialized=false, stdLoaded=false, stdOpenKeyword=null, stdSelectedTitle=null;
 
@@ -481,9 +490,28 @@ function closeImageModal(){ document.getElementById('imageModal').style.display=
 
 // --- [탭 1] 검사기준 로직 (💡 성능 최적화: innerHTML 누적) ---
 fetch('./data/criteria.json').then(r=>r.json()).then(j=>{
-  DATA=j.criteria||[]; DATA.forEach(i=>{if(!TITLE_MAP[i.title])TITLE_MAP[i.title]=[]; TITLE_MAP[i.title].push(i);});
-  renderTopics(); renderResults(); updateHeaderBtns();
+  ELEV_DATA=j.criteria||[]; applyType(); updateHeaderBtns();
 }).catch(()=>resultsEl.innerHTML='<div class="card"><div class="title">데이터 로드 실패</div></div>');
+
+
+// --- 승강기 종류(엘리베이터/에스컬레이터) 전환: 에스컬레이터 데이터는 처음 선택할 때만 불러옴 ---
+function applyType(){
+  DATA = curType==='escalator' ? (ESC_DATA||[]) : ELEV_DATA; TITLE_MAP={};
+  DATA.forEach(i=>{if(!TITLE_MAP[i.title])TITLE_MAP[i.title]=[]; TITLE_MAP[i.title].push(i);});
+  renderTopics(); renderResults();
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('#typeSwitch button'); if(!b) return;
+  curType=b.dataset.type;
+  document.querySelectorAll('#typeSwitch button').forEach(x=>x.classList.toggle('active',x===b));
+  search.value='';
+  if(curType==='escalator' && ESC_DATA===null){
+    resultsEl.innerHTML='<div class="card"><div class="title">에스컬레이터 기준 불러오는 중...</div></div>';
+    try{ ESC_DATA=(await (await fetch('./data/criteria_escalator.json')).json()).criteria||[]; }
+    catch(err){ ESC_DATA=null; resultsEl.innerHTML='<div class="card"><div class="title">에스컬레이터 데이터 로드 실패</div></div>'; return; }
+  }
+  applyType();
+});
 
 function renderTopics(){
   if(!topicsEl) return; 
